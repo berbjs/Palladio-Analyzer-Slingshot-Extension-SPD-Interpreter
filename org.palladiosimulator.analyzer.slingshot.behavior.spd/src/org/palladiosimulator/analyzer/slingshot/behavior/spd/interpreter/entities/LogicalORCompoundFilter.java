@@ -39,4 +39,5 @@ public class LogicalORCompoundFilter extends FilterChain implements Filter {
 		this.eventToProcess = null;
 		this.numberDisregarded = 0;
 	}
+
 }
