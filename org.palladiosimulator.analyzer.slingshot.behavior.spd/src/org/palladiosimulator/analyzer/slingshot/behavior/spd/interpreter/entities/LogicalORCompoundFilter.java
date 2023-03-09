@@ -1,6 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities;
 
-public class LogicalORCompoundFilter extends FilterChain implements Filter {
+public class LogicalORCompoundFilter extends ComboundFilter {
 
 	private FilterChain currentParentChain;
 	private Object eventToProcess;

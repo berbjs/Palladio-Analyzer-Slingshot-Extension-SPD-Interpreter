@@ -6,26 +6,23 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.SPDAdjustorContext;
-import org.palladiosimulator.analyzer.slingshot.core.api.SimulationDriver;
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
+import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.spd.SPD;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.util.SpdSwitch;
 
 /**
+ * A simple SPD interpreter that will build a {@link FilterChain} for each
+ * scaling policy.
  *
  * @author Julijan Katic
  */
 class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 
 	private static final Logger LOGGER = Logger.getLogger(SpdInterpreter.class);
-
-	private final SimulationDriver driver;
-
-
-	SpdInterpreter(final SimulationDriver driver) {
-		this.driver = driver;
-	}
 
 	@Override
 	public InterpretationResult caseSPD(final SPD spd) {
@@ -44,7 +41,7 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 		if (!policy.isActive()) {
 			return InterpretationResult.EMPTY_RESULT;
 		}
-		final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter(this.driver, policy)).doSwitch(policy.getScalingTrigger());
+		final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter(policy)).doSwitch(policy.getScalingTrigger());
 		return (new InterpretationResult())
 				.adjustorContext(new SPDAdjustorContext(policy, intrResult.getTriggerChecker()))
 				.eventsToSchedule(intrResult.getEventsToSchedule());
@@ -55,22 +52,26 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 	 *
 	 * @author Julijan Katic
 	 */
-	static final class InterpretationResult {
+	public static final class InterpretationResult {
 
 		public static final InterpretationResult EMPTY_RESULT = new InterpretationResult();
 
 		private final List<SPDAdjustorContext> adjustorContexts;
 		private final List<SpdBasedEvent> eventsToSchedule;
+		private final List<Subscriber<? extends DESEvent>> subscribers;
 
 		InterpretationResult() {
 			this.adjustorContexts = new ArrayList<>();
 			this.eventsToSchedule = new ArrayList<>();
+			this.subscribers = new ArrayList<>();
 		}
 
 		InterpretationResult(final List<SPDAdjustorContext> adjustorContexts,
-							 final List<SpdBasedEvent> eventsToSchedule) {
+							 final List<SpdBasedEvent> eventsToSchedule,
+							 final List<Subscriber<? extends DESEvent>> subscribers) {
 			this.adjustorContexts = new ArrayList<>(adjustorContexts);
 			this.eventsToSchedule = new ArrayList<>(eventsToSchedule);
+			this.subscribers = new ArrayList<>(subscribers);
 		}
 
 		/**
@@ -79,7 +80,7 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 		 * @param other
 		 */
 		InterpretationResult(final InterpretationResult other) {
-			this(other.adjustorContexts, other.eventsToSchedule);
+			this(other.adjustorContexts, other.eventsToSchedule, other.subscribers);
 		}
 
 		public InterpretationResult adjustorContext(final SPDAdjustorContext adjustorContext) {
@@ -95,6 +96,19 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 		public InterpretationResult eventsToSchedule(final Collection<? extends SpdBasedEvent> eventsToSchedule) {
 			this.eventsToSchedule.addAll(eventsToSchedule);
 			return this;
+		}
+
+
+		public List<SPDAdjustorContext> getAdjustorContexts() {
+			return this.adjustorContexts;
+		}
+
+		public List<SpdBasedEvent> getEventsToSchedule() {
+			return this.eventsToSchedule;
+		}
+
+		public List<Subscriber<? extends DESEvent>> getSubscribers() {
+			return this.subscribers;
 		}
 
 		/**

@@ -5,11 +5,15 @@ import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalANDComboundFilter;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalXORCompoundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.TriggerChecker;
-import org.palladiosimulator.analyzer.slingshot.core.api.SimulationDriver;
-import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.EventHandler;
+import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
+import org.palladiosimulator.spd.triggers.LogicalOperator;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
@@ -19,19 +23,19 @@ import org.palladiosimulator.spd.triggers.util.TriggersSwitch;
 
 public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInterpreter.InterpretationResult> {
 
-	private final SimulationDriver driver;
 	private final ScalingPolicy policy;
 
-	public ScalingTriggerInterpreter(final SimulationDriver driver, final ScalingPolicy policy) {
+	public ScalingTriggerInterpreter(final ScalingPolicy policy) {
 		super();
-		this.driver = driver;
 		this.policy = policy;
 	}
 
 	@Override
 	public InterpretationResult caseComposedTrigger(final ComposedTrigger object) {
-		// TODO Auto-generated method stub
-		return super.caseComposedTrigger(object);
+		return object.getScalingtrigger().stream()
+								  .map(this::doSwitch)
+								  .reduce((res1, res2) -> res1.addFrom(res2, object.getLogicalOperator()))
+								  .orElseGet(InterpretationResult::new);
 	}
 
 	@Override
@@ -49,11 +53,11 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 
 	static final class InterpretationResult {
 
-		private TriggerChecker triggerChecker;
+		private Filter triggerChecker;
 		private final List<SpdBasedEvent> eventsToSchedule = new ArrayList<>();
-		private final List<EventListenerWithId<?>> eventsToListen = new ArrayList<>();
+		private final List<Subscriber<?>> eventsToListen = new ArrayList<>();
 
-		public InterpretationResult triggerChecker(final TriggerChecker triggerChecker) {
+		public InterpretationResult triggerChecker(final Filter triggerChecker) {
 			this.triggerChecker = triggerChecker;
 			return this;
 		}
@@ -63,12 +67,12 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 			return this;
 		}
 
-		public InterpretationResult listenEvent(final EventListenerWithId<?> event) {
+		public InterpretationResult listenEvent(final Subscriber<?> event) {
 			this.eventsToListen.add(event);
 			return this;
 		}
 
-		public TriggerChecker getTriggerChecker() {
+		public Filter getTriggerChecker() {
 			return this.triggerChecker;
 		}
 
@@ -76,11 +80,55 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 			return this.eventsToSchedule;
 		}
 
-		public List<EventListenerWithId<?>> getEventsToListen() {
+		public List<Subscriber<?>> getEventsToListen() {
 			return this.eventsToListen;
 		}
 
-		static record EventListenerWithId<T>(String name, Class<T> eventToListen, EventHandler<T> listener) {
+		// TODO: Please look at code style again..
+		public InterpretationResult addFrom(final InterpretationResult other, final LogicalOperator operator) {
+			this.eventsToSchedule.addAll(other.eventsToSchedule);
+			this.eventsToListen.addAll(other.eventsToListen);
+
+			if (this.triggerChecker == null) {
+				/* We then simply set as the other */
+				this.triggerChecker = other.triggerChecker;
+			} else {
+				switch (operator) {
+				case AND:
+					{
+						final Filter temp = this.triggerChecker;
+						if (temp instanceof final LogicalANDComboundFilter chain) {
+							chain.add(other.triggerChecker);
+						} else {
+							final LogicalANDComboundFilter comboundFilter = new LogicalANDComboundFilter();
+							comboundFilter.add(temp);
+							comboundFilter.add(other.triggerChecker);
+							this.triggerChecker = comboundFilter;
+						}
+					}
+					break;
+				case OR:
+					{
+						final LogicalORCompoundFilter comboundFilter = new LogicalORCompoundFilter();
+						comboundFilter.add(this.triggerChecker);
+						comboundFilter.add(other.triggerChecker);
+						this.triggerChecker = comboundFilter;
+					}
+					break;
+				case XOR:
+					{
+						final LogicalXORCompoundFilter comboundFilter = new LogicalXORCompoundFilter();
+						comboundFilter.add(this.triggerChecker);
+						comboundFilter.add(other.triggerChecker);
+						this.triggerChecker = comboundFilter;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+
+			return this;
 		}
 	}
 
