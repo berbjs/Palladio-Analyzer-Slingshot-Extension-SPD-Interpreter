@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.adjustor.Adjustor;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.TriggerChecker;
 import org.palladiosimulator.spd.ScalingPolicy;
 
 public final class SPDAdjustorContext {
@@ -13,7 +12,7 @@ public final class SPDAdjustorContext {
 
 	private final ScalingPolicy scalingPolicy;
 
-	public SPDAdjustorContext(final ScalingPolicy policy, final TriggerChecker triggerChecker) {
+	public SPDAdjustorContext(final ScalingPolicy policy, final Filter triggerChecker) {
 		this.scalingPolicy = policy;
 
 		this.filterChain.add(new TargetGroupChecker(policy.getTargetGroup()));
