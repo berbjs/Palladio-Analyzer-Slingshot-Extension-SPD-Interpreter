@@ -4,6 +4,7 @@ import static org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.e
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.SpdInterpreter.InterpretationResult;
@@ -27,6 +28,8 @@ import org.palladiosimulator.spd.SPD;
  */
 @OnEvent(when = PreSimulationConfigurationStarted.class, then = SpdBasedEvent.class, cardinality = MANY)
 public class SpdBehavior implements SimulationBehaviorExtension {
+	
+	private static final Logger LOGGER = Logger.getLogger(SpdBehavior.class);
 
 	private final SimulationDriver driver;
 	private final SPD spdModel;
@@ -43,8 +46,14 @@ public class SpdBehavior implements SimulationBehaviorExtension {
 	public Result<SpdBasedEvent> onPreSimulationConfigurationStarted(final PreSimulationConfigurationStarted configurationStarted) {
 		final SpdInterpreter interpreter = new SpdInterpreter();
 		final InterpretationResult result = interpreter.doSwitch(this.spdModel);
-
-		result.getSubscribers().forEach(this.driver::registerEventHandler);
+		
+		LOGGER.debug("The result of the SPD interpretation is not null: " + (result != null));
+		
+		
+		result.getAdjustorContexts().stream()
+								    .peek(ac -> LOGGER.debug("AdjustorContext: #handlers = " + ac.getAssociatedHandlers().size()))
+								    .flatMap(ac -> ac.getAssociatedHandlers().stream())
+								    .forEach(driver::registerEventHandler);
 
 		return Result.from(result.getEventsToSchedule());
 	}

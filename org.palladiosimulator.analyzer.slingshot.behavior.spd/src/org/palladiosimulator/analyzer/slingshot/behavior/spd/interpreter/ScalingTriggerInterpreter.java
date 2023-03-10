@@ -10,6 +10,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalXORCompoundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.TriggerChecker;
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
@@ -55,7 +56,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 
 		private Filter triggerChecker;
 		private final List<SpdBasedEvent> eventsToSchedule = new ArrayList<>();
-		private final List<Subscriber<?>> eventsToListen = new ArrayList<>();
+		private final List<Subscriber.Builder<? extends DESEvent>> eventsToListen = new ArrayList<>();
 
 		public InterpretationResult triggerChecker(final Filter triggerChecker) {
 			this.triggerChecker = triggerChecker;
@@ -67,7 +68,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 			return this;
 		}
 
-		public InterpretationResult listenEvent(final Subscriber<?> event) {
+		public InterpretationResult listenEvent(final Subscriber.Builder<? extends DESEvent> event) {
 			this.eventsToListen.add(event);
 			return this;
 		}
@@ -80,7 +81,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 			return this.eventsToSchedule;
 		}
 
-		public List<Subscriber<?>> getEventsToListen() {
+		public List<Subscriber.Builder<? extends DESEvent>> getEventsToListen() {
 			return this.eventsToListen;
 		}
 
@@ -156,6 +157,8 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 			final SimulationTimeReached event = new SimulationTimeReached(ScalingTriggerInterpreter.this.policy.getTargetGroup().getId(), expectedTime.getValue());
 
 			return (new InterpretationResult()).scheduleEvent(event)
+											   .listenEvent(Subscriber.builder(SimulationTimeReached.class)
+													   				  .name("something"))
 											   .triggerChecker(new TriggerChecker.SimulationTimeChecker(this.trigger));
 		}
 

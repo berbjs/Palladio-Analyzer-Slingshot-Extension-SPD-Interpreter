@@ -18,7 +18,7 @@ public sealed abstract class TriggerChecker implements Filter {
 		private final SimpleFireOnValue trigger;
 
 		public SimulationTimeChecker(final SimpleFireOnValue trigger) {
-			Preconditions.checkArgument(trigger.getStimulus().getClass().equals(SimulationTime.class));
+			Preconditions.checkArgument(trigger.getStimulus() instanceof SimulationTime, "Trigger must be of type SimulationTime, but is " + trigger.getStimulus().eClass().getName());
 			this.trigger = trigger;
 		}
 

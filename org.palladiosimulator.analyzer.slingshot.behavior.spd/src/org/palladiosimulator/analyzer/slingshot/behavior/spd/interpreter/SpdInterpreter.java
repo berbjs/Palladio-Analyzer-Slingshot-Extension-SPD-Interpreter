@@ -38,12 +38,14 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 
 	@Override
 	public InterpretationResult caseScalingPolicy(final ScalingPolicy policy) {
+		LOGGER.debug("Interpreting ScalingPolicy Model " + policy.getEntityName() + "[" + policy.getId() + "]");
+		
 		if (!policy.isActive()) {
 			return InterpretationResult.EMPTY_RESULT;
 		}
 		final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter(policy)).doSwitch(policy.getScalingTrigger());
 		return (new InterpretationResult())
-				.adjustorContext(new SPDAdjustorContext(policy, intrResult.getTriggerChecker()))
+				.adjustorContext(new SPDAdjustorContext(policy, intrResult.getTriggerChecker(), intrResult.getEventsToListen()))
 				.eventsToSchedule(intrResult.getEventsToSchedule());
 	}
 
