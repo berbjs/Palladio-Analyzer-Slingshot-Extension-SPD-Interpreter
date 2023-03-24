@@ -2,40 +2,42 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entiti
 
 public class LogicalORCompoundFilter extends ComboundFilter {
 
-	private FilterChain currentParentChain;
+	private FilterResult result = null;
 	private Object eventToProcess;
 	private int numberDisregarded;
 
 	@Override
-	public void doProcess(final Object event, final FilterChain chain) {
-		this.currentParentChain = chain;
+	public FilterResult doProcess(final Object event) {
+		result = null;
 		this.eventToProcess = event;
 		this.numberDisregarded = 0;
+		this.next(event);
+		return result;
 	}
 
 	@Override
 	public void next(final Object event) {
 		/* The whole filter was successful, delegate to parent */
-		this.currentParentChain.next(event);
+		//this.currentParentChain.next(event);
 
 		/* Reinitialize */
 		this.initialize();
 	}
 
 	@Override
-	public void disregard(final String message) {
+	public void disregard(final Object message) {
 		this.numberDisregarded++;
 		if (this.numberDisregarded < this.size()) {
 			super.next(this.eventToProcess);
 		} else {
-			this.currentParentChain.disregard(message);
+		//	this.currentParentChain.disregard(message);
 			this.initialize();
 		}
 
 	}
 
 	private void initialize() {
-		this.currentParentChain = null;
+	//	this.currentParentChain = null;
 		this.eventToProcess = null;
 		this.numberDisregarded = 0;
 	}

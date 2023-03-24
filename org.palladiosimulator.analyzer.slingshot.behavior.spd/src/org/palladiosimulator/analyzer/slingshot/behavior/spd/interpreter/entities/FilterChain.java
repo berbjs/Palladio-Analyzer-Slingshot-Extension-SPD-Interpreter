@@ -25,10 +25,11 @@ import java.util.function.Consumer;
 public class FilterChain {
 
 	protected final List<Filter> filters = new ArrayList<>();
-	private final Consumer<String> doOnDisregard;
-
+	private final Consumer<Object> doOnDisregard;
+	
 	protected Iterator<Filter> iterator;
-
+	private FilterResult latestResult;
+	
 	/**
 	 * Constructs a new and empty filter chain. A non-null delegator
 	 * must be provided that will be called if any filter disregards.
@@ -36,7 +37,7 @@ public class FilterChain {
 	 * @param doOnDisregard A non-null delegator called when disregarded.
 	 * @see #FilterChain()
 	 */
-	public FilterChain(final Consumer<String> doOnDisregard) {
+	public FilterChain(final Consumer<Object> doOnDisregard) {
 		this.doOnDisregard = Objects.requireNonNull(doOnDisregard);
 	}
 
@@ -97,11 +98,28 @@ public class FilterChain {
 			this.iterator = this.filters.iterator();
 		}
 		if (this.iterator.hasNext()) {
-			final Filter filter = this.iterator.next();
-			filter.doProcess(event, this);
+			try {
+				final Filter filter = this.iterator.next();
+				this.latestResult = filter.doProcess(event);
+				checkResult();
+			} catch (final Exception e) {
+				this.disregard(e);
+			}
 		} else {
 			this.iterator = null;
 		}
+	}
+	
+	private void checkResult() {
+		if (this.latestResult instanceof final FilterResult.Success success) {
+			this.next(success.nextEvent());
+		} else if (this.latestResult instanceof final FilterResult.Disregard disregard) {
+			this.disregard(disregard.reason().toString());
+		}
+	}
+	
+	public FilterResult getLatestResult() {
+		return this.latestResult;
 	}
 
 	/**
@@ -111,7 +129,7 @@ public class FilterChain {
 	 *
 	 * @param message A message describing why the chain is cancelled.
 	 */
-	public void disregard(final String message) {
+	public void disregard(final Object message) {
 		this.iterator = null;
 		this.doOnDisregard.accept(message);
 	}

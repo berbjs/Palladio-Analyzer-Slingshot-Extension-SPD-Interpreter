@@ -17,7 +17,7 @@ public final class SPDAdjustorContext {
 
 	private static final Logger LOGGER = Logger.getLogger(SPDAdjustorContext.class);
 	
-	private final FilterChain filterChain = new FilterChain();
+	private final FilterChain filterChain;
 	private final ScalingPolicy scalingPolicy;
 	
 	private final List<Subscriber<? extends DESEvent>> associatedHandlers;
@@ -26,6 +26,8 @@ public final class SPDAdjustorContext {
 			final Filter triggerChecker,
 			final List<Subscriber.Builder<? extends DESEvent>> associatedHandlers) {
 		this.scalingPolicy = policy;
+		
+		this.filterChain = new FilterChain(message -> LOGGER.info("Couldn't do it :( " + message));
 
 		this.filterChain.add(new TargetGroupChecker(policy.getTargetGroup()));
 
@@ -36,7 +38,7 @@ public final class SPDAdjustorContext {
 		this.filterChain.add(new Adjustor(policy.getAdjustmentType(), policy.getTargetGroup()));
 		
 		final PublishResultingEventFilter publisher = new PublishResultingEventFilter();
-		this.filterChain.add(publisher);
+		//this.filterChain.add(publisher);
 		
 		this.associatedHandlers = associatedHandlers.stream()
 				.map(builder -> builder.handler(publisher))
@@ -73,25 +75,22 @@ public final class SPDAdjustorContext {
 		return false;
 	}
 	
-	private class PublishResultingEventFilter implements Filter, EventHandler<Object> {
+	private class PublishResultingEventFilter implements EventHandler<Object> {
 		
-		private Object result;
-
-		@Override
-		public void doProcess(Object event, FilterChain chain) {
-			this.result = event;
-		}
-
 		@Override
 		public Result<?> acceptEvent(Object event) throws Exception {
 			filterChain.next(event);
-			if (this.result == null) {
-				throw new IllegalStateException("After the next() call, the result shouldn´t be null..");
+			final FilterResult filterResult = filterChain.getLatestResult();
+			
+			if (filterResult instanceof final FilterResult.Success success) {
+				final Object result = success.nextEvent();
+				LOGGER.debug("Got a result after filtering! " + result.getClass().getSimpleName());
+				final Result<?> eventResult = Result.of(result);
+				//result = null; // Reinitialize for next call
+				return eventResult;
+			} else {
+				return Result.empty();
 			}
-			LOGGER.debug("Got a result after filtering! " + this.result.getClass().getSimpleName());
-			final Result<?> result = Result.of(this.result);
-			this.result = null; // Reinitialize for next call
-			return result;
 		}
 		
 	}

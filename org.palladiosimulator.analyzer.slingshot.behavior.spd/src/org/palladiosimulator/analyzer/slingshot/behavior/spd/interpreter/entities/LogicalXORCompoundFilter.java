@@ -2,7 +2,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entiti
 
 public class LogicalXORCompoundFilter extends ComboundFilter {
 
-	private FilterChain currentParentChain;
+	private FilterResult currentResult;
 	private Object eventToProcess;
 	private Object outputEvent;
 
@@ -10,11 +10,13 @@ public class LogicalXORCompoundFilter extends ComboundFilter {
 	private int numberDisregarded;
 
 	@Override
-	public void doProcess(final Object event, final FilterChain chain) {
-		this.currentParentChain = chain;
+	public FilterResult doProcess(final Object event) {
+		this.currentResult = null;
 		this.eventToProcess = event;
 		this.numberContinued = 0;
 		this.numberDisregarded = 0;
+		this.next(event);
+		return this.currentResult;
 	}
 
 	@Override
@@ -26,27 +28,26 @@ public class LogicalXORCompoundFilter extends ComboundFilter {
 			super.next(this.eventToProcess);
 		} else {
 			/* We called it to often. */
-			this.currentParentChain.disregard("More than one filter through XOR");
+			this.currentResult = FilterResult.disregard("More than one filter through XOR");
 			this.initialize();
 		}
 	}
 
 	@Override
-	public void disregard(final String message) {
+	public void disregard(final Object message) {
 		this.numberDisregarded++;
 		if (this.numberDisregarded + this.numberContinued < this.size()) {
 			super.next(this.eventToProcess);
 		} else if (this.numberContinued == 1) {
-			this.currentParentChain.next(this.outputEvent);
+			this.currentResult = FilterResult.success(this.outputEvent);
 		} else {
-			this.currentParentChain.disregard("No filter went through. Last message: " + message);
+			this.currentResult = FilterResult.disregard("No filter went through. Last message: " + message);
 			this.initialize();
 		}
 
 	}
 
 	private void initialize() {
-		this.currentParentChain = null;
 		this.eventToProcess = null;
 		this.outputEvent = null;
 		this.numberContinued = 0;

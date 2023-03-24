@@ -2,12 +2,13 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entiti
 
 public class LogicalANDComboundFilter extends ComboundFilter {
 
-	private FilterChain parentChain;
+	private FilterResult result;
 
 	@Override
-	public void doProcess(final Object event, final FilterChain chain) {
-		this.parentChain = chain;
+	public FilterResult doProcess(final Object event) {
+		result = null;
 		this.next(event);
+		return result;
 	}
 
 	@Override
@@ -15,14 +16,13 @@ public class LogicalANDComboundFilter extends ComboundFilter {
 		super.next(event);
 		if (!this.filterIsBeingUsed()) {
 			/* This means that no filter was used. */
-			this.parentChain.next(event);
+			result = FilterResult.success(event);
 		}
 	}
 
 	@Override
-	public void disregard(final String message) {
-		this.parentChain.disregard(message);
+	public void disregard(final Object message) {
+		result = FilterResult.disregard(message);
 	}
-
 
 }

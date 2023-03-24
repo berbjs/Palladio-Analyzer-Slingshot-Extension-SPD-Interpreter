@@ -3,6 +3,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.StepBasedAdjustor;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.spd.adjustments.AdjustmentType;
 import org.palladiosimulator.spd.adjustments.StepAdjustment;
 import org.palladiosimulator.spd.targets.TargetGroup;
@@ -21,11 +22,11 @@ public class Adjustor implements Filter {
 	}
 
 	@Override
-	public void doProcess(final Object event, final FilterChain chain) {
+	public FilterResult doProcess(final Object event) {
 		if (this.adjustmentType instanceof final StepAdjustment stepAdjustment) {
-			chain.next(new StepBasedAdjustor(this.targetGroup, stepAdjustment.getStepValue()));
+			return FilterResult.success(new StepBasedAdjustor(this.targetGroup, stepAdjustment.getStepValue()));
 		}
-		chain.disregard("TODO: the other adjustors");
+		return FilterResult.disregard("TODO: the other adjustors");
 	}
 
 	/* private ModelAdjusted stepAdjustment(final StepAdjustment stepAdjustment) {

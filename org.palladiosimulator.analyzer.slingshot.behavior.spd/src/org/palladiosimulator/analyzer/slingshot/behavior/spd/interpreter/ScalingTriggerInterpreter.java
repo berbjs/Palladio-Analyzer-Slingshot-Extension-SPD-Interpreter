@@ -9,15 +9,19 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalANDComboundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalXORCompoundFilter;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.TriggerChecker;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.OperationResponseTimeTriggerChecker;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.SimulationTimeChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
+import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
 import org.palladiosimulator.spd.triggers.LogicalOperator;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
+import org.palladiosimulator.spd.triggers.expectations.ExpectedValue;
+import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
 import org.palladiosimulator.spd.triggers.stimuli.SimulationTime;
 import org.palladiosimulator.spd.triggers.stimuli.util.StimuliSwitch;
 import org.palladiosimulator.spd.triggers.util.TriggersSwitch;
@@ -147,20 +151,36 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 
 		@Override
 		public InterpretationResult caseSimulationTime(final SimulationTime object) {
-			if (!(this.trigger.getExpectedValue() instanceof ExpectedTime)) {
-				throw new IllegalArgumentException("In case of the stimuli being SimulationTime, it is only possible "
-						+ "that the trigger is of type ExpectedTime, but the given type was "
-						+ this.trigger.getExpectedValue().getClass().getSimpleName());
-			}
-			final ExpectedTime expectedTime = (ExpectedTime) this.trigger.getExpectedValue();
+			final ExpectedTime expectedTime = this.checkExpectedValue(ExpectedTime.class);
 
 			final SimulationTimeReached event = new SimulationTimeReached(ScalingTriggerInterpreter.this.policy.getTargetGroup().getId(), expectedTime.getValue());
 
 			return (new InterpretationResult()).scheduleEvent(event)
 											   .listenEvent(Subscriber.builder(SimulationTimeReached.class)
 													   				  .name("something"))
-											   .triggerChecker(new TriggerChecker.SimulationTimeChecker(this.trigger));
+											   .triggerChecker(new SimulationTimeChecker(this.trigger));
 		}
 
+
+
+		@Override
+		public InterpretationResult caseOperationResponseTime(OperationResponseTime object) {
+			this.checkExpectedValue(ExpectedTime.class);
+			return (new InterpretationResult()).listenEvent(Subscriber.builder(MeasurementMade.class)
+																	  .name("measurementMade"))
+										       .triggerChecker(new OperationResponseTimeTriggerChecker(this.trigger));
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T extends ExpectedValue> T checkExpectedValue(final Class<T> expectedType) {
+			if (!(expectedType.isAssignableFrom(this.trigger.getExpectedValue().getClass()))) {
+				throw new IllegalArgumentException(String.format("In case of the stimuli being SimulationTime, it is only possible "
+						+ "that the trigger is of type %s, but the given type was %s",
+						expectedType.getSimpleName(),
+						this.trigger.getExpectedValue().getClass().getSimpleName()));
+			}
+			
+			return (T) this.trigger.getExpectedValue();
+		}
 	}
 }
