@@ -1,7 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
@@ -25,12 +24,12 @@ public final class SimulationTimeChecker extends TriggerChecker<SimulationTime> 
 		final SimulationTimeReached simulationTimeReached = (SimulationTimeReached) event;
 		final ExpectedTime expectedTime = (ExpectedTime) this.trigger.getExpectedValue();
 
-		if (simulationTimeReached.time() >= expectedTime.getValue()) {
+		if (this.compareValues(expectedTime.getValue(), simulationTimeReached.time())) {
 			return FilterResult.success(event);
 		} else {
-			return FilterResult.disregard("");
+			return FilterResult.disregard(String.format("Simulationtime of %f is not [%s] expectedValue %f", simulationTimeReached.time(), this.trigger.getRelationalOperator().toString(), expectedTime.getValue()));
 		}
-		
+
 	}
 
 }
