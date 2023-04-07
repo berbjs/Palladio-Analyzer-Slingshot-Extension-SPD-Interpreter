@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Adjustment
+Bundle-SymbolicName: org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: org.palladiosimulator.analyzer.slingshot.behavior.spd.data;bundle-version="1.0.0",
+ org.palladiosimulator.analyzer.slingshot.common;bundle-version="1.0.0",
+ org.palladiosimulator.analyzer.slingshot.core;bundle-version="1.0.0",
+ org.palladiosimulator.analyzer.slingshot.monitor.data;bundle-version="1.0.0",
+ org.palladiosimulator.pcm,
+ org.palladiosimulator.monitorrepository,
+ org.palladiosimulator.commons,
+ org.palladiosimulator.pcm.edp2.measuringpoint,
+ org.apache.log4j,
+ org.palladiosimulator.spd
