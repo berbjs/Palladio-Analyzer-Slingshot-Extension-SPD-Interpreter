@@ -3,7 +3,6 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
@@ -28,8 +27,6 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 	public InterpretationResult caseSPD(final SPD spd) {
 		LOGGER.debug("Interpreting SPD Model " + spd.getEntityName() + "[" + spd.getId() + "]");
 
-
-
 		return spd.getScalingPolicies().stream()
 									   .map(this::doSwitch)
 									   .reduce(InterpretationResult::add)
@@ -39,9 +36,9 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 	@Override
 	public InterpretationResult caseScalingPolicy(final ScalingPolicy policy) {
 		LOGGER.debug("Interpreting ScalingPolicy Model " + policy.getEntityName() + "[" + policy.getId() + "]");
-		
+
 		if (!policy.isActive()) {
-			return InterpretationResult.EMPTY_RESULT;
+			return new InterpretationResult();
 		}
 		final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter(policy)).doSwitch(policy.getScalingTrigger());
 		return (new InterpretationResult())
