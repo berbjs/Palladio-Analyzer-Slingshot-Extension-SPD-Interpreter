@@ -3,6 +3,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter;
 import static org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcontract.EventCardinality.MANY;
 
 import javax.inject.Inject;
+import org.palladiosimulator.analyzer.slingshot.common.annotations.Nullable;
 
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
@@ -37,9 +38,14 @@ public class SpdBehavior implements SimulationBehaviorExtension {
 	@Inject
 	public SpdBehavior(
 			final SimulationDriver driver,
-			final SPD spdModel) {
+			@Nullable final SPD spdModel) {
 		this.spdModel = spdModel;
 		this.driver = driver;
+	}
+	
+	@Override
+	public boolean isActive() {
+		return this.spdModel != null;
 	}
 
 	@Subscribe
