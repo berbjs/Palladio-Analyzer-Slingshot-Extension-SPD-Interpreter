@@ -23,6 +23,7 @@ public class SPDModelConfiguration implements SystemBehaviorExtension {
 			 .fileExtensions(FILE_EXTENSIONS)
 			 .modelClass(SPD.class)
 			 .label("Scaling Policy Definition")
+			 .optional(true)
 			 .build();
 	}
 	

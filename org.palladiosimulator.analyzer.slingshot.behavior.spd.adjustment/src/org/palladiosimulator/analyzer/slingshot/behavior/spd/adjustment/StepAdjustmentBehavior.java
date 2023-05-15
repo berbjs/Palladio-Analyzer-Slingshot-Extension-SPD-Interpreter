@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjusted;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.StepBasedAdjustor;
+import org.palladiosimulator.analyzer.slingshot.common.annotations.Nullable;
 import org.palladiosimulator.analyzer.slingshot.core.extension.SimulationBehaviorExtension;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.Subscribe;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcontract.EventCardinality;
@@ -23,9 +24,17 @@ public class StepAdjustmentBehavior extends AbstractAdjustmentExecutor implement
 	
 	private static final Logger LOGGER = Logger.getLogger(StepAdjustmentBehavior.class);
 
+	private final boolean activated;
+	
 	@Inject
-	public StepAdjustmentBehavior(Allocation allocation, MonitorRepository monitorRepository) {
+	public StepAdjustmentBehavior(Allocation allocation, @Nullable MonitorRepository monitorRepository) {
 		super(allocation, monitorRepository);
+		this.activated = monitorRepository != null;
+	}
+	
+	@Override
+	public boolean isActive() {
+		return this.activated;
 	}
 
 	@Subscribe
