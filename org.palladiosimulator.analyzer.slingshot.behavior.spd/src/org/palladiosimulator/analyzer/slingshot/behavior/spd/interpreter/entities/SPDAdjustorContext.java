@@ -35,7 +35,7 @@ public final class SPDAdjustorContext {
 		this.filterChain.add(triggerChecker);
 
 		
-		this.filterChain.add(new Adjustor(policy.getAdjustmentType(), policy.getTargetGroup()));
+		this.filterChain.add(new Adjustor(policy.getAdjustmentType(), policy.getTargetGroup(), policy));
 		
 		final PublishResultingEventFilter publisher = new PublishResultingEventFilter();
 		//this.filterChain.add(publisher);

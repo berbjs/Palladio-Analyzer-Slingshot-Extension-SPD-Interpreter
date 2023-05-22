@@ -23,7 +23,9 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.semanticspd.Configuration;
+import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
+import org.palladiosimulator.semanticspd.TargetGroupCfg;
 import org.palladiosimulator.spd.SPD;
 
 @OnEvent(when = StepBasedAdjustor.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
@@ -87,14 +89,20 @@ public class StepAdjustmentBehavior extends AbstractAdjustmentExecutor implement
 		configuration.setSpd(spd);
 		configuration.setSystem(allocation.getSystem_Allocation());
 		configuration.setRepository(allocation.getSystem_Allocation().getAssemblyContexts__ComposedStructure().get(0).getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent()); // TODO: What to do here?
-
+		configuration.setEnactedPolicy(event.getEnactedPolicy());
+		
+		final ElasticInfrastructureCfg targetGroupConfig = SemanticspdFactory.eINSTANCE.createElasticInfrastructureCfg();
+		targetGroupConfig.setResourceEnvironment(environment);
+		
+		configuration.getTargetCfgs().add(targetGroupConfig);
+		
 		// 2. Now execute
 		this.reconfigurator.getModelCache().storeModel(configuration);
 		final boolean result = this.reconfigurator.execute(this.transformations, null, null);
 		
 		LOGGER.info("RECONFIGURATION WAS " + result);
 		//return Result.of(finalizeBuilder());
-		
+		LOGGER.info("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment().size());
 		
 		
 		return Result.empty();

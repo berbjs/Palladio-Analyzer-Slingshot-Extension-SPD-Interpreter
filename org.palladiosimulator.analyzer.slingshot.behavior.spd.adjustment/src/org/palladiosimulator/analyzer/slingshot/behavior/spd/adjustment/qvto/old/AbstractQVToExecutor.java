@@ -47,7 +47,7 @@ public abstract class AbstractQVToExecutor {
 	private final ModelTransformationCache transformationCache;
 	
 	// TODO: Get Measurements somehow
-	private static final Function<EObject, Collection<EObject>> CREATE_NON_EMPTY_MODEL_ELEMENTS_SWITCH = e -> Collections.emptyList();
+	private static final Function<EObject, Collection<EObject>> CREATE_NON_EMPTY_MODEL_ELEMENTS_SWITCH = e -> Collections.singletonList(e);
 	
 	/**
 	 * Accumulates the model elements and finally creates a basic model extent.
@@ -206,6 +206,7 @@ public abstract class AbstractQVToExecutor {
 		// setup the execution environment details -> configuration properties, LOGGER, monitor object etc.
 		final ExecutionContextImpl result = new ExecutionContextImpl();
 		result.setLog(createLog());
+		result.setConfigProperty("keepModeling", true);
 		
 		if (resourceTableManager != null) {
 			result.setConfigProperty("resourceTableManager", resourceTableManager);
@@ -248,7 +249,7 @@ public abstract class AbstractQVToExecutor {
 			final Collection<EObject> sourceModel = this.availableModels.getModelsByType(inParams.getParameterType());
 			if (sourceModel.isEmpty()) {
 				throw new IllegalStateException("No model in QVTo model cache for " 
-						+ (inParams.getParameterIndex() + 1) + ". Parameter of transformation '"
+						+ (inParams.getParameterIndex() + 1) + " of parameter type " + inParams.getParameterType().getName() + " Parameter of transformation '"
 						+ transformation.getTransformationName() + "'");
 			}
 			modelExtents[inParams.getParameterIndex()] = sourceModel.stream()
