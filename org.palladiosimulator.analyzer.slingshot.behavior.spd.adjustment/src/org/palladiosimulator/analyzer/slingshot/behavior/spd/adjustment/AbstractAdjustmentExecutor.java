@@ -31,8 +31,8 @@ import com.google.common.base.Preconditions;
 
 public abstract class AbstractAdjustmentExecutor {
 	
-	private final Allocation allocation;
-	private final MonitorRepository monitorRepository;
+	protected final Allocation allocation;
+	protected final MonitorRepository monitorRepository;
 	
 	private AdjustmentResult.Builder adjustmentResultBuilder;
 	private double simulationTime;
