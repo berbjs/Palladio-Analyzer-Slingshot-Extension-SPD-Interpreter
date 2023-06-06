@@ -1,12 +1,12 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util.ModelTransformationCache;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util.QVToModelCache;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.ModelTransformationCache;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.QVToModelCache;
 
 import de.uka.ipd.sdq.scheduler.resources.active.IResourceTableManager;
 import de.uka.ipd.sdq.workflow.mdsd.blackboard.MDSDBlackboard;

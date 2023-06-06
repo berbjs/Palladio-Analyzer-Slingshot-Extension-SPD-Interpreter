@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QvtoModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
 
 /**
  * This cache implementation is used to store QVTo transformations (in terms

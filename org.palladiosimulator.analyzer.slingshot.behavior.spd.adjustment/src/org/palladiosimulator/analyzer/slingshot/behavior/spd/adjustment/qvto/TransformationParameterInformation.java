@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.m2m.internal.qvt.oml.expressions.DirectionKind;

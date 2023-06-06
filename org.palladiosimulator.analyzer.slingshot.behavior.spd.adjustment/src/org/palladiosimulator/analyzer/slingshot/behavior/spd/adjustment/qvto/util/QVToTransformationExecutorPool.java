@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.function.Supplier;
 
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QVToTransformationExecutor;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToTransformationExecutor;
 
 public class QVToTransformationExecutorPool {
 	private final Collection<SoftReference<QVToTransformationExecutor>> availableExecutors;

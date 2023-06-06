@@ -1,10 +1,10 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 import java.util.Collection;
 import java.util.function.Supplier;
 
 import org.eclipse.m2m.internal.qvt.oml.expressions.OperationalTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util.QVToTransformationExecutorPool;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.QVToTransformationExecutorPool;
 
 @SuppressWarnings("restriction")
 public class QVTOPoolingModelTransformation extends QvtoModelTransformation {

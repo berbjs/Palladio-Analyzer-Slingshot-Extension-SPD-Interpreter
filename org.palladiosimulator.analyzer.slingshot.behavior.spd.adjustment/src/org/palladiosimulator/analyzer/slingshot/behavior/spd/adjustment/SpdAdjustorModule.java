@@ -2,9 +2,9 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment;
 
 import javax.inject.Named;
 
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QVToLoader;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QvtoModelTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QvtoReconfigurator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToLoader;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoReconfigurator;
 import org.palladiosimulator.analyzer.slingshot.core.extension.AbstractSlingshotExtension;
 
 import com.google.inject.Provides;
@@ -16,7 +16,7 @@ public class SpdAdjustorModule extends AbstractSlingshotExtension {
 	
 	@Override
 	protected void configure() {
-		install(StepAdjustmentBehavior.class);
+		install(SpdAdjustmentBehavior.class);
 
 		bind(QvtoReconfigurator.class);
 	}

@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +22,8 @@ import org.eclipse.m2m.qvt.oml.ExecutionContextImpl;
 import org.eclipse.m2m.qvt.oml.ExecutionDiagnostic;
 import org.eclipse.m2m.qvt.oml.ModelExtent;
 import org.eclipse.m2m.qvt.oml.util.Log;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util.ModelTransformationCache;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util.QVToModelCache;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.ModelTransformationCache;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.QVToModelCache;
 
 import de.uka.ipd.sdq.scheduler.resources.active.IResourceTableManager;
 

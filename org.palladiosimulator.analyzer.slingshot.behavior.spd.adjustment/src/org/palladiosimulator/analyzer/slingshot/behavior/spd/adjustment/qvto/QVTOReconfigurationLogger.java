@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 
 import org.apache.log4j.Level;

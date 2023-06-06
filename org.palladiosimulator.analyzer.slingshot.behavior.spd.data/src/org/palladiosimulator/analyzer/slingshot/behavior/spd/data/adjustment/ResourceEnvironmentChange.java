@@ -7,40 +7,28 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 public class ResourceEnvironmentChange extends ModelChange<ResourceEnvironment> {
-	
-	private final int currentSize;
-	private final List<ResourceContainerChange> changedContainers;
+
+	private final List<ResourceContainer> oldResourceContainers;
+	private final List<ResourceContainer> newResourceContainers;
+	private final List<ResourceContainer> deletedResourceContainers;
 	
 	public ResourceEnvironmentChange(final Builder builder) {
-		super(builder.container, builder.previousState, builder.simulationTime, deriveModeFromNewSize(builder.previousState, builder.currentSize));
-		this.currentSize = builder.currentSize;
-		this.changedContainers = builder.changedContainers;
-		this.changedContainers.forEach(cc -> cc.setParent(this));
+		super(builder.environment, builder.simulationTime);
+		this.oldResourceContainers = Collections.unmodifiableList(builder.oldResourceContainers);
+		this.newResourceContainers = Collections.unmodifiableList(builder.newResourceContainers);
+		this.deletedResourceContainers = Collections.unmodifiableList(builder.deletedResourceContainers);
 	}
 
-	public int getCurrentSize() {
-		return this.currentSize;
+	public List<ResourceContainer> getOldResourceContainers() {
+		return oldResourceContainers;
 	}
-	
-	public List<ResourceContainerChange> changedContainers() {
-		return this.changedContainers;
+
+	public List<ResourceContainer> getNewResourceContainers() {
+		return newResourceContainers;
 	}
-	
-	private static Mode deriveModeFromNewSize(final ResourceEnvironmentChange previousState, final int currentSize) {
-		if (previousState == null) {
-			return Mode.ADDITION;
-		}
-		
-		return switch(Integer.compare(previousState.currentSize, currentSize)) {
-			case -1 -> Mode.ADDITION;
-			case 0 -> Mode.LOCAL_CHANGE;
-			case 1 -> Mode.DELETION;
-			default -> Mode.UNCHANGED;
-		};
-	}
-	
-	public Builder transform() {
-		return builder().previousState(this);
+
+	public List<ResourceContainer> getDeletedResourceContainers() {
+		return deletedResourceContainers;
 	}
 	
 	public static Builder builder() {
@@ -48,21 +36,16 @@ public class ResourceEnvironmentChange extends ModelChange<ResourceEnvironment> 
 	}
 	
 	public static final class Builder {
-		private ResourceEnvironment container;
-		private ResourceEnvironmentChange previousState;
-		private double simulationTime;
-		private int currentSize;
-		private List<ResourceContainerChange> changedContainers;
+		private ResourceEnvironment environment;
+		private double simulationTime = -1;
+		private List<ResourceContainer> oldResourceContainers;
+		private List<ResourceContainer> newResourceContainers;
+		private List<ResourceContainer> deletedResourceContainers;
 		
 		private Builder() {}
 		
-		public Builder container(final ResourceEnvironment container) {
-			this.container = container;
-			return this;
-		}
-		
-		public Builder previousState(final ResourceEnvironmentChange previousState) {
-			this.previousState = previousState;
+		public Builder resourceEnvironment(final ResourceEnvironment environment) {
+			this.environment = environment;
 			return this;
 		}
 		
@@ -71,13 +54,18 @@ public class ResourceEnvironmentChange extends ModelChange<ResourceEnvironment> 
 			return this;
 		}
 		
-		public Builder currentSize(final int currentSize) {
-			this.currentSize = currentSize;
+		public Builder oldResourceContainers(final List<ResourceContainer> oldResourceContainers) {
+			this.oldResourceContainers = oldResourceContainers;
 			return this;
 		}
 		
-		public Builder changedContainers(final List<ResourceContainerChange> changedContainers) {
-			this.changedContainers = changedContainers;
+		public Builder newResourceContainers(final List<ResourceContainer> newResourceContainers) {
+			this.newResourceContainers = newResourceContainers;
+			return this;
+		}
+		
+		public Builder deletedResourceContainers(final List<ResourceContainer> deletedResourceContainers) {
+			this.deletedResourceContainers = deletedResourceContainers;
 			return this;
 		}
 		

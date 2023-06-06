@@ -2,16 +2,18 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QvtoModelTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QvtoReconfigurator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoReconfigurator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjusted;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmentRequested;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ResourceEnvironmentChange;
 import org.palladiosimulator.analyzer.slingshot.common.annotations.Nullable;
 import org.palladiosimulator.analyzer.slingshot.core.extension.SimulationBehaviorExtension;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.Subscribe;
@@ -20,6 +22,7 @@ import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcon
 import org.palladiosimulator.analyzer.slingshot.eventdriver.returntypes.Result;
 import org.palladiosimulator.monitorrepository.MonitorRepository;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
@@ -29,9 +32,9 @@ import org.palladiosimulator.spd.targets.ElasticInfrastructure;
 import org.palladiosimulator.spd.targets.TargetGroup;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
-public class StepAdjustmentBehavior implements SimulationBehaviorExtension {
+public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	
-	private static final Logger LOGGER = Logger.getLogger(StepAdjustmentBehavior.class);
+	private static final Logger LOGGER = Logger.getLogger(SpdAdjustmentBehavior.class);
 
 	private final boolean activated;
 	
@@ -42,7 +45,7 @@ public class StepAdjustmentBehavior implements SimulationBehaviorExtension {
 	private final MonitorRepository monitorRepository;
 	
 	@Inject
-	public StepAdjustmentBehavior(
+	public SpdAdjustmentBehavior(
 			final Allocation allocation, 
 			final @Nullable MonitorRepository monitorRepository,
 			final SPD spd,
@@ -62,29 +65,39 @@ public class StepAdjustmentBehavior implements SimulationBehaviorExtension {
 	}
 
 	@Subscribe
-	public Result<ModelAdjusted> onStepBasedAdjustor(final ModelAdjustmentRequested event) {
+	public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
 		final ResourceEnvironment environment = getResourceEnvironmentFromTargetGroup(event.getScalingPolicy().getTargetGroup());
+		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 		
-		LOGGER.info("Number of resource container before: " + environment.getResourceContainer_ResourceEnvironment().size());
-		
+		LOGGER.debug("Number of resource container before: " + environment.getResourceContainer_ResourceEnvironment().size());
 		if (LOGGER.isDebugEnabled()) {
 			this.transformations.forEach(trans -> LOGGER.debug(trans.toString()));
 		}
 		
 		final Configuration configuration = createConfiguration(event, environment);
 		
-		
-		// 2. Now execute
 		this.reconfigurator.getModelCache().storeModel(configuration);
 		final boolean result = this.reconfigurator.execute(this.transformations);
+		LOGGER.debug("RECONFIGURATION WAS " + result);
 		
-		LOGGER.info("RECONFIGURATION WAS " + result);
-		//return Result.of(finalizeBuilder());
+		if (result) {
+			LOGGER.debug("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment().size());
+			
+			final List<ResourceContainer> newResourceContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
+			newResourceContainers.removeAll(oldContainers);
+			
+			final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
+			deletedResourceContainers.removeAll(deletedResourceContainers);
+			
+			return Result.of(new ModelAdjusted(true, List.of(ResourceEnvironmentChange.builder()
+																.oldResourceContainers(oldContainers)
+																.newResourceContainers(newResourceContainers)
+																.deletedResourceContainers(deletedResourceContainers)
+																.build())));
+		} else {
+			return Result.of(new ModelAdjusted(false, Collections.emptyList()));
+		}
 		
-		LOGGER.info("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment().size());
-		
-		
-		return Result.empty();
 	}
 
 	private ElasticInfrastructureCfg createElasticInfrastructureCfg(final ResourceEnvironment environment) {
@@ -93,7 +106,10 @@ public class StepAdjustmentBehavior implements SimulationBehaviorExtension {
 		targetGroupConfig.getElements().addAll(environment.getResourceContainer_ResourceEnvironment());
 		return targetGroupConfig;
 	}
-
+	
+	/**
+	 * Helper method for creating the {@link Configuration}
+	 */
 	private Configuration createConfiguration(final ModelAdjustmentRequested event,
 			final ResourceEnvironment environment) {
 		final Configuration configuration = SemanticspdFactory.eINSTANCE.createConfiguration();

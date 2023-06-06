@@ -1,10 +1,10 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util.ModelTransformationCache;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.ModelTransformationCache;
 import org.palladiosimulator.commons.eclipseutils.FileHelper;
 
 /**

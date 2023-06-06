@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.util;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,10 +14,10 @@ import org.eclipse.m2m.internal.qvt.oml.expressions.ModelParameter;
 import org.eclipse.m2m.internal.qvt.oml.expressions.ModelType;
 import org.eclipse.m2m.internal.qvt.oml.expressions.OperationalTransformation;
 import org.eclipse.m2m.internal.qvt.oml.expressions.util.ExpressionsSwitch;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QVTOPoolingModelTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QVToTransformationExecutor;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.QvtoModelTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.old.TransformationParameterInformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVTOPoolingModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToTransformationExecutor;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.TransformationParameterInformation;
 
 /**
  * Factory class to create {@link TransformationData} objects related to QVTo transformations.
