@@ -3,6 +3,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.data;
 import org.palladiosimulator.analyzer.slingshot.common.events.AbstractSimulationEvent;
 import org.palladiosimulator.spd.targets.TargetGroup;
 
+@Deprecated
 public abstract sealed class AdjustorBasedEvent extends AbstractSimulationEvent implements SpdBasedEvent
 	permits StepBasedAdjustor {
 

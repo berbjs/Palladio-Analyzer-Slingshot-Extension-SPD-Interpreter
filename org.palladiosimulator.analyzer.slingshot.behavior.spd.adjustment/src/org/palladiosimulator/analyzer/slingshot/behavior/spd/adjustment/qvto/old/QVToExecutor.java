@@ -24,17 +24,13 @@ public class QVToExecutor extends AbstractQVToExecutor {
 		super(knownTransformationCache, knownModels);
 	}
 	
-	public boolean executeTransformations(final Iterable<QvtoModelTransformation> transformations, final IResourceTableManager resourceTableManager) {
+	public boolean executeTransformations(final Iterable<QvtoModelTransformation> transformations) {
 		boolean result = true;
 		for (final QvtoModelTransformation transformation : transformations) {
 
-			result &= executeTransformation(transformation, resourceTableManager);
+			result &= executeTransformation(transformation);
 		}
 		return result;
-	}
-	
-	public boolean executeTransformations(final Iterable<QvtoModelTransformation> transformations) {
-		return this.executeTransformations(transformations, null);
 	}
 	
 }

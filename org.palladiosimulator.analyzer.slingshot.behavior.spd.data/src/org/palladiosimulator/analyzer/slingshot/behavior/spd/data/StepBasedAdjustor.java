@@ -6,7 +6,7 @@ import org.palladiosimulator.spd.targets.TargetGroup;
 /**
  *
  * @author Julijan Katic
- *
+ * @deprecated Use ModelAdjustmentRequested instead
  */
 public final class StepBasedAdjustor extends AdjustorBasedEvent {
 

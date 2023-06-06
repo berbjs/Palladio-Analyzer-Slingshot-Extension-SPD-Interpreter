@@ -35,8 +35,8 @@ public class QvtoReconfigurator {
 		return this.qvtoExecutor;
 	}
 	
-	public boolean execute(final Iterable<QvtoModelTransformation> actions, EObject monitoredElement, IResourceTableManager manager) {
-		return getQVToExecutor().executeTransformations(actions, manager);
+	public boolean execute(final Iterable<QvtoModelTransformation> actions) {
+		return getQVToExecutor().executeTransformations(actions);
 	}
 
 	public QVToModelCache getModelCache() {

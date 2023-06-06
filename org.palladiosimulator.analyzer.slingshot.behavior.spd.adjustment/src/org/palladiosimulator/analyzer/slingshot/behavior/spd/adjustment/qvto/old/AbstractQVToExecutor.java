@@ -108,12 +108,10 @@ public abstract class AbstractQVToExecutor {
 	 * 				In case the transformation is not known, i.e., not stored in the internal cache.
 	 * @see #executeTransformation(TransformationData)
 	 */
-	public boolean executeTransformation(final URI transformationURI,
-										 final IResourceTableManager resourceTableManager) {
+	public boolean executeTransformation(final URI transformationURI) {
 		final Optional<QvtoModelTransformation> data = this.transformationCache.get(Objects.requireNonNull(transformationURI));
 		return executeTransformation(
-				data.orElseThrow(() -> new IllegalArgumentException("Given transformation not present in transformation cache.")),
-				resourceTableManager
+				data.orElseThrow(() -> new IllegalArgumentException("Given transformation not present in transformation cache."))
 			   );
 	}
 	
@@ -138,14 +136,14 @@ public abstract class AbstractQVToExecutor {
 	 * @param resourceManager
 	 * @return The result of the last step, i.e., a boolean that indicates whether the transformation succeeded.
 	 */
-	public final boolean executeTransformation(final QvtoModelTransformation modelTransformation, IResourceTableManager resourceManager) {
-		final ExecutionDiagnostic result = executeTransformationInternal(modelTransformation, resourceManager);
+	public final boolean executeTransformation(final QvtoModelTransformation modelTransformation) {
+		final ExecutionDiagnostic result = executeTransformationInternal(modelTransformation);
 		return handleExecutionResult(result);
 	}
 	
-	protected ExecutionDiagnostic executeTransformationInternal(final QvtoModelTransformation modelTransformation, final IResourceTableManager resourceManager) {
+	protected ExecutionDiagnostic executeTransformationInternal(final QvtoModelTransformation modelTransformation) {
 		final ModelExtent[] modelExtents = setupModelExtents(Objects.requireNonNull(modelTransformation));
-		final ExecutionContext executionContext = setupExecutionContext(resourceManager);
+		final ExecutionContext executionContext = setupExecutionContext();
 		final ExecutionDiagnostic result = doExecution(modelTransformation, executionContext, modelExtents);
 		
 		return result;
@@ -202,16 +200,11 @@ public abstract class AbstractQVToExecutor {
      * @return A fully-fledged {@link ExecutionContext}.
      * @see #doExecution(TransformationData, ExecutionContext, ModelExtent[])
      */
-	protected ExecutionContext setupExecutionContext(final IResourceTableManager resourceTableManager) {
+	protected ExecutionContext setupExecutionContext() {
 		// setup the execution environment details -> configuration properties, LOGGER, monitor object etc.
 		final ExecutionContextImpl result = new ExecutionContextImpl();
 		result.setLog(createLog());
 		result.setConfigProperty("keepModeling", true);
-		
-		if (resourceTableManager != null) {
-			result.setConfigProperty("resourceTableManager", resourceTableManager);
-		}
-		
 		return result;
 	}
 	
