@@ -90,6 +90,8 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			deletedResourceContainers.removeAll(deletedResourceContainers);
 			
 			return Result.of(new ModelAdjusted(true, List.of(ResourceEnvironmentChange.builder()
+																.resourceEnvironment(environment)
+																.simulationTime(event.time())
 																.oldResourceContainers(oldContainers)
 																.newResourceContainers(newResourceContainers)
 																.deletedResourceContainers(deletedResourceContainers)
