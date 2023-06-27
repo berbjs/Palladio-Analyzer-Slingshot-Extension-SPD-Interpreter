@@ -120,6 +120,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	private ElasticInfrastructureCfg createElasticInfrastructureCfg(final ResourceEnvironment environment) {
 		final ElasticInfrastructureCfg targetGroupConfig = SemanticspdFactory.eINSTANCE.createElasticInfrastructureCfg();
 		targetGroupConfig.setResourceEnvironment(environment);
+		targetGroupConfig.setUnit(environment.getResourceContainer_ResourceEnvironment().stream().findAny().get());
 		targetGroupConfig.getElements().addAll(environment.getResourceContainer_ResourceEnvironment());
 		targetGroupConfig.setUnit(null);
 		return targetGroupConfig;
@@ -140,6 +141,8 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		
 		final ElasticInfrastructureCfg targetGroupConfig = createElasticInfrastructureCfg(environment);
 		configuration.getTargetCfgs().add(targetGroupConfig);
+		
+		
 		
 		return configuration;
 	}
