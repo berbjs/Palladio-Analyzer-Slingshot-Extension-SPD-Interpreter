@@ -1,10 +1,14 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger;
 
+import java.util.Set;
+
 import javax.measure.Measure;
 import javax.measure.quantity.Duration;
 import javax.measure.unit.SI;
 
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
@@ -18,13 +22,12 @@ import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
 public final class OperationResponseTimeTriggerChecker extends TriggerChecker<OperationResponseTime> {
 
 	public OperationResponseTimeTriggerChecker(final SimpleFireOnValue trigger) {
-		super(trigger, OperationResponseTime.class);
+		super(trigger, OperationResponseTime.class, Set.of(ExpectedTime.class));
 	}
 
 	@Override
-	public FilterResult doProcess(final Object event) {
-		final ExpectedTime expectedTime = this.getExpectedValueAs(ExpectedTime.class);
-
+	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
+		final DESEvent event = objectWrapper.getEventToFilter();
 		if (event instanceof final MeasurementMade measurementMade) {
 			final SlingshotMeasuringValue measuringValue = measurementMade.getEntity();
 
@@ -37,19 +40,16 @@ public final class OperationResponseTimeTriggerChecker extends TriggerChecker<Op
 					final Measure<Double,Duration> measure = measuringValue.getMeasureForMetric(MetricDescriptionConstants.RESPONSE_TIME_METRIC);
 					final double operationTime = measure.doubleValue(SI.SECOND);
 
-					if (this.compareValues(expectedTime.getValue(), operationTime)) {
+					if (this.compareToTrigger(operationTime) == ComparatorResult.IN_ACCORDANCE) {
 						return FilterResult.success(event);
-					} else {
-						return FilterResult.disregard("");
 					}
 				} else {
 					return FilterResult.disregard("The signatures do not match");
 				}
-			} else {
-				return FilterResult.disregard("Yo wtf: Point is " + point.getClass().getName());
 			}
-		} else {
-			return FilterResult.disregard("Yo wtf: Event is " + event.getClass().getName());
 		}
+		
+		
+		return FilterResult.disregard();
 	}
 }

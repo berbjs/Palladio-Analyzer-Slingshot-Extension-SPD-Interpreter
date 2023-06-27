@@ -5,26 +5,33 @@ import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ScalingTriggerInterpreter.InterpretationResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalANDComboundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalXORCompoundFilter;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.CPUUtilizationTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.OperationResponseTimeTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.SimulationTimeChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.ScalingPolicy;
+import org.palladiosimulator.spd.targets.ElasticInfrastructure;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
 import org.palladiosimulator.spd.triggers.LogicalOperator;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
+import org.palladiosimulator.spd.triggers.expectations.ExpectedPercentage;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedValue;
+import org.palladiosimulator.spd.triggers.stimuli.CPUUtilization;
 import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
 import org.palladiosimulator.spd.triggers.stimuli.SimulationTime;
 import org.palladiosimulator.spd.triggers.stimuli.util.StimuliSwitch;
 import org.palladiosimulator.spd.triggers.util.TriggersSwitch;
+
+import com.google.common.base.Preconditions;
 
 public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInterpreter.InterpretationResult> {
 
@@ -105,7 +112,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 						if (temp instanceof final LogicalANDComboundFilter chain) {
 							chain.add(other.triggerChecker);
 						} else {
-							final LogicalANDComboundFilter comboundFilter = new LogicalANDComboundFilter();
+							final LogicalANDComboundFilter comboundFilter = new LogicalANDComboundFilter(null);
 							comboundFilter.add(temp);
 							comboundFilter.add(other.triggerChecker);
 							this.triggerChecker = comboundFilter;
@@ -114,7 +121,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 					break;
 				case OR:
 					{
-						final LogicalORCompoundFilter comboundFilter = new LogicalORCompoundFilter();
+						final LogicalORCompoundFilter comboundFilter = new LogicalORCompoundFilter(null);
 						comboundFilter.add(this.triggerChecker);
 						comboundFilter.add(other.triggerChecker);
 						this.triggerChecker = comboundFilter;
@@ -122,7 +129,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 					break;
 				case XOR:
 					{
-						final LogicalXORCompoundFilter comboundFilter = new LogicalXORCompoundFilter();
+						final LogicalXORCompoundFilter comboundFilter = new LogicalXORCompoundFilter(null);
 						comboundFilter.add(this.triggerChecker);
 						comboundFilter.add(other.triggerChecker);
 						this.triggerChecker = comboundFilter;
@@ -171,10 +178,26 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 										       .triggerChecker(new OperationResponseTimeTriggerChecker(this.trigger));
 		}
 
+		@Override
+		public InterpretationResult caseCPUUtilization(CPUUtilization object) {
+			final ExpectedPercentage expectedPercentage = this.checkExpectedValue(ExpectedPercentage.class);
+			Preconditions.checkArgument(0 <= expectedPercentage.getValue() && expectedPercentage.getValue() <= 100, 
+										"The expected percentage must be between 0 and 100");
+			
+			
+			return (new InterpretationResult()).listenEvent(Subscriber.builder(MeasurementMade.class)
+																	  .name("cpuUtilizationMade"))
+											   .triggerChecker(new CPUUtilizationTriggerChecker(
+													   				   this.trigger, 
+																	   object.getAggregationOverElements(), 
+																	   (ElasticInfrastructure) policy.getTargetGroup())
+													   		  );
+		}
+
 		@SuppressWarnings("unchecked")
 		private <T extends ExpectedValue> T checkExpectedValue(final Class<T> expectedType) {
 			if (!(expectedType.isAssignableFrom(this.trigger.getExpectedValue().getClass()))) {
-				throw new IllegalArgumentException(String.format("In case of the stimuli being SimulationTime, it is only possible "
+				throw new IllegalArgumentException(String.format("It is only possible "
 						+ "that the trigger is of type %s, but the given type was %s",
 						expectedType.getSimpleName(),
 						this.trigger.getExpectedValue().getClass().getSimpleName()));

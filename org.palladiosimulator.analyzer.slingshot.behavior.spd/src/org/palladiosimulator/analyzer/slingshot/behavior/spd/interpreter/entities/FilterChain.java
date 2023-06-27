@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
+
 /**
  * A filter chain describes an ordered chain of {@link Filter}s through which an event
  * is passed and possibly manipulated or transformed. Each {@link Filter} will get
@@ -26,6 +28,7 @@ public class FilterChain {
 
 	protected final List<Filter> filters = new ArrayList<>();
 	private final Consumer<Object> doOnDisregard;
+	private final SPDAdjustorState state;
 	
 	protected Iterator<Filter> iterator;
 	private FilterResult latestResult;
@@ -37,16 +40,17 @@ public class FilterChain {
 	 * @param doOnDisregard A non-null delegator called when disregarded.
 	 * @see #FilterChain()
 	 */
-	public FilterChain(final Consumer<Object> doOnDisregard) {
+	public FilterChain(final Consumer<Object> doOnDisregard, final SPDAdjustorState state) {
 		this.doOnDisregard = Objects.requireNonNull(doOnDisregard);
+		this.state = state;
 	}
 
 	/**
 	 * Constructs a new and empty filter chain with a default delegator
 	 * that does nothing.
 	 */
-	public FilterChain() {
-		this(message -> {});
+	public FilterChain(final SPDAdjustorState state) {
+		this(message -> {}, state);
 	}
 
 	/**
@@ -93,14 +97,14 @@ public class FilterChain {
 	 *
 	 * @param event An event that should be passed to the next filter if there is one.
 	 */
-	public void next(final Object event) {
+	public void next(final DESEvent event) {
 		if (!this.filterIsBeingUsed()) {
 			this.iterator = this.filters.iterator();
 		}
 		if (this.iterator.hasNext()) {
 			try {
 				final Filter filter = this.iterator.next();
-				this.latestResult = filter.doProcess(event);
+				this.latestResult = filter.doProcess(new FilterObjectWrapper(event, state));
 				checkResult();
 			} catch (final Exception e) {
 				this.disregard(e);

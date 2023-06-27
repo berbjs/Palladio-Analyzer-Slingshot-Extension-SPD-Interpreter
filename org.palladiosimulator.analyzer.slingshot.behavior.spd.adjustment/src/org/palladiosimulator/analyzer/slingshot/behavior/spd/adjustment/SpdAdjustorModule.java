@@ -5,7 +5,10 @@ import javax.inject.Named;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToLoader;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoReconfigurator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.ui.SemanticModelLaunchConfig;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.ui.SemanticModelProvider;
 import org.palladiosimulator.analyzer.slingshot.core.extension.AbstractSlingshotExtension;
+import org.palladiosimulator.semanticspd.Configuration;
 
 import com.google.inject.Provides;
 
@@ -17,6 +20,8 @@ public class SpdAdjustorModule extends AbstractSlingshotExtension {
 	@Override
 	protected void configure() {
 		install(SpdAdjustmentBehavior.class);
+		install(SemanticModelLaunchConfig.class);
+		provideModel(Configuration.class, SemanticModelProvider.class);
 
 		bind(QvtoReconfigurator.class);
 	}

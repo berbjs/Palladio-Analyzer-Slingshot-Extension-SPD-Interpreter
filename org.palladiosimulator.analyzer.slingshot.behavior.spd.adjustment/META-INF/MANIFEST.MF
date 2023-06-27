@@ -20,4 +20,6 @@ Require-Bundle: org.palladiosimulator.analyzer.slingshot.behavior.spd.data;bundl
  org.palladiosimulator.analyzer.workflow,
  de.uka.ipd.sdq.scheduler,
  org.palladiosimulator.spd.semantic.transformations;bundle-version="1.0.0",
- org.palladiosimulator.spd.semantic;bundle-version="1.0.0"
+ org.palladiosimulator.spd.semantic;bundle-version="1.0.0",
+ org.palladiosimulator.analyzer.slingshot.ui.events;bundle-version="1.0.0",
+ org.palladiosimulator.analyzer.slingshot.workflow.events;bundle-version="1.0.0"

@@ -4,7 +4,9 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmen
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.adjustments.AdjustmentType;
 import org.palladiosimulator.spd.adjustments.StepAdjustment;
@@ -27,7 +29,11 @@ public class Adjustor implements Filter {
 	}
 
 	@Override
-	public FilterResult doProcess(final Object event) {
+	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
+		// We reached the end, so we can safely say that here the adjustment happens.
+		objectWrapper.getState().setLatestAdjustmentAtSimulationTime(
+				((DESEvent) objectWrapper.getEventToFilter()).time());
+		objectWrapper.getState().incrementNumberScales();
 		return FilterResult.success(new ModelAdjustmentRequested(this.policy));
 	}
 

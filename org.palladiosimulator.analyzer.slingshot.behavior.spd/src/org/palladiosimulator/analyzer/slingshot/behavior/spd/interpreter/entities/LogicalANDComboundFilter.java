@@ -1,18 +1,24 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities;
 
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
+
 public class LogicalANDComboundFilter extends ComboundFilter {
+
+	public LogicalANDComboundFilter(SPDAdjustorState state) {
+		super(state);
+	}
 
 	private FilterResult result;
 
 	@Override
-	public FilterResult doProcess(final Object event) {
+	public FilterResult doProcess(final FilterObjectWrapper event) {
 		result = null;
-		this.next(event);
+		this.next(event.getEventToFilter());
 		return result;
 	}
 
 	@Override
-	public void next(final Object event) {
+	public void next(final DESEvent event) {
 		super.next(event);
 		if (!this.filterIsBeingUsed()) {
 			/* This means that no filter was used. */

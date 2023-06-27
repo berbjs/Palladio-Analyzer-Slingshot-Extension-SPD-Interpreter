@@ -42,18 +42,19 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	private final QvtoReconfigurator reconfigurator;
 	private final Iterable<QvtoModelTransformation> transformations;
 	private final Allocation allocation;
-	private final MonitorRepository monitorRepository;
+	private final Configuration semanticConfiguration;
 	
 	@Inject
 	public SpdAdjustmentBehavior(
-			final Allocation allocation, 
+			final Allocation allocation,
 			final @Nullable MonitorRepository monitorRepository,
+			final Configuration semanticConfiguration,
 			final SPD spd,
 			final QvtoReconfigurator reconfigurator,
 			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QvtoModelTransformation> transformations) {
 		this.activated = monitorRepository != null;
 		this.allocation = allocation;
-		this.monitorRepository = monitorRepository;
+		this.semanticConfiguration = semanticConfiguration;
 		this.spd = spd;
 		this.reconfigurator = reconfigurator;
 		this.transformations = transformations;
@@ -74,20 +75,27 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			this.transformations.forEach(trans -> LOGGER.debug(trans.toString()));
 		}
 		
-		final Configuration configuration = createConfiguration(event, environment);
+		/* Since the model is provided by the user, the model will be available in the cache already. */
+		//final Configuration configuration = createConfiguration(event, environment);
+		//this.reconfigurator.getModelCache().storeModel(configuration);
 		
-		this.reconfigurator.getModelCache().storeModel(configuration);
+		// Set the enacted policy for the next transformation
+		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+		
 		final boolean result = this.reconfigurator.execute(this.transformations);
 		LOGGER.debug("RECONFIGURATION WAS " + result);
 		
 		if (result) {
 			LOGGER.debug("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment().size());
 			
+			/*
+			 * Calculate what the new and deleted resource containers are for tracking.
+			 */
 			final List<ResourceContainer> newResourceContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 			newResourceContainers.removeAll(oldContainers);
 			
 			final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
-			deletedResourceContainers.removeAll(deletedResourceContainers);
+			deletedResourceContainers.removeAll(environment.getResourceContainer_ResourceEnvironment());
 			
 			return Result.of(new ModelAdjusted(true, List.of(ResourceEnvironmentChange.builder()
 																.resourceEnvironment(environment)
@@ -101,11 +109,19 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		}
 		
 	}
+	
+	
+	
+	/*
+	 * We leave the following methods for now, as we will need to make the Configuration through
+	 * a dedicated launch tab instead.
+	 */
 
 	private ElasticInfrastructureCfg createElasticInfrastructureCfg(final ResourceEnvironment environment) {
 		final ElasticInfrastructureCfg targetGroupConfig = SemanticspdFactory.eINSTANCE.createElasticInfrastructureCfg();
 		targetGroupConfig.setResourceEnvironment(environment);
 		targetGroupConfig.getElements().addAll(environment.getResourceContainer_ResourceEnvironment());
+		targetGroupConfig.setUnit(null);
 		return targetGroupConfig;
 	}
 	

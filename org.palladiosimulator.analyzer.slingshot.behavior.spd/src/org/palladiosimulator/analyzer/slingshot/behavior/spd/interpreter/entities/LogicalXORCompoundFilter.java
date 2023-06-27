@@ -1,33 +1,39 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities;
 
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
+
 public class LogicalXORCompoundFilter extends ComboundFilter {
 
 	private FilterResult currentResult;
-	private Object eventToProcess;
-	private Object outputEvent;
+	private DESEvent eventToProcess;
+	private DESEvent outputEvent;
 
 	private int numberContinued;
 	private int numberDisregarded;
+	
+	public LogicalXORCompoundFilter(SPDAdjustorState state) {
+		super(state);
+	}
 
 	@Override
-	public FilterResult doProcess(final Object event) {
+	public FilterResult doProcess(final FilterObjectWrapper event) {
 		this.currentResult = null;
-		this.eventToProcess = event;
+		this.eventToProcess = event.getEventToFilter();
 		this.numberContinued = 0;
 		this.numberDisregarded = 0;
-		this.next(event);
+		this.next(event.getEventToFilter());
 		return this.currentResult;
 	}
 
 	@Override
-	public void next(final Object event) {
+	public void next(final DESEvent event) {
 		if (this.numberContinued == 0) {
 			/* We allow one call, but we need to check that any other filter was called. */
 			this.outputEvent = event;
 			this.numberContinued++;
 			super.next(this.eventToProcess);
 		} else {
-			/* We called it to often. */
+			/* We called it too often. */
 			this.currentResult = FilterResult.disregard("More than one filter through XOR");
 			this.initialize();
 		}

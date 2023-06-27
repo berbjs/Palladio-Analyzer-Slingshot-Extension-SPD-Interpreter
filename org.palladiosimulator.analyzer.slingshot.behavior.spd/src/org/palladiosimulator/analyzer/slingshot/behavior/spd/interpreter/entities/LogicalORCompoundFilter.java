@@ -1,22 +1,30 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities;
 
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
+
 public class LogicalORCompoundFilter extends ComboundFilter {
 
 	private FilterResult result = null;
-	private Object eventToProcess;
+	private DESEvent eventToProcess;
 	private int numberDisregarded;
+	
+	public LogicalORCompoundFilter(SPDAdjustorState state) {
+		super(state);
+		// TODO Auto-generated constructor stub
+	}
+
 
 	@Override
-	public FilterResult doProcess(final Object event) {
+	public FilterResult doProcess(final FilterObjectWrapper event) {
 		result = null;
-		this.eventToProcess = event;
+		this.eventToProcess = event.getEventToFilter();
 		this.numberDisregarded = 0;
-		this.next(event);
+		this.next(event.getEventToFilter());
 		return result;
 	}
 
 	@Override
-	public void next(final Object event) {
+	public void next(final DESEvent event) {
 		/* The whole filter was successful, delegate to parent */
 		//this.currentParentChain.next(event);
 
