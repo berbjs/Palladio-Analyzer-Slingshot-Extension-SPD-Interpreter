@@ -75,13 +75,14 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		
 		// Set the enacted policy for the next transformation
 		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
-		final List<ResourceContainer> oldContainers = new ArrayList<>(this.semanticConfiguration.getTargetCfgs().stream()
-				.filter(cfg -> cfg instanceof ElasticInfrastructureCfg)
-				.filter(cfg -> ((ElasticInfrastructureCfg) cfg).getEnactedPolicies().stream().anyMatch(plc -> plc.getId().equals(this.semanticConfiguration.getEnactedPolicy().getId())))
-				.map(cfg -> ((ElasticInfrastructureCfg) cfg).getElements())
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("something went wrong: The policy couldn't be found"))
-				);
+		//final List<ResourceContainer> oldContainers = new ArrayList<>(this.semanticConfiguration.getTargetCfgs().stream()
+		//		.filter(cfg -> cfg instanceof ElasticInfrastructureCfg)
+		//		.filter(cfg -> ((ElasticInfrastructureCfg) cfg).getEnactedPolicies().stream().anyMatch(plc -> plc.getId().equals(this.semanticConfiguration.getEnactedPolicy().getId())))
+		//		.map(cfg -> ((ElasticInfrastructureCfg) cfg).getElements())
+		//		.findAny()
+		//		.orElseThrow(() -> new IllegalArgumentException("something went wrong: The policy couldn't be found"))
+		//		);
+		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 		
 		final boolean result = this.reconfigurator.execute(this.transformations);
 		LOGGER.debug("RECONFIGURATION WAS " + result);
