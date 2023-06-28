@@ -4,14 +4,12 @@ import org.palladiosimulator.analyzer.slingshot.core.extension.SystemBehaviorExt
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.Subscribe;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcontract.OnEvent;
 import org.palladiosimulator.analyzer.slingshot.ui.events.ArchitectureModelsTabBuilderStarted;
-import org.palladiosimulator.analyzer.slingshot.ui.events.CustomTabBuilderInitialized;
 import org.palladiosimulator.analyzer.slingshot.workflow.events.WorkflowLaunchConfigurationBuilderInitialized;
-import org.palladiosimulator.monitorrepository.MonitorRepository;
+
 import org.palladiosimulator.semanticspd.Configuration;
 
 @OnEvent(when = ArchitectureModelsTabBuilderStarted.class)
 @OnEvent(when = WorkflowLaunchConfigurationBuilderInitialized.class)
-@OnEvent(when = CustomTabBuilderInitialized.class)
 public class SemanticModelLaunchConfig implements SystemBehaviorExtension {
 
 	private static final String FILE_NAME = "semanticspd";
@@ -33,9 +31,4 @@ public class SemanticModelLaunchConfig implements SystemBehaviorExtension {
 				(conf, model) -> conf.addOtherModelFile((String) model));
 	}
 	
-	
-	@Subscribe
-	public void onCustomTabBuilderInitialized(final CustomTabBuilderInitialized tabBuilder) {
-		tabBuilder.getTabList().addTab(new SemanticConfigurationTab());
-	}
 }

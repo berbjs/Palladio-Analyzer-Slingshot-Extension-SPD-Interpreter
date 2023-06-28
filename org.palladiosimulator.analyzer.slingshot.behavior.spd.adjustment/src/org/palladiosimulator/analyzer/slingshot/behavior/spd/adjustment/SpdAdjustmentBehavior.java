@@ -68,12 +68,6 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	@Subscribe
 	public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
 		final ResourceEnvironment environment = getResourceEnvironmentFromTargetGroup(event.getScalingPolicy().getTargetGroup());
-		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
-		
-		LOGGER.debug("Number of resource container before: " + environment.getResourceContainer_ResourceEnvironment().size());
-		if (LOGGER.isDebugEnabled()) {
-			this.transformations.forEach(trans -> LOGGER.debug(trans.toString()));
-		}
 		
 		/* Since the model is provided by the user, the model will be available in the cache already. */
 		//final Configuration configuration = createConfiguration(event, environment);
@@ -81,6 +75,13 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		
 		// Set the enacted policy for the next transformation
 		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+		final List<ResourceContainer> oldContainers = new ArrayList<>(this.semanticConfiguration.getTargetCfgs().stream()
+				.filter(cfg -> cfg instanceof ElasticInfrastructureCfg)
+				.filter(cfg -> ((ElasticInfrastructureCfg) cfg).getEnactedPolicies().stream().anyMatch(plc -> plc.getId().equals(this.semanticConfiguration.getEnactedPolicy().getId())))
+				.map(cfg -> ((ElasticInfrastructureCfg) cfg).getElements())
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("something went wrong: The policy couldn't be found"))
+				);
 		
 		final boolean result = this.reconfigurator.execute(this.transformations);
 		LOGGER.debug("RECONFIGURATION WAS " + result);
