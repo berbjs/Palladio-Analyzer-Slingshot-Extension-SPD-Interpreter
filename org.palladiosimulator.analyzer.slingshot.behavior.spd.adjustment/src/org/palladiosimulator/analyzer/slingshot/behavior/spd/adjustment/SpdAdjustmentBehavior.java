@@ -76,20 +76,6 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		
 		// Set the enacted policy for the next transformation
 		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
-		this.semanticConfiguration.getTargetCfgs().stream()
-												  .filter(ElasticInfrastructureCfg.class::isInstance)
-												  .map(ElasticInfrastructureCfg.class::cast)
-												  .forEach(cfg -> { 
-													  cfg.getElements().clear();
-													  cfg.getElements().addAll(environment.getResourceContainer_ResourceEnvironment());
-												  });
-		this.semanticConfiguration.getTargetCfgs().stream()
-												  .filter(ServiceGroupCfg.class::isInstance)
-												  .map(ServiceGroupCfg.class::cast)
-												  .forEach(cfg -> {
-													  cfg.getElements().clear();
-													  cfg.getElements().addAll(allocation.getSystem_Allocation().getAssemblyContexts__ComposedStructure());
-												  });
 		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 		
 		
@@ -98,14 +84,6 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		
 		if (result) {
 			LOGGER.debug("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment().size());
-			
-//			final List<ResourceContainer> resourceContainers = this.semanticConfiguration.getTargetCfgs().stream()
-//							.filter(cfg -> cfg instanceof ElasticInfrastructureCfg)
-//							.filter(cfg -> ((ElasticInfrastructureCfg) cfg).getEnactedPolicies().stream().anyMatch(plc -> plc.getId().equals(this.semanticConfiguration.getEnactedPolicy().getId())))
-//							.map(cfg -> ((ElasticInfrastructureCfg) cfg).getElements())
-//							.findAny()
-//							.orElseThrow(() -> new IllegalArgumentException("something went wrong: The policy couldn't be found"));
-//							
 			
 			/*
 			 * Calculate what the new and deleted resource containers are for tracking.
