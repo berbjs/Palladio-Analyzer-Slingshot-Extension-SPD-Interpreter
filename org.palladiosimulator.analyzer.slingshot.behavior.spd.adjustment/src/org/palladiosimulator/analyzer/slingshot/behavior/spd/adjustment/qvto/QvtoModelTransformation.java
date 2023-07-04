@@ -1,7 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ public class QvtoModelTransformation {
 	private final Collection<TransformationParameterInformation> inParams;
 	private final Collection<TransformationParameterInformation> outParams;
 	
-	private OperationalTransformation modelTransformation;
+	private final OperationalTransformation modelTransformation;
 	
 	public QvtoModelTransformation(final OperationalTransformation transformation,
 								   final QVToTransformationExecutor executor,

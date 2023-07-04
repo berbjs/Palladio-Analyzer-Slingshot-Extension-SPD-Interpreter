@@ -4,7 +4,6 @@ import org.palladiosimulator.spd.triggers.RelationalOperator;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedCount;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedPercentage;
-import org.palladiosimulator.spd.triggers.expectations.ExpectedPrimitive;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedValue;
 

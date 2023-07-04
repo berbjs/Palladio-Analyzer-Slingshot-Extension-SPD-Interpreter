@@ -1,7 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.constraint;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.spd.constraints.AbstractConstraint;
 import org.palladiosimulator.spd.constraints.policy.CooldownConstraint;
 import org.palladiosimulator.spd.constraints.policy.IntervallConstraint;

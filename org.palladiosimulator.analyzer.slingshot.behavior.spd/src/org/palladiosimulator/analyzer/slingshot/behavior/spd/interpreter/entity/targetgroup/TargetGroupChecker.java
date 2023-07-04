@@ -3,7 +3,6 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import java.util.Objects;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
@@ -19,7 +18,7 @@ public class TargetGroupChecker implements Filter {
 	}
 	
 	@Override
-	public FilterResult doProcess(FilterObjectWrapper objectWrapper) {
+	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
 		final DESEvent event = objectWrapper.getEventToFilter();
 		if (event instanceof MeasurementMade) {
 			return FilterResult.success(event);

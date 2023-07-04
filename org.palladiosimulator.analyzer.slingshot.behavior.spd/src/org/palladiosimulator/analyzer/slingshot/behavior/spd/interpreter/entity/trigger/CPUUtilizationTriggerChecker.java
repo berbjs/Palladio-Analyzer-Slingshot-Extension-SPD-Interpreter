@@ -1,12 +1,9 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.measure.Measure;
 import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Quantity;
-
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.*;
@@ -48,7 +45,7 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	}
 
 	@Override
-	public FilterResult doProcess(FilterObjectWrapper object) {
+	public FilterResult doProcess(final FilterObjectWrapper object) {
 		final DESEvent event = object.getEventToFilter();
 		if (event instanceof final MeasurementMade measurementMade) {
 			final MeasuringPoint measuringPoint = measurementMade.getEntity().getMeasuringPoint();
@@ -90,7 +87,7 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	/**
 	 * Helper method to aggregate the measurement in case if the measurement comes from one of the resource containers in the target group.
 	 */
-	private void aggregateMeasurement(MeasurementMade measurementMade, ActiveResourceMeasuringPoint activeResourceMP) {
+	private void aggregateMeasurement(final MeasurementMade measurementMade, final ActiveResourceMeasuringPoint activeResourceMP) {
 		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
 		if (TargetGroupUtils.isContainerInElasticInfrastructure(spec.getResourceContainer_ProcessingResourceSpecification(), 
 																this.elasticInfrastructure)) {
