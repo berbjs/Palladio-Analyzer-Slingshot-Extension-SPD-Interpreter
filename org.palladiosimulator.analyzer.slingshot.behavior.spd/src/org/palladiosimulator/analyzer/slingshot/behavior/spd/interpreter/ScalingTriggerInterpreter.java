@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ScalingTriggerInterpreter.InterpretationResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalANDComboundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
@@ -170,7 +169,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 
 
 		@Override
-		public InterpretationResult caseOperationResponseTime(OperationResponseTime object) {
+		public InterpretationResult caseOperationResponseTime(final OperationResponseTime object) {
 			this.checkExpectedValue(ExpectedTime.class);
 			return (new InterpretationResult()).listenEvent(Subscriber.builder(MeasurementMade.class)
 																	  .name("measurementMade"))

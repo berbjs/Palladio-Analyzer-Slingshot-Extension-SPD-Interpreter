@@ -3,7 +3,6 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.ui;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
