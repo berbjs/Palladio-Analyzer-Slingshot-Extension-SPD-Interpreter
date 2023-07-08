@@ -10,7 +10,6 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalANDComboundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalXORCompoundFilter;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.CPUUtilizationTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.OperationResponseTimeTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.SimulationTimeChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
@@ -176,22 +175,6 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 			return (new InterpretationResult()).listenEvent(Subscriber.builder(MeasurementMade.class)
 																	  .name("measurementMade"))
 										       .triggerChecker(new OperationResponseTimeTriggerChecker(this.trigger));
-		}
-
-		@Override
-		public InterpretationResult caseCPUUtilization(CPUUtilization object) {
-			final ExpectedPercentage expectedPercentage = this.checkExpectedValue(ExpectedPercentage.class);
-			Preconditions.checkArgument(0 <= expectedPercentage.getValue() && expectedPercentage.getValue() <= 100, 
-										"The expected percentage must be between 0 and 100");
-			
-			
-			return (new InterpretationResult()).listenEvent(Subscriber.builder(MeasurementMade.class)
-																	  .name("cpuUtilizationMade"))
-											   .triggerChecker(new CPUUtilizationTriggerChecker(
-													   				   this.trigger, 
-																	   object.getAggregationOverElements(), 
-																	   (ElasticInfrastructure) policy.getTargetGroup())
-													   		  );
 		}
 
 		@SuppressWarnings("unchecked")

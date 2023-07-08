@@ -17,8 +17,7 @@ public class SimpleFireOnTrendComparator implements ValueComparator {
 	
 	@Override
 	public ComparatorResult compare(double actualValue, ExpectedValue expectedValue) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("This is not yet implemented and only exist as a placeholder right now");
 	}
 
 }
