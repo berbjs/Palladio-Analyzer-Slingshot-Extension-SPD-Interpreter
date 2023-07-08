@@ -94,9 +94,9 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
 		if (TargetGroupUtils.isContainerInElasticInfrastructure(spec.getResourceContainer_ProcessingResourceSpecification(), 
 																this.elasticInfrastructure)) {
-			final Measure<Double, Dimensionless> measure 
-						= measurementMade.getEntity().getMeasureForMetric(MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);					
-			final double value = measure.getValue();
+//			final Measure<Double, Dimensionless> measure // TODO: Find the right metrics
+//						= measurementMade.getEntity().getMeasureForMetric(measurementMade.getEntity().getMetricDesciption());					
+			final double value = 0;//measure.getValue();
 			aggregator.aggregate(value);
 		}
 	}
