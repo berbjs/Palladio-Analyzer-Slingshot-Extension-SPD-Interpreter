@@ -20,9 +20,9 @@ public class QVToExecutor extends AbstractQVToExecutor {
 		super(knownTransformationCache, knownModels);
 	}
 	
-	public boolean executeTransformations(final Iterable<QvtoModelTransformation> transformations) {
+	public boolean executeTransformations(final Iterable<QVToModelTransformation> transformations) {
 		boolean result = true;
-		for (final QvtoModelTransformation transformation : transformations) {
+		for (final QVToModelTransformation transformation : transformations) {
 
 			result &= executeTransformation(transformation);
 		}

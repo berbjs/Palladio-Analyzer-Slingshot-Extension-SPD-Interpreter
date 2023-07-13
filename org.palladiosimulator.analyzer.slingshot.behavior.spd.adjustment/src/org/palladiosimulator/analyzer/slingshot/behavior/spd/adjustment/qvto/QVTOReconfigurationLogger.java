@@ -11,13 +11,13 @@ import org.eclipse.m2m.qvt.oml.util.Log;
  * @author Matthias Becker, Sebastian Krach
  *
  */
-public class QVTOReconfigurationLogger implements Log {
+public class QVToReconfigurationLogger implements Log {
 	
 	private static final Level DEFAULT_LOG_LEVEL = Level.INFO;
 	
 	private Logger logger;
 
-	public QVTOReconfigurationLogger(final Class<?> clazz) {
+	public QVToReconfigurationLogger(final Class<?> clazz) {
 		this.logger = Logger.getLogger(clazz);
 	}
 	

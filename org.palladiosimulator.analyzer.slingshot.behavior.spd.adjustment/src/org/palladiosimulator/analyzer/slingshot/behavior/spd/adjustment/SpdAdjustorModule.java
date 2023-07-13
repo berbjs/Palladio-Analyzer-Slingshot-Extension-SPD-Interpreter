@@ -3,8 +3,8 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment;
 import javax.inject.Named;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToLoader;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoReconfigurator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToReconfigurator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.ui.SemanticModelLaunchConfig;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.ui.SemanticModelProvider;
 import org.palladiosimulator.analyzer.slingshot.core.extension.AbstractSlingshotExtension;
@@ -23,7 +23,7 @@ public class SpdAdjustorModule extends AbstractSlingshotExtension {
 		install(SemanticModelLaunchConfig.class);
 		provideModel(Configuration.class, SemanticModelProvider.class);
 
-		bind(QvtoReconfigurator.class);
+		bind(QVToReconfigurator.class);
 	}
 
 	@Provides
@@ -34,7 +34,7 @@ public class SpdAdjustorModule extends AbstractSlingshotExtension {
 	
 	@Provides
 	@Named(MAIN_QVTO)
-	public Iterable<QvtoModelTransformation> getTransformations() {
+	public Iterable<QVToModelTransformation> getTransformations() {
 		return QVToLoader.loadFromFiles(MAIN_QVTO_FILE);
 	}
 	

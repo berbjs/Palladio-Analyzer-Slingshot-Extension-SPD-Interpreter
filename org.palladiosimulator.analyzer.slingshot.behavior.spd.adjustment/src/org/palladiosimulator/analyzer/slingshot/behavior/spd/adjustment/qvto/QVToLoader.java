@@ -12,7 +12,7 @@ public class QVToLoader {
 
 	private static final Logger LOGGER = Logger.getLogger(QVToLoader.class);
 
-	public static Iterable<QvtoModelTransformation> loadFromFiles(final String... files) {
+	public static Iterable<QVToModelTransformation> loadFromFiles(final String... files) {
 		final URI[] uris = new URI[files.length];
 		for (int i = 0; i < files.length; ++i) {
 			uris[i] = getUriFromFile(files[i]);

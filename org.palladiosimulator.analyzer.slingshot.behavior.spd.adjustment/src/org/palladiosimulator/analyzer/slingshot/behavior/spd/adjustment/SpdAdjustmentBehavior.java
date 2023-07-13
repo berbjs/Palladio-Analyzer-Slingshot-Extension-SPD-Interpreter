@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoReconfigurator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToReconfigurator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjusted;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmentRequested;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ResourceEnvironmentChange;
@@ -39,8 +39,8 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	private final boolean activated;
 
 	private final SPD spd;
-	private final QvtoReconfigurator reconfigurator;
-	private final Iterable<QvtoModelTransformation> transformations;
+	private final QVToReconfigurator reconfigurator;
+	private final Iterable<QVToModelTransformation> transformations;
 	private final Allocation allocation;
 	private final Configuration semanticConfiguration;
 
@@ -50,8 +50,8 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			final @Nullable MonitorRepository monitorRepository,
 			final @Nullable Configuration semanticConfiguration,
 			final SPD spd,
-			final QvtoReconfigurator reconfigurator,
-			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QvtoModelTransformation> transformations) {
+			final QVToReconfigurator reconfigurator,
+			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) {
 		this.activated = monitorRepository != null;
 		this.allocation = allocation;
 		this.semanticConfiguration = semanticConfiguration;

@@ -6,7 +6,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.uti
 
 import de.uka.ipd.sdq.workflow.mdsd.blackboard.MDSDBlackboard;
 
-public class QvtoReconfigurator {
+public class QVToReconfigurator {
 
 	private final MDSDBlackboard blackboard;
 	private QVToExecutor qvtoExecutor;
@@ -14,7 +14,7 @@ public class QvtoReconfigurator {
 	private ModelTransformationCache transformationCache;
 	
 	@Inject
-	public QvtoReconfigurator(
+	public QVToReconfigurator(
 			final MDSDBlackboard pcmPartitionManager
 	) {
 		this.blackboard = pcmPartitionManager;
@@ -30,7 +30,7 @@ public class QvtoReconfigurator {
 		return this.qvtoExecutor;
 	}
 	
-	public boolean execute(final Iterable<QvtoModelTransformation> actions) {
+	public boolean execute(final Iterable<QVToModelTransformation> actions) {
 		return getQVToExecutor().executeTransformations(actions);
 	}
 

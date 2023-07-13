@@ -7,11 +7,11 @@ import org.eclipse.m2m.internal.qvt.oml.expressions.OperationalTransformation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.QVToTransformationExecutorPool;
 
 @SuppressWarnings("restriction")
-public class QVTOPoolingModelTransformation extends QvtoModelTransformation {
+public class QVToPoolingModelTransformation extends QVToModelTransformation {
 
 	protected final QVToTransformationExecutorPool executorPool;
 	
-	public QVTOPoolingModelTransformation(
+	public QVToPoolingModelTransformation(
 			final OperationalTransformation transformation,
 			final Supplier<QVToTransformationExecutor> executorSupplier,
 			final Collection<TransformationParameterInformation> paramInfo

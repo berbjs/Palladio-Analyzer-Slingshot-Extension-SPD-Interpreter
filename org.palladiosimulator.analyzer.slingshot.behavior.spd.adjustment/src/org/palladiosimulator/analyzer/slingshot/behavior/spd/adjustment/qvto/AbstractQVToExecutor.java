@@ -107,7 +107,7 @@ public abstract class AbstractQVToExecutor {
 	 * @see #executeTransformation(TransformationData)
 	 */
 	public boolean executeTransformation(final URI transformationURI) {
-		final Optional<QvtoModelTransformation> data = this.transformationCache.get(Objects.requireNonNull(transformationURI));
+		final Optional<QVToModelTransformation> data = this.transformationCache.get(Objects.requireNonNull(transformationURI));
 		return executeTransformation(
 				data.orElseThrow(() -> new IllegalArgumentException("Given transformation not present in transformation cache."))
 			   );
@@ -134,12 +134,12 @@ public abstract class AbstractQVToExecutor {
 	 * @param resourceManager
 	 * @return The result of the last step, i.e., a boolean that indicates whether the transformation succeeded.
 	 */
-	public final boolean executeTransformation(final QvtoModelTransformation modelTransformation) {
+	public final boolean executeTransformation(final QVToModelTransformation modelTransformation) {
 		final ExecutionDiagnostic result = executeTransformationInternal(modelTransformation);
 		return handleExecutionResult(result);
 	}
 
-	protected ExecutionDiagnostic executeTransformationInternal(final QvtoModelTransformation modelTransformation) {
+	protected ExecutionDiagnostic executeTransformationInternal(final QVToModelTransformation modelTransformation) {
 		final ModelExtent[] modelExtents = setupModelExtents(Objects.requireNonNull(modelTransformation));
 		final ExecutionContext executionContext = setupExecutionContext();
 		final ExecutionDiagnostic result = doExecution(modelTransformation, executionContext, modelExtents);
@@ -155,7 +155,7 @@ public abstract class AbstractQVToExecutor {
 	 * @param params
 	 * @return
 	 */
-	protected final ExecutionDiagnostic doExecution(final QvtoModelTransformation modelTransformation,
+	protected final ExecutionDiagnostic doExecution(final QVToModelTransformation modelTransformation,
 												    final ExecutionContext executionContext,
 												    final ModelExtent[] params) {
 		return modelTransformation.getTransformationExecutor().execute(executionContext, params);
@@ -215,7 +215,7 @@ public abstract class AbstractQVToExecutor {
      *         {@code new QVTOReconfigurationLogger(getClass())}.
      */
 	protected Log createLog() {
-		return new QVTOReconfigurationLogger(getClass());
+		return new QVToReconfigurationLogger(getClass());
 	}
 
 	/**
@@ -231,7 +231,7 @@ public abstract class AbstractQVToExecutor {
      *             'inout' parameter.
      * @see #doExecution(TransformationData, ExecutionContext, ModelExtent[])
      */
-	protected ModelExtent[] setupModelExtents(final QvtoModelTransformation transformation) {
+	protected ModelExtent[] setupModelExtents(final QVToModelTransformation transformation) {
 		assert transformation != null && transformation.getTransformationExecutor() != null;
 
 		final ModelExtent[] modelExtents = new ModelExtent[transformation.getParameterCount()];

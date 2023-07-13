@@ -8,7 +8,7 @@ import org.eclipse.m2m.internal.qvt.oml.expressions.OperationalTransformation;
 
 
 @SuppressWarnings("restriction")
-public class QvtoModelTransformation {
+public class QVToModelTransformation {
 	
 	private static final Predicate<TransformationParameterInformation> PURE_OUT_PARAM_PREDICATE =
 			transformationParameterInformation -> transformationParameterInformation.isOutParameter();
@@ -22,7 +22,7 @@ public class QvtoModelTransformation {
 	
 	private final OperationalTransformation modelTransformation;
 	
-	public QvtoModelTransformation(final OperationalTransformation transformation,
+	public QVToModelTransformation(final OperationalTransformation transformation,
 								   final QVToTransformationExecutor executor,
 								   final Collection<TransformationParameterInformation> paramInfo) {
 		this.modelTransformation = transformation;
