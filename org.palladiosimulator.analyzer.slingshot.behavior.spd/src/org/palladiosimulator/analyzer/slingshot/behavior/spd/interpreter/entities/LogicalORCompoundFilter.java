@@ -7,12 +7,6 @@ public class LogicalORCompoundFilter extends ComboundFilter {
 	private FilterResult result = null;
 	private DESEvent eventToProcess;
 	private int numberDisregarded;
-	
-	public LogicalORCompoundFilter(SPDAdjustorState state) {
-		super(state);
-		// TODO Auto-generated constructor stub
-	}
-
 
 	@Override
 	public FilterResult doProcess(final FilterObjectWrapper event) {

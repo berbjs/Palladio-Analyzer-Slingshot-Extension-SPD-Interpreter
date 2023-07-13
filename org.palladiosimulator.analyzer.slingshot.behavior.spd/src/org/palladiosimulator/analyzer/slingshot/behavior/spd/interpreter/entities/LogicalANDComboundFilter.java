@@ -4,10 +4,6 @@ import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 
 public class LogicalANDComboundFilter extends ComboundFilter {
 
-	public LogicalANDComboundFilter(SPDAdjustorState state) {
-		super(state);
-	}
-
 	private FilterResult result;
 
 	@Override

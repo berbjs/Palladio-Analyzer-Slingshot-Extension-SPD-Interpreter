@@ -48,7 +48,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	public SpdAdjustmentBehavior(
 			final Allocation allocation,
 			final @Nullable MonitorRepository monitorRepository,
-			final Configuration semanticConfiguration,
+			final @Nullable Configuration semanticConfiguration,
 			final SPD spd,
 			final QvtoReconfigurator reconfigurator,
 			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QvtoModelTransformation> transformations) {
@@ -67,7 +67,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 
 	@Subscribe
 	public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
-		final ResourceEnvironment environment = getResourceEnvironmentFromTargetGroup(event.getScalingPolicy().getTargetGroup());
+		final ResourceEnvironment environment = allocation.getTargetResourceEnvironment_Allocation();
 
 		/* Since the model is provided by the user, the model will be available in the cache already. */
 		//final Configuration configuration = createConfiguration(event, environment);
@@ -143,11 +143,4 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		return configuration;
 	}
 
-	private static ResourceEnvironment getResourceEnvironmentFromTargetGroup(final TargetGroup targetGroup) {
-		if (targetGroup instanceof final ElasticInfrastructure ei) {
-			return ei.getPCM_ResourceEnvironment();
-		}
-
-		throw new UnsupportedOperationException("Currently, only elastic infrastructures are supported...");
-	}
 }

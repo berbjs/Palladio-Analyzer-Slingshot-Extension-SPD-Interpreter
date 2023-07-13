@@ -110,7 +110,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 						if (temp instanceof final LogicalANDComboundFilter chain) {
 							chain.add(other.triggerChecker);
 						} else {
-							final LogicalANDComboundFilter comboundFilter = new LogicalANDComboundFilter(null);
+							final LogicalANDComboundFilter comboundFilter = new LogicalANDComboundFilter();
 							comboundFilter.add(temp);
 							comboundFilter.add(other.triggerChecker);
 							this.triggerChecker = comboundFilter;
@@ -119,7 +119,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 					break;
 				case OR:
 					{
-						final LogicalORCompoundFilter comboundFilter = new LogicalORCompoundFilter(null);
+						final LogicalORCompoundFilter comboundFilter = new LogicalORCompoundFilter();
 						comboundFilter.add(this.triggerChecker);
 						comboundFilter.add(other.triggerChecker);
 						this.triggerChecker = comboundFilter;
@@ -127,7 +127,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 					break;
 				case XOR:
 					{
-						final LogicalXORCompoundFilter comboundFilter = new LogicalXORCompoundFilter(null);
+						final LogicalXORCompoundFilter comboundFilter = new LogicalXORCompoundFilter();
 						comboundFilter.add(this.triggerChecker);
 						comboundFilter.add(other.triggerChecker);
 						this.triggerChecker = comboundFilter;
