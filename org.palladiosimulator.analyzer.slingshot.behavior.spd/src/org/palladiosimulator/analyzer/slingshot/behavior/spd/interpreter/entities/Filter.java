@@ -17,6 +17,6 @@ public interface Filter {
 	 * @param event The event to transform.
 	 * @return An object describing the result of this process.
 	 */
-	public FilterResult doProcess(final Object event);
+	public FilterResult doProcess(final FilterObjectWrapper event);
 
 }

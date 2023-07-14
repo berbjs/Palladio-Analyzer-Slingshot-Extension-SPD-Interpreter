@@ -18,32 +18,35 @@ public final class SPDAdjustorContext {
 	private static final Logger LOGGER = Logger.getLogger(SPDAdjustorContext.class);
 	
 	private final FilterChain filterChain;
-	private final ScalingPolicy scalingPolicy;
-	
+	private final ScalingPolicy scalingPolicy;	
 	private final List<Subscriber<? extends DESEvent>> associatedHandlers;
 
+	private SPDAdjustorState state = new SPDAdjustorState();
+	private SPDAdjustorState previousState = new SPDAdjustorState();
+	
 	public SPDAdjustorContext(final ScalingPolicy policy, 
 			final Filter triggerChecker,
 			final List<Subscriber.Builder<? extends DESEvent>> associatedHandlers) {
 		this.scalingPolicy = policy;
 		
-		this.filterChain = new FilterChain(message -> LOGGER.info("Couldn't do it :( " + message));
-
-		this.filterChain.add(new TargetGroupChecker(policy.getTargetGroup()));
-
-		// TODO: Add trigger checker based on composition
-		this.filterChain.add(triggerChecker);
-
+		this.filterChain = new FilterChain(this::doOnDisregard, state);
 		
-		this.filterChain.add(new Adjustor(policy.getAdjustmentType(), policy.getTargetGroup()));
+		initializeFilterChain(triggerChecker);
 		
 		final PublishResultingEventFilter publisher = new PublishResultingEventFilter();
-		//this.filterChain.add(publisher);
+
 		
 		this.associatedHandlers = associatedHandlers.stream()
 				.map(builder -> builder.handler(publisher))
 				.map(builder -> builder.build())
 				.collect(Collectors.toList());
+	}
+
+
+	private void initializeFilterChain(final Filter triggerChecker) {
+		this.filterChain.add(new TargetGroupChecker(this.scalingPolicy.getTargetGroup()));
+		this.filterChain.add(triggerChecker);
+		this.filterChain.add(new Adjustor(this.scalingPolicy));
 	}
 	
 
@@ -57,6 +60,11 @@ public final class SPDAdjustorContext {
 
 	public List<Subscriber<? extends DESEvent>> getAssociatedHandlers() {
 		return associatedHandlers;
+	}
+	
+	private void doOnDisregard(final Object reason) {
+		this.state = previousState;
+		LOGGER.info("Filter was not successful: " + reason.toString());
 	}
 
 	@Override
@@ -75,19 +83,21 @@ public final class SPDAdjustorContext {
 		return false;
 	}
 	
-	private class PublishResultingEventFilter implements EventHandler<Object> {
+	/**
+	 * After all filters are successful, the resulting event should be published.
+	 */
+	private class PublishResultingEventFilter implements EventHandler<DESEvent> {
 		
 		@Override
-		public Result<?> acceptEvent(Object event) throws Exception {
+		public Result<?> acceptEvent(DESEvent event) throws Exception {
 			filterChain.next(event);
 			final FilterResult filterResult = filterChain.getLatestResult();
 			
 			if (filterResult instanceof final FilterResult.Success success) {
 				final Object result = success.nextEvent();
 				LOGGER.debug("Got a result after filtering! " + result.getClass().getSimpleName());
-				final Result<?> eventResult = Result.of(result);
-				//result = null; // Reinitialize for next call
-				return eventResult;
+				
+				return Result.of(result);
 			} else {
 				return Result.empty();
 			}

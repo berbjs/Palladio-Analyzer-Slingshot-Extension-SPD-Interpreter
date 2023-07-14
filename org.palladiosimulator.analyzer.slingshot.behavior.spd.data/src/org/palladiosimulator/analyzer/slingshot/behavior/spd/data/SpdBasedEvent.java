@@ -8,7 +8,6 @@ import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
  *
  * @author Julijan Katic
  */
-public sealed interface SpdBasedEvent extends DESEvent
-	permits SimulationTimeReached, ModelAdjusted, AdjustorBasedEvent {
+public interface SpdBasedEvent extends DESEvent {
 
 }

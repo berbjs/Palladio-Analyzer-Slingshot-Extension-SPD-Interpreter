@@ -164,7 +164,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 
 
 		@Override
-		public InterpretationResult caseOperationResponseTime(OperationResponseTime object) {
+		public InterpretationResult caseOperationResponseTime(final OperationResponseTime object) {
 			this.checkExpectedValue(ExpectedTime.class);
 			return (new InterpretationResult()).listenEvent(Subscriber.builder(MeasurementMade.class)
 																	  .name("measurementMade"))
@@ -174,7 +174,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 		@SuppressWarnings("unchecked")
 		private <T extends ExpectedValue> T checkExpectedValue(final Class<T> expectedType) {
 			if (!(expectedType.isAssignableFrom(this.trigger.getExpectedValue().getClass()))) {
-				throw new IllegalArgumentException(String.format("In case of the stimuli being SimulationTime, it is only possible "
+				throw new IllegalArgumentException(String.format("It is only possible "
 						+ "that the trigger is of type %s, but the given type was %s",
 						expectedType.getSimpleName(),
 						this.trigger.getExpectedValue().getClass().getSimpleName()));

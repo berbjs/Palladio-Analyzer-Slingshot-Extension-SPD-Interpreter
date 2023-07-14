@@ -1,20 +1,29 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.data;
 
 
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.AdjustmentResult;
+import java.util.List;
+
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ModelChange;
 import org.palladiosimulator.analyzer.slingshot.common.events.AbstractSimulationEvent;
 
 public final class ModelAdjusted extends AbstractSimulationEvent implements SpdBasedEvent {
-
-	private AdjustmentResult adjustmentResult;
-
-	public ModelAdjusted(final AdjustmentResult adjustmentResult) {
+	
+	private final boolean wasSuccessful;
+	private final List<ModelChange<?>> changes;
+	
+	public ModelAdjusted(boolean wasSuccessful, List<ModelChange<?>> changes) {
 		super();
-		this.adjustmentResult = adjustmentResult;
+		this.wasSuccessful = wasSuccessful;
+		this.changes = changes;
 	}
 
-	public AdjustmentResult getAdjustmentResult() {
-		return this.adjustmentResult;
+	public boolean isWasSuccessful() {
+		return wasSuccessful;
 	}
+
+	public List<ModelChange<?>> getChanges() {
+		return changes;
+	}
+	
 	
 }
