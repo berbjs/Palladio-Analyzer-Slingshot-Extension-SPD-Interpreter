@@ -28,8 +28,6 @@ import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
 import org.palladiosimulator.spd.SPD;
-import org.palladiosimulator.spd.targets.ElasticInfrastructure;
-import org.palladiosimulator.spd.targets.TargetGroup;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
 public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
@@ -49,10 +47,10 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			final Allocation allocation,
 			final @Nullable MonitorRepository monitorRepository,
 			final @Nullable Configuration semanticConfiguration,
-			final SPD spd,
+			final @Nullable SPD spd,
 			final QVToReconfigurator reconfigurator,
 			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) {
-		this.activated = monitorRepository != null;
+		this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
 		this.allocation = allocation;
 		this.semanticConfiguration = semanticConfiguration;
 		this.spd = spd;
@@ -79,6 +77,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 
 
 		final boolean result = this.reconfigurator.execute(this.transformations);
+
 		LOGGER.debug("RECONFIGURATION WAS " + result);
 
 		if (result) {
