@@ -17,6 +17,7 @@ import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcmmeasuringpoint.ActiveResourceMeasuringPoint;
 import org.palladiosimulator.spd.targets.ElasticInfrastructure;
+import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedPercentage;
@@ -28,14 +29,14 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	private static final int THRESHOLD = 10;
 
 	private final AbstractWindowAggregation aggregator;
-	private final ElasticInfrastructure elasticInfrastructure;
+	private final TargetGroup targetGroup;
 	
 	public CPUUtilizationTriggerChecker(final SimpleFireOnValue trigger,
-								 		final AGGREGATIONMETHOD aggregationMethod,
-								 		final ElasticInfrastructure elasticInfrastructure) {
+										final AGGREGATIONMETHOD aggregationMethod,
+								 		final TargetGroup targetGroup) {
 		super(trigger, CPUUtilization.class, Set.of(ExpectedPercentage.class));
 		
-		this.elasticInfrastructure = elasticInfrastructure;
+		this.targetGroup = targetGroup;
 		this.aggregator = switch (aggregationMethod) {
 			case MIN -> new MinWindowAggregation(THRESHOLD);
 			case AVERAGE -> new MeanWindowAggregation(THRESHOLD);
@@ -91,8 +92,8 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	 */
 	private void aggregateMeasurement(MeasurementMade measurementMade, ActiveResourceMeasuringPoint activeResourceMP) {
 		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
-		if (TargetGroupUtils.isContainerInElasticInfrastructure(spec.getResourceContainer_ProcessingResourceSpecification(), 
-																this.elasticInfrastructure)) {
+		if (TargetGroupUtils.isContainerInTargetGroup(spec.getResourceContainer_ProcessingResourceSpecification(), 
+													  this.targetGroup)) {
 			final Measure<Double, Dimensionless> measure // TODO: Find the right metrics
 						= measurementMade.getEntity().getMeasureForMetric(measurementMade.getEntity().getMetricDesciption());					
 			final double value = 0;//measure.getValue();
