@@ -14,9 +14,9 @@ import org.eclipse.m2m.internal.qvt.oml.expressions.ModelParameter;
 import org.eclipse.m2m.internal.qvt.oml.expressions.ModelType;
 import org.eclipse.m2m.internal.qvt.oml.expressions.OperationalTransformation;
 import org.eclipse.m2m.internal.qvt.oml.expressions.util.ExpressionsSwitch;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVTOPoolingModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToPoolingModelTransformation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToTransformationExecutor;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToModelTransformation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.TransformationParameterInformation;
 
 /**
@@ -68,7 +68,7 @@ public class ModelTransformationFactory {
      * @throws NullPointerException
      *             In case the given {@code transformationURI} is {@code null}.
      */
-	public QvtoModelTransformation createModelTransformation(final URI transformationUri) {
+	public QVToModelTransformation createModelTransformation(final URI transformationUri) {
 		// the EObject transformation should be the first in the content list.
 		final Resource transformationResource = this.resourceSet.getResource(Objects.requireNonNull(transformationUri), true);
 		OperationalTransformation transformation = null;
@@ -79,7 +79,7 @@ public class ModelTransformationFactory {
 			throw new IllegalArgumentException("OperationalTransformation instance could not be retrieved from resource contents.");
 		}
 		
-		return new QVTOPoolingModelTransformation(
+		return new QVToPoolingModelTransformation(
 				transformation,
 				() -> new QVToTransformationExecutor(transformationUri),
 				createTransformationParameterInformation(transformation)

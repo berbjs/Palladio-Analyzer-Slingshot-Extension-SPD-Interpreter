@@ -2,7 +2,6 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils;
 
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.spd.targets.ElasticInfrastructure;
-import org.palladiosimulator.spd.targets.TargetGroup;
 
 public class TargetGroupUtils {
 	

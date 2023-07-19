@@ -9,7 +9,7 @@ import org.palladiosimulator.spd.ScalingPolicy;
  * Tells that a certain adjustment to the PCM model is requested. An adjustor
  * module can then perform these adjustments.
  * <br>
- * This event holds the inacted scaling policy that was fired as well as
+ * This event holds the enacted scaling policy that was fired as well as
  * the target group.
  * 
  * @author Julijan Katic

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QvtoModelTransformation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToModelTransformation;
 
 /**
  * This cache implementation is used to store QVTo transformations (in terms
@@ -23,7 +23,7 @@ public class ModelTransformationCache {
 
 	private static final Logger LOGGER = Logger.getLogger(ModelTransformationCache.class);
 	
-	private final Map<URI, QvtoModelTransformation> cache;
+	private final Map<URI, QVToModelTransformation> cache;
 	private final ModelTransformationFactory modelTransformationFactory;
 	
 	/**
@@ -73,7 +73,7 @@ public class ModelTransformationCache {
 	 *             In case the given URI is {@code null}.
 	 * @see #contains(URI)
 	 */
-	public Optional<QvtoModelTransformation> get(final URI transformationUri) {
+	public Optional<QVToModelTransformation> get(final URI transformationUri) {
 		if (!this.contains(transformationUri)) {
 			this.store(transformationUri);
 		}
@@ -115,7 +115,7 @@ public class ModelTransformationCache {
 	 * 
 	 * @return An {@link Iterable} of all the stored transformations.
 	 */
-	public Iterable<QvtoModelTransformation> getAll() {
+	public Iterable<QVToModelTransformation> getAll() {
 		return this.cache.values();
 	}
 	

@@ -1,12 +1,8 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.ModelTransformationCache;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.util.QVToModelCache;
-
-import de.uka.ipd.sdq.scheduler.resources.active.IResourceTableManager;
 
 /**
  * QVTo executor helper class that supports executing QVTo reconfiguration rules.
@@ -24,9 +20,9 @@ public class QVToExecutor extends AbstractQVToExecutor {
 		super(knownTransformationCache, knownModels);
 	}
 	
-	public boolean executeTransformations(final Iterable<QvtoModelTransformation> transformations) {
+	public boolean executeTransformations(final Iterable<QVToModelTransformation> transformations) {
 		boolean result = true;
-		for (final QvtoModelTransformation transformation : transformations) {
+		for (final QVToModelTransformation transformation : transformations) {
 
 			result &= executeTransformation(transformation);
 		}

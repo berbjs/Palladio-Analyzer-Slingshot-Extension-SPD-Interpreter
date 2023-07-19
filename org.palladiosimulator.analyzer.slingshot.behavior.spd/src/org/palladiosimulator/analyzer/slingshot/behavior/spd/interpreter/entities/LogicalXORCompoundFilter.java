@@ -10,10 +10,6 @@ public class LogicalXORCompoundFilter extends ComboundFilter {
 
 	private int numberContinued;
 	private int numberDisregarded;
-	
-	public LogicalXORCompoundFilter(SPDAdjustorState state) {
-		super(state);
-	}
 
 	@Override
 	public FilterResult doProcess(final FilterObjectWrapper event) {

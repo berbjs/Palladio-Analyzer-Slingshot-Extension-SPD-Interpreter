@@ -14,7 +14,6 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils.T
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
-import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcmmeasuringpoint.ActiveResourceMeasuringPoint;
 import org.palladiosimulator.spd.targets.ElasticInfrastructure;
@@ -94,8 +93,8 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
 		if (TargetGroupUtils.isContainerInElasticInfrastructure(spec.getResourceContainer_ProcessingResourceSpecification(), 
 																this.elasticInfrastructure)) {
-//			final Measure<Double, Dimensionless> measure // TODO: Find the right metrics
-//						= measurementMade.getEntity().getMeasureForMetric(measurementMade.getEntity().getMetricDesciption());					
+			final Measure<Double, Dimensionless> measure // TODO: Find the right metrics
+						= measurementMade.getEntity().getMeasureForMetric(measurementMade.getEntity().getMetricDesciption());					
 			final double value = 0;//measure.getValue();
 			aggregator.aggregate(value);
 		}
