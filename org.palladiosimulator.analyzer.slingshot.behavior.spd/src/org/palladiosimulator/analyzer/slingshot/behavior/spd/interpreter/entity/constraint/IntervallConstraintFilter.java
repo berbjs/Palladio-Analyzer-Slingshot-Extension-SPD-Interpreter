@@ -8,7 +8,7 @@ public class IntervallConstraintFilter extends AbstractConstraintFilter<Interval
 
 	/** The sum of the offset and the interval size. */
 	private final double delta;
-	
+
 	public IntervallConstraintFilter(final IntervallConstraint constraint) {
 		super(constraint);
 		this.delta = constraint.getOffset() + constraint.getIntervallDuration();
@@ -20,9 +20,10 @@ public class IntervallConstraintFilter extends AbstractConstraintFilter<Interval
 		if (currentSimulationTime % delta > constraint.getOffset()) {
 			return FilterResult.success(event.getEventToFilter());
 		} else {
-			return FilterResult.disregard(String.format("The simulation time is outside of the offset: %d <= %d", (currentSimulationTime % delta), constraint.getOffset()));
+			return FilterResult.disregard(String.format("The simulation time is outside of the offset: %f <= %d",
+					(currentSimulationTime % delta), constraint.getOffset()));
 		}
-		
+
 	}
 
 }
