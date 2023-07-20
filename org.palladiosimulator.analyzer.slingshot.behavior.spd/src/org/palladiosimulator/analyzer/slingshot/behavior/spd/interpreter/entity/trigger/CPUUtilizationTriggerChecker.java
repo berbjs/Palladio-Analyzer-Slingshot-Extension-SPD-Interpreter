@@ -17,6 +17,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils.T
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
+import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcmmeasuringpoint.ActiveResourceMeasuringPoint;
 import org.palladiosimulator.spd.targets.TargetGroup;
@@ -63,8 +64,8 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 
 
 				/*
-				 * If all the values are collected, then check whether the expected percentage maches,
-				 * otherwise disregard.
+				 * If all the values are collected, then check whether the expected percentage
+				 * matches, otherwise disregard.
 				 */
 				return getResult(event);
 			}
@@ -95,9 +96,12 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	private void aggregateMeasurement(final MeasurementMade measurementMade, final ActiveResourceMeasuringPoint activeResourceMP) {
 		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
 		if (TargetGroupUtils.isContainerInTargetGroup(spec.getResourceContainer_ProcessingResourceSpecification(),
-													  this.targetGroup)) {
+				this.targetGroup)
+				&& measurementMade.getEntity().getMetricDesciption().getId()
+						.equals(MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE.getId())) {
 			final Measure<Double, Dimensionless> measure // TODO: Find the right metrics
-						= measurementMade.getEntity().getMeasureForMetric(measurementMade.getEntity().getMetricDesciption());
+					= measurementMade.getEntity()
+							.getMeasureForMetric(MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
 			final double value = 0;//measure.getValue();
 			aggregator.aggregate(value);
 		}
