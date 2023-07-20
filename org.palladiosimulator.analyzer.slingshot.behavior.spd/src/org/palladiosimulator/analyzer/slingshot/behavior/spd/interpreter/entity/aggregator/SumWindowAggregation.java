@@ -1,7 +1,5 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator;
 
-import java.util.Queue;
-
 public class SumWindowAggregation extends AbstractWindowAggregation {
 	
 	private double lastSummand;

@@ -2,7 +2,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 public class MinWindowAggregation extends AbstractWindowAggregation {
 
-	public MinWindowAggregation(int windowSize) {
+	public MinWindowAggregation(final int windowSize) {
 		super(windowSize);
 		// TODO Auto-generated constructor stub
 	}

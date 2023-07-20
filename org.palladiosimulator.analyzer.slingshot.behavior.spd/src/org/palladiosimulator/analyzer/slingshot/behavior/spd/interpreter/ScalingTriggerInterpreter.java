@@ -16,7 +16,6 @@ import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.ScalingPolicy;
-import org.palladiosimulator.spd.targets.ElasticInfrastructure;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
 import org.palladiosimulator.spd.triggers.LogicalOperator;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
@@ -178,7 +177,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 		}
 		
 		@Override
-		public InterpretationResult caseCPUUtilization(CPUUtilization object) {
+		public InterpretationResult caseCPUUtilization(final CPUUtilization object) {
 			final ExpectedPercentage expectedPercentage = this.checkExpectedValue(ExpectedPercentage.class);
 			Preconditions.checkArgument(0 <= expectedPercentage.getValue() && expectedPercentage.getValue() <= 100, 
 										"The expected percentage must be between 0 and 100");
