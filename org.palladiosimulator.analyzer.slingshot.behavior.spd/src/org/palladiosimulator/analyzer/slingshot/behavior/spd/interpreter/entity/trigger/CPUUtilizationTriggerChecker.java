@@ -76,8 +76,10 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	}
 
 	/**
-	 * Helper method to retrieve the filter result. If the aggregated value is in accordance with the specified trigger,
-	 * success is returned. If not all measurements were made yet, or if the value was not in accordance, then disregard.
+	 * Helper method to retrieve the filter result. If the aggregated value is in
+	 * accordance with the specified trigger, success is returned. If not all
+	 * measurements were made yet, or if the value was not in accordance, then
+	 * disregard.
 	 */
 	private FilterResult getResult(final DESEvent event) {
 		final double aggregatedValue = this.aggregator.getCurrentValue();
@@ -99,10 +101,10 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 				this.targetGroup)
 				&& measurementMade.getEntity().getMetricDesciption().getId()
 						.equals(MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE.getId())) {
-			final Measure<Double, Dimensionless> measure // TODO: Find the right metrics
+			final Measure<Double, Dimensionless> measure
 					= measurementMade.getEntity()
 							.getMeasureForMetric(MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
-			final double value = 0;//measure.getValue();
+			final double value = measure.getValue();
 			aggregator.aggregate(value);
 		}
 	}
