@@ -2,16 +2,16 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
-import org.palladiosimulator.spd.constraints.policy.IntervallConstraint;
+import org.palladiosimulator.spd.constraints.policy.IntervalConstraint;
 
-public class IntervallConstraintFilter extends AbstractConstraintFilter<IntervallConstraint> {
+public class IntervallConstraintFilter extends AbstractConstraintFilter<IntervalConstraint> {
 
 	/** The sum of the offset and the interval size. */
 	private final double delta;
 
-	public IntervallConstraintFilter(final IntervallConstraint constraint) {
+	public IntervallConstraintFilter(final IntervalConstraint constraint) {
 		super(constraint);
-		this.delta = constraint.getOffset() + constraint.getIntervallDuration();
+		this.delta = constraint.getOffset() + constraint.getIntervalDuration();
 	}
 
 	@Override
