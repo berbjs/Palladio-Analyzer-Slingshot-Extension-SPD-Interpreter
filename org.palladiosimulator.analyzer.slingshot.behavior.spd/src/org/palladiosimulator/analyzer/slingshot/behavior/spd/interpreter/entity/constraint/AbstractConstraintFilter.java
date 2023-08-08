@@ -23,7 +23,7 @@ public abstract class AbstractConstraintFilter<T extends AbstractConstraint> imp
 		if (constraint instanceof final CooldownConstraint cooldownConstraint) {
 			return new CooldownConstraintFilter(cooldownConstraint);
 		} else if (constraint instanceof final IntervalConstraint intervallConstraint) {
-			return new IntervallConstraintFilter(intervallConstraint);
+			return new IntervalConstraintFilter(intervallConstraint);
 		} else {
 			throw new UnsupportedOperationException("Currently, only cooldown and intervall is supported");
 		}
