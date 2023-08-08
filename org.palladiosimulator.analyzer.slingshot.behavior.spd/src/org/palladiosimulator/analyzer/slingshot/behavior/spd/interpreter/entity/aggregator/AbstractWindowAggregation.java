@@ -18,8 +18,12 @@ public abstract class AbstractWindowAggregation {
 	private double currentValue;
 	
 	public AbstractWindowAggregation(final int windowSize) {
+		this(windowSize, new ArrayDeque<>(windowSize));
+	}
+	
+	public AbstractWindowAggregation(final int windowSize, final Queue<Double> container) {
 		this.windowSize = windowSize;
-		this.valuesToConsider = new ArrayDeque<>(windowSize);
+		this.valuesToConsider = container;
 	}
 	
 	/**
