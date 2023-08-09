@@ -61,7 +61,7 @@ public abstract class AbstractWindowAggregation {
 		if (valuesToConsider.size() == windowSize) {
 			valuesToConsider.poll();
 		}
-		valuesToConsider.add(newValue);
+		valuesToConsider.offer(newValue);
 	}
 	
 	public final double getCurrentValue() {

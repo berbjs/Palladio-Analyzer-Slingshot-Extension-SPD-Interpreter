@@ -107,7 +107,11 @@ public class MedianQueue extends AbstractQueue<Double> {
 	}
 	
 	public Double getMedian() {
-		if (this.size() % 2 == 0) {
+		if (this.size() == 0) {
+			throw new NoSuchElementException();
+		}
+		
+		if (this.minHeap.size() == this.maxHeap.size()) {
 			return (this.minHeap.peek() + this.maxHeap.peek()) / 2;
 		} else {
 			return (this.minHeap.peek());
@@ -116,12 +120,41 @@ public class MedianQueue extends AbstractQueue<Double> {
 
 	@Override
 	public Iterator<Double> iterator() {
-		throw new UnsupportedOperationException();
+		return new MedianQueueIterator();
 	}
 
 	@Override
 	public int size() {
 		// TODO Auto-generated method stub
 		return this.minHeap.size() + this.maxHeap.size();
+	}
+	
+	/**
+	 * Iterator for this queue.
+	 * 
+	 * This iterator is NEEDED because otherwise debugging is not possible
+	 * (throws an error in the debugger view).
+	 * 
+	 * @author Julijan Katic
+	 */
+	private class MedianQueueIterator implements Iterator<Double> {
+		
+		private final Iterator<Double> minHeapIterator = minHeap.iterator();
+		private final Iterator<Double> maxHeapIterator = maxHeap.iterator();
+
+		@Override
+		public boolean hasNext() {
+			return minHeapIterator.hasNext() || maxHeapIterator.hasNext();
+		}
+
+		@Override
+		public Double next() {
+			if (maxHeapIterator.hasNext()) {
+				return maxHeapIterator.next();
+			} else {
+				return minHeapIterator.next();
+			}
+		}
+		
 	}
 }
