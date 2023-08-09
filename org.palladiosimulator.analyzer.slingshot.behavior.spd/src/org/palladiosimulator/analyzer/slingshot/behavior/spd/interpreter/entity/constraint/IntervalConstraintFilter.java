@@ -39,14 +39,14 @@ public class IntervalConstraintFilter extends AbstractConstraintFilter<IntervalC
 	 *   HOWEVER, the first 0 (i.e. simulationTime == 0) is not allowed!
 	 *   
 	 * - If repeat == false, then return true iff the simulationTime lies exactly on the
-	 *   first interval, i.e. if the simulationTime is greater than the offset AND smaller
-	 *   then (offset + interval). 
+	 *   first interval, i.e. if the simulationTime is equals or greater than the offset AND 
+	 *   equals or smaller than (offset + interval). 
 	 */
 	private boolean isWithinInterval(final double simulationTime) {
 		return (this.repeat && 
 					simulationTime != 0 && /* Don't allow the first zero */
 					(simulationTime % delta == 0 || /* However, allow any subsequent 0s */
-					simulationTime % delta > constraint.getOffset())) ||
+					simulationTime % delta >= constraint.getOffset())) ||
 			   (!this.repeat && simulationTime >= constraint.getOffset() && simulationTime <= delta);
 	}
 	
