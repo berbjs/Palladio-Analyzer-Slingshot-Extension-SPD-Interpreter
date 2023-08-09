@@ -47,7 +47,7 @@ public class MedianQueue extends AbstractQueue<Double> {
 		if (minHeap.size() == maxHeap.size()) {
 			return maxHeap.offer(e) && minHeap.offer(maxHeap.poll());
 		} else {
-			return minHeap.offer(e) && maxHeap.offer(maxHeap.poll());
+			return minHeap.offer(e) && maxHeap.offer(minHeap.poll());
 		}
 	}
 
