@@ -1,8 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class MedianWindowAggregation extends AbstractWindowAggregation {
 
