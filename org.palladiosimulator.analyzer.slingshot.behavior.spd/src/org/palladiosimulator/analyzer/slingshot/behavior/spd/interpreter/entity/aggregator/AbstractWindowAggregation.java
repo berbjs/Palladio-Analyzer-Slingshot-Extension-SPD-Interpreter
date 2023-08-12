@@ -3,6 +3,8 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
+
 /**
  * A window-based aggregator with a window size of the last
  * {@code windowSize} measurements.
@@ -10,6 +12,8 @@ import java.util.Queue;
  * @author Julijan Katic
  */
 public abstract class AbstractWindowAggregation {
+	
+	public static final int DEFAULT_WINDOW_SIZE = 10;
 
 	protected final int windowSize;
 	protected final Queue<Double> valuesToConsider;
@@ -66,5 +70,20 @@ public abstract class AbstractWindowAggregation {
 	
 	public final double getCurrentValue() {
 		return this.currentValue;
+	}
+	
+	public static AbstractWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod, final int windowSize) {
+		return switch (aggregationMethod) {
+			case MIN -> new MinWindowAggregation(windowSize);
+			case AVERAGE -> new MeanWindowAggregation(windowSize);
+			case MAX -> new MaxWindowAggregation(windowSize);
+			case MEDIAN -> new MedianWindowAggregation(windowSize);
+			case SUM -> new SumWindowAggregation(windowSize);
+			default -> throw new IllegalArgumentException("Unexpected value: " + aggregationMethod);
+		};
+	}
+	
+	public static AbstractWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod) {
+		return getFromAggregationMethod(aggregationMethod, DEFAULT_WINDOW_SIZE);
 	}
 }

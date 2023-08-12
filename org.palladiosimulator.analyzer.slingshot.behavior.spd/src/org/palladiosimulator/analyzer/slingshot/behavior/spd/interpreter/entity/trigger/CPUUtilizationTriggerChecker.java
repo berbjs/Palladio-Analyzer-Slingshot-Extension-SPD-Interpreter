@@ -23,57 +23,48 @@ import org.palladiosimulator.pcmmeasuringpoint.ActiveResourceMeasuringPoint;
 import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
+import org.palladiosimulator.spd.triggers.expectations.ExpectedCount;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedPercentage;
 import org.palladiosimulator.spd.triggers.stimuli.CPUUtilization;
 
-public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization> {
-
-	/** The number of measurements to consider at most. */
-	private static final int THRESHOLD = 10;
-
-	private final AbstractWindowAggregation aggregator;
-	private final TargetGroup targetGroup;
+public class CPUUtilizationTriggerChecker extends AbstractManagedElementTriggerChecker<CPUUtilization, ActiveResourceMeasuringPoint> {
 
 	public CPUUtilizationTriggerChecker(final SimpleFireOnValue trigger,
-										final AGGREGATIONMETHOD aggregationMethod,
+										final CPUUtilization stimulus,
 								 		final TargetGroup targetGroup) {
-		super(trigger, CPUUtilization.class, Set.of(ExpectedPercentage.class));
-
-		this.targetGroup = targetGroup;
-		this.aggregator = switch (aggregationMethod) {
-			case MIN -> new MinWindowAggregation(THRESHOLD);
-			case AVERAGE -> new MeanWindowAggregation(THRESHOLD);
-			case MAX -> new MaxWindowAggregation(THRESHOLD);
-			case MEDIAN -> new MedianWindowAggregation(THRESHOLD);
-			case SUM -> new SumWindowAggregation(THRESHOLD);
-			default -> throw new IllegalArgumentException("Unexpected value: " + aggregationMethod);
-		};
+		super(trigger, 
+				stimulus, 
+				ActiveResourceMeasuringPoint.class, 
+				targetGroup,
+				Set.of(ExpectedPercentage.class),
+				MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
+				MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
 	}
 
-	@Override
-	public FilterResult doProcess(final FilterObjectWrapper object) {
-		final DESEvent event = object.getEventToFilter();
-		if (event instanceof final MeasurementMade measurementMade) {
-			final MeasuringPoint measuringPoint = measurementMade.getEntity().getMeasuringPoint();
-			if (measuringPoint instanceof final ActiveResourceMeasuringPoint activeResourceMP) {
-				/*
-				 * Check that the measuring point points to one of the resource container's
-				 * specifications, and count them only once!
-				 */
-				aggregateMeasurement(measurementMade, activeResourceMP);
-
-
-				/*
-				 * If all the values are collected, then check whether the expected percentage
-				 * matches, otherwise disregard.
-				 */
-				return getResult(event);
-			}
-		}
-
-
-		return FilterResult.disregard("");
-	}
+//	@Override
+//	public FilterResult doProcess(final FilterObjectWrapper object) {
+//		final DESEvent event = object.getEventToFilter();
+//		if (event instanceof final MeasurementMade measurementMade) {
+//			final MeasuringPoint measuringPoint = measurementMade.getEntity().getMeasuringPoint();
+//			if (measuringPoint instanceof final ActiveResourceMeasuringPoint activeResourceMP) {
+//				/*
+//				 * Check that the measuring point points to one of the resource container's
+//				 * specifications, and count them only once!
+//				 */
+//				aggregateMeasurement(measurementMade, activeResourceMP);
+//
+//
+//				/*
+//				 * If all the values are collected, then check whether the expected percentage
+//				 * matches, otherwise disregard.
+//				 */
+//				return getResult(event);
+//			}
+//		}
+//
+//
+//		return FilterResult.disregard("");
+//	}
 
 	/**
 	 * Helper method to retrieve the filter result. If the aggregated value is in
@@ -81,13 +72,13 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	 * measurements were made yet, or if the value was not in accordance, then
 	 * disregard.
 	 */
-	private FilterResult getResult(final DESEvent event) {
+	/*private FilterResult getResult(final DESEvent event) {
 		final double aggregatedValue = this.aggregator.getCurrentValue();
 		if (this.compareToTrigger(aggregatedValue) == ComparatorResult.IN_ACCORDANCE) {
 			return FilterResult.success(event);
 		}
 		return FilterResult.disregard();
-	}
+	}*/
 
 	/*
 	 * Keep history of last n measurements.
@@ -95,7 +86,7 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	/**
 	 * Helper method to aggregate the measurement in case if the measurement comes from one of the resource containers in the target group.
 	 */
-	private void aggregateMeasurement(final MeasurementMade measurementMade, final ActiveResourceMeasuringPoint activeResourceMP) {
+	/*private void aggregateMeasurement(final MeasurementMade measurementMade, final ActiveResourceMeasuringPoint activeResourceMP) {
 		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
 		if (TargetGroupUtils.isContainerInTargetGroup(spec.getResourceContainer_ProcessingResourceSpecification(),
 				this.targetGroup)
@@ -107,6 +98,11 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 			final double value = measure.getValue();
 			aggregator.aggregate(value);
 		}
+	}*/
+	
+	@Override
+	protected boolean isMeasuringPointInTargetGroup(final ActiveResourceMeasuringPoint activeResourceMP) {
+		final ProcessingResourceSpecification spec = activeResourceMP.getActiveResource();
+		return TargetGroupUtils.isContainerInTargetGroup(spec.getResourceContainer_ProcessingResourceSpecification(), targetGroup);
 	}
-
 }
