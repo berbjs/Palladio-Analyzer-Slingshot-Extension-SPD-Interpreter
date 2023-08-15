@@ -7,7 +7,7 @@ import javax.measure.quantity.Dimensionless;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AbstractWindowAggregation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.FixedLengthWindowAggregation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.MaxWindowAggregation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.MeanWindowAggregation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.MedianWindowAggregation;
@@ -31,7 +31,7 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	/** The number of measurements to consider at most. */
 	private static final int THRESHOLD = 10;
 
-	private final AbstractWindowAggregation aggregator;
+	private final FixedLengthWindowAggregation aggregator;
 	private final TargetGroup targetGroup;
 
 	public CPUUtilizationTriggerChecker(final SimpleFireOnValue trigger,
@@ -82,6 +82,10 @@ public class CPUUtilizationTriggerChecker extends TriggerChecker<CPUUtilization>
 	 * disregard.
 	 */
 	private FilterResult getResult(final DESEvent event) {
+		if (!this.aggregator.isWindowFull()) {
+			return FilterResult.disregard("The window for this trigger is not full yet.");
+		}
+		
 		final double aggregatedValue = this.aggregator.getCurrentValue();
 		if (this.compareToTrigger(aggregatedValue) == ComparatorResult.IN_ACCORDANCE) {
 			return FilterResult.success(event);

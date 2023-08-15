@@ -9,7 +9,7 @@ import java.util.Queue;
  * 
  * @author Julijan Katic
  */
-public abstract class AbstractWindowAggregation {
+public abstract class FixedLengthWindowAggregation {
 
 	protected final int windowSize;
 	protected final Queue<Double> valuesToConsider;
@@ -17,11 +17,11 @@ public abstract class AbstractWindowAggregation {
 	/** The aggregated value so far. */
 	private double currentValue;
 	
-	public AbstractWindowAggregation(final int windowSize) {
+	public FixedLengthWindowAggregation(final int windowSize) {
 		this(windowSize, new ArrayDeque<>(windowSize));
 	}
 	
-	public AbstractWindowAggregation(final int windowSize, final Queue<Double> container) {
+	public FixedLengthWindowAggregation(final int windowSize, final Queue<Double> container) {
 		this.windowSize = windowSize;
 		this.valuesToConsider = container;
 	}
@@ -66,5 +66,19 @@ public abstract class AbstractWindowAggregation {
 	
 	public final double getCurrentValue() {
 		return this.currentValue;
+	}
+	
+	/**
+	 * Returns whether the window is full or whether some
+	 * measurements are still missing.
+	 * 
+	 * @return true iff the window is full.
+	 */
+	public final boolean isWindowFull() {
+		return this.valuesToConsider.size() == this.windowSize;
+	}
+	
+	public final int getSize() {
+		return this.valuesToConsider.size();
 	}
 }

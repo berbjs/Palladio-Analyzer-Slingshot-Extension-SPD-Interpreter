@@ -1,6 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator;
 
-public class MeanWindowAggregation extends AbstractWindowAggregation {
+public class MeanWindowAggregation extends FixedLengthWindowAggregation {
 
 	public MeanWindowAggregation(final int windowSize) {
 		super(windowSize);

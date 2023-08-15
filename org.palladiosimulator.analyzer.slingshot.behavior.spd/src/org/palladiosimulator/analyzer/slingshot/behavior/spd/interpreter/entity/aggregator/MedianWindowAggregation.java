@@ -2,7 +2,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import java.util.Arrays;
 
-public class MedianWindowAggregation extends AbstractWindowAggregation {
+public class MedianWindowAggregation extends FixedLengthWindowAggregation {
 
 	public MedianWindowAggregation(final int windowSize) {
 		super(windowSize);
