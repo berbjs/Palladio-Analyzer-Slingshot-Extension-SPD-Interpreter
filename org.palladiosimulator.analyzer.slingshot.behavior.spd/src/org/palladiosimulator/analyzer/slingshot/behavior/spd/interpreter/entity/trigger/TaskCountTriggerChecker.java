@@ -33,6 +33,7 @@ public class TaskCountTriggerChecker extends AbstractManagedElementTriggerChecke
 		return TargetGroupUtils.isContainerInTargetGroup(spec.getResourceContainer_ProcessingResourceSpecification(), targetGroup);
 	}
 	
+	/* We need to retrieve the correct type (Long) instead of Double */
 	@Override
 	protected double getValueForAggregation(final SlingshotMeasuringValue smv) {
 		final Measure<Long, Dimensionless> measure = smv.getMeasureForMetric(this.baseMetricDescription);
