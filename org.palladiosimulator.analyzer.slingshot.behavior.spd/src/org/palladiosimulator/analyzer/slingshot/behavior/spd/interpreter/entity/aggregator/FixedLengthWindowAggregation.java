@@ -11,7 +11,7 @@ import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
  * 
  * @author Julijan Katic
  */
-public abstract class AbstractWindowAggregation {
+public abstract class FixedLengthWindowAggregation {
 	
 	public static final int DEFAULT_WINDOW_SIZE = 10;
 
@@ -21,11 +21,11 @@ public abstract class AbstractWindowAggregation {
 	/** The aggregated value so far. */
 	private double currentValue;
 	
-	public AbstractWindowAggregation(final int windowSize) {
+	public FixedLengthWindowAggregation(final int windowSize) {
 		this(windowSize, new ArrayDeque<>(windowSize));
 	}
 	
-	public AbstractWindowAggregation(final int windowSize, final Queue<Double> container) {
+	public FixedLengthWindowAggregation(final int windowSize, final Queue<Double> container) {
 		this.windowSize = windowSize;
 		this.valuesToConsider = container;
 	}
@@ -72,7 +72,8 @@ public abstract class AbstractWindowAggregation {
 		return this.currentValue;
 	}
 	
-	public static AbstractWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod, final int windowSize) {
+	
+	public static FixedLengthWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod, final int windowSize) {
 		return switch (aggregationMethod) {
 			case MIN -> new MinWindowAggregation(windowSize);
 			case AVERAGE -> new MeanWindowAggregation(windowSize);
@@ -83,7 +84,21 @@ public abstract class AbstractWindowAggregation {
 		};
 	}
 	
-	public static AbstractWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod) {
+	public static FixedLengthWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod) {
 		return getFromAggregationMethod(aggregationMethod, DEFAULT_WINDOW_SIZE);
+	}
+
+	/**
+	 * Returns whether the window is full or whether some
+	 * measurements are still missing.
+	 * 
+	 * @return true iff the window is full.
+	 */
+	public final boolean isWindowFull() {
+		return this.valuesToConsider.size() == this.windowSize;
+	}
+	
+	public final int getSize() {
+		return this.valuesToConsider.size();
 	}
 }

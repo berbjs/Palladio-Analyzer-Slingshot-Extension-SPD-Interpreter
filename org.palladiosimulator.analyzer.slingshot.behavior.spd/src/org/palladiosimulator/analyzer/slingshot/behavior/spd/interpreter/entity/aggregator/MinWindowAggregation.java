@@ -1,6 +1,8 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator;
 
-public class MinWindowAggregation extends AbstractWindowAggregation {
+import java.util.NoSuchElementException;
+
+public class MinWindowAggregation extends FixedLengthWindowAggregation {
 
 	public MinWindowAggregation(final int windowSize) {
 		super(windowSize);
@@ -9,7 +11,9 @@ public class MinWindowAggregation extends AbstractWindowAggregation {
 
 	@Override
 	protected double doAggregation() {
-		return valuesToConsider.stream().min(Double::compare).orElse(0.0d);
+		return valuesToConsider.stream()
+					.min(Double::compare)
+					.orElseThrow(() -> new NoSuchElementException("There are no values to aggregate yet."));
 	}
 
 }

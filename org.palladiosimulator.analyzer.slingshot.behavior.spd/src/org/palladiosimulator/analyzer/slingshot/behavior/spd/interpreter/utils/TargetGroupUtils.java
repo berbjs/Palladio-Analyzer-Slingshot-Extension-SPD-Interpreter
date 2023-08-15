@@ -1,8 +1,14 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils;
 
+import java.util.stream.Stream;
+
 import org.palladiosimulator.analyzer.slingshot.core.Slingshot;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.semanticspd.Configuration;
+import org.palladiosimulator.semanticspd.ServiceGroupCfg;
 import org.palladiosimulator.spd.targets.ElasticInfrastructure;
 import org.palladiosimulator.spd.targets.ServiceGroup;
 import org.palladiosimulator.spd.targets.TargetGroup;
@@ -10,6 +16,7 @@ import org.palladiosimulator.spd.targets.TargetGroup;
 public class TargetGroupUtils {
 	
 	private static final Allocation allocation = Slingshot.getInstance().getInstance(Allocation.class);
+	private static final Configuration configuration = Slingshot.getInstance().getInstance(Configuration.class);
 	
 	public static boolean isContainerInElasticInfrastructure(final ResourceContainer container, final ElasticInfrastructure targetGroup) {
 		return targetGroup.getPCM_ResourceEnvironment()
@@ -19,9 +26,11 @@ public class TargetGroupUtils {
 	}
 	
 	public static boolean isContainerInServiceGroup(final ResourceContainer container, final ServiceGroup serviceGroup) {
+		final Stream<AssemblyContext> contextsToConsider = getAllContextsToConsider();
+		
 		return allocation.getAllocationContexts_Allocation()
 						 .stream()
-						 .filter(ac -> ac.getAssemblyContext_AllocationContext().getId().equals(serviceGroup.getUnitAssembly().getId()))
+						 .filter(ac -> contextsToConsider.anyMatch(asc -> ac.getAssemblyContext_AllocationContext().getId().equals(asc.getId())))
 						 .map(ac -> ac.getResourceContainer_AllocationContext())
 						 .anyMatch(rc -> rc.getId().equals(container.getId()));
 	}
@@ -37,5 +46,15 @@ public class TargetGroupUtils {
 		return false;
 	}
 	
-	
+	/**
+	 * Helper method to retrieve the assembly contexts that need to be considered
+	 * when checking whether the container is part of the target group. This includes
+	 * the replicated contexts as well.
+	 */
+	private static Stream<AssemblyContext> getAllContextsToConsider() {
+		return configuration.getTargetCfgs().stream()
+					.filter(ServiceGroupCfg.class::isInstance)
+					.map(ServiceGroupCfg.class::cast)
+					.flatMap(sgc -> sgc.getElements().stream());
+	}
 }

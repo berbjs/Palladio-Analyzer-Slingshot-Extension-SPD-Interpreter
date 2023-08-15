@@ -17,4 +17,5 @@ Require-Bundle: org.palladiosimulator.analyzer.slingshot.core;bundle-version="1.
  org.palladiosimulator.edp2,
  org.palladiosimulator.pcm.edp2.measuringpoint,
  org.jscience,
- org.palladiosimulator.metricspec
+ org.palladiosimulator.metricspec,
+ org.palladiosimulator.spd.semantic
