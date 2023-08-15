@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.adjustor.Adjustor;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.constraint.AbstractConstraintFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.EventHandler;
@@ -45,6 +46,11 @@ public final class SPDAdjustorContext {
 
 	private void initializeFilterChain(final Filter triggerChecker) {
 		this.filterChain.add(new TargetGroupChecker(this.scalingPolicy.getTargetGroup()));
+		
+		scalingPolicy.getPolicyConstraints().forEach(constraint -> 
+						this.filterChain.add(AbstractConstraintFilter.createAbstractConstraintFilter(constraint))
+					);
+		
 		this.filterChain.add(triggerChecker);
 		this.filterChain.add(new Adjustor(this.scalingPolicy));
 	}

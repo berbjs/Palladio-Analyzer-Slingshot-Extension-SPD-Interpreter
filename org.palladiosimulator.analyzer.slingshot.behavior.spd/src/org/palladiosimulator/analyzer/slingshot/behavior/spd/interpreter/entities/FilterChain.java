@@ -105,10 +105,10 @@ public class FilterChain {
 			try {
 				final Filter filter = this.iterator.next();
 				this.latestResult = filter.doProcess(new FilterObjectWrapper(event, state));
-				checkResult();
 			} catch (final Exception e) {
-				this.disregard(e);
+				this.latestResult = FilterResult.disregard(e);
 			}
+			checkResult();
 		} else {
 			this.iterator = null;
 		}

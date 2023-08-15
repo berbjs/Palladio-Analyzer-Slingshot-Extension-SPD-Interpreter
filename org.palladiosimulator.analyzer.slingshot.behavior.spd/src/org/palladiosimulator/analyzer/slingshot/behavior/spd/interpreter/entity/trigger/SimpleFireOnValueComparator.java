@@ -42,7 +42,8 @@ public class SimpleFireOnValueComparator implements ValueComparator {
 		} else if (primitive instanceof ExpectedCount) {
 			return ((ExpectedCount) primitive).getCount();
 		} else if (primitive instanceof ExpectedPercentage) {
-			return ((ExpectedPercentage) primitive).getValue();
+			// Here, we assume that the value is a percentage given as a number between 0 and 100.
+			return ((ExpectedPercentage) primitive).getValue() / 100;
 		}
 		
 		throw new IllegalStateException("The proivded ExpectedPrimitive is not defined: " + primitive.getClass().getSimpleName());
