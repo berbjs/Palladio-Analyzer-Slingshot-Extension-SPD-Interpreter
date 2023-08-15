@@ -40,6 +40,7 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 		if (!policy.isActive()) {
 			return new InterpretationResult();
 		}
+		
 		final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter(policy)).doSwitch(policy.getScalingTrigger());
 		return (new InterpretationResult())
 				.adjustorContext(new SPDAdjustorContext(policy, intrResult.getTriggerChecker(), intrResult.getEventsToListen()))
