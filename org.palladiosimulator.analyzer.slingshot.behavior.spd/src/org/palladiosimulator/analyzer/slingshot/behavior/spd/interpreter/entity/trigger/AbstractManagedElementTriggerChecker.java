@@ -7,7 +7,7 @@ import javax.measure.quantity.Dimensionless;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AbstractWindowAggregation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.FixedLengthWindowAggregation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils.TargetGroupUtils;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
@@ -30,7 +30,7 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 	protected final T managedElementsStateStimulus;
 	protected final MetricSetDescription metricSetDescription;
 	protected final BaseMetricDescription baseMetricDescription;
-	protected final AbstractWindowAggregation aggregator;
+	protected final FixedLengthWindowAggregation aggregator;
 	protected final Class<MP> measuringPointType;
 	
 	public AbstractManagedElementTriggerChecker(final BaseTrigger trigger, 
@@ -46,7 +46,7 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 		this.managedElementsStateStimulus = stimulus;
 		this.metricSetDescription = metricSetDescription;
 		this.baseMetricDescription = baseMetricDescription;
-		this.aggregator = AbstractWindowAggregation.getFromAggregationMethod(stimulus.getAggregationOverElements());
+		this.aggregator = FixedLengthWindowAggregation.getFromAggregationMethod(stimulus.getAggregationOverElements());
 		this.measuringPointType = measuringPointType;
 	}
 

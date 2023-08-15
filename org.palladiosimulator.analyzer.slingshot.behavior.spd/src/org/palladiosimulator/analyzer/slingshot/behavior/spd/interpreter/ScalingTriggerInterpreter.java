@@ -187,7 +187,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 																	  .name("cpuUtilizationMade"))
 											   .triggerChecker(new CPUUtilizationTriggerChecker(
 													   				   this.trigger, 
-																	   object.getAggregationOverElements(), 
+																	   object, 
 																	   policy.getTargetGroup())
 													   		  );
 		}
