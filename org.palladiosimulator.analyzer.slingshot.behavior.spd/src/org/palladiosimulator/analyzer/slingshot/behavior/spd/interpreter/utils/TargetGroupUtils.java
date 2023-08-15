@@ -26,7 +26,7 @@ public class TargetGroupUtils {
 	}
 	
 	public static boolean isContainerInServiceGroup(final ResourceContainer container, final ServiceGroup serviceGroup) {
-		final Stream<AssemblyContext> contextsToConsider = getAllContextsToConsider();
+		final Stream<AssemblyContext> contextsToConsider = getAllContextsToConsider(serviceGroup);
 		
 		return allocation.getAllocationContexts_Allocation()
 						 .stream()
@@ -51,10 +51,11 @@ public class TargetGroupUtils {
 	 * when checking whether the container is part of the target group. This includes
 	 * the replicated contexts as well.
 	 */
-	private static Stream<AssemblyContext> getAllContextsToConsider() {
+	private static Stream<AssemblyContext> getAllContextsToConsider(final ServiceGroup serviceGroup) {
 		return configuration.getTargetCfgs().stream()
 					.filter(ServiceGroupCfg.class::isInstance)
 					.map(ServiceGroupCfg.class::cast)
+					.filter(sgc -> sgc.getUnit().getId().equals(serviceGroup.getUnitAssembly().getId()))
 					.flatMap(sgc -> sgc.getElements().stream());
 	}
 }
