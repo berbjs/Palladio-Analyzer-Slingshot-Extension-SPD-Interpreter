@@ -31,21 +31,19 @@ import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
  * @author Julijan Katic
  *
  * @param <T> The concrete element the class is checking for.
- * @param <MP> The concrete measuring point the checker needs to listen to.
  */
-public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElementsStateStimulus, MP extends MeasuringPoint> extends TriggerChecker<T> {
+public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElementsStateStimulus>
+		extends TriggerChecker<T> {
 	
 	protected final TargetGroup targetGroup;
 	protected final T managedElementsStateStimulus;
 	protected final MetricSetDescription metricSetDescription;
 	protected final BaseMetricDescription baseMetricDescription;
 	protected final FixedLengthWindowAggregation aggregator;
-	protected final Class<MP> measuringPointType;
 	
 	@SuppressWarnings("unchecked")
 	public AbstractManagedElementTriggerChecker(final BaseTrigger trigger, 
 												final T stimulus,
-												final Class<MP> measuringPointType,
 												final TargetGroup targetGroup,
 												final Set<Class<? extends ExpectedPrimitive>> allowedExpectedPrimitives,
 												final MetricSetDescription metricSetDescription,
@@ -57,27 +55,24 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 		this.metricSetDescription = metricSetDescription;
 		this.baseMetricDescription = baseMetricDescription;
 		this.aggregator = FixedLengthWindowAggregation.getFromAggregationMethod(stimulus.getAggregationOverElements());
-		this.measuringPointType = measuringPointType;
 	}
 
 	@Override
-	public FilterResult doProcess(FilterObjectWrapper event) {
+	public FilterResult doProcess(final FilterObjectWrapper event) {
 		if (event.getEventToFilter() instanceof final MeasurementMade measurementMade) {
-			final MeasuringPoint measuringPoint = measurementMade.getEntity().getMeasuringPoint();
-			if (measuringPointType.isAssignableFrom(measuringPoint.getClass())) {
-				/*
-				 * Check that the measuring point points to one of the resource container's
-				 * specifications, and count them only once!
-				 */
-				aggregateMeasurement(measurementMade, measuringPointType.cast(measuringPoint));
+			/*
+			 * Check that the measuring point points to one of the resource container's
+			 * specifications, and count them only once!
+			 */
+			aggregateMeasurement(measurementMade);
 
 
-				/*
-				 * If all the values are collected, then check whether the expected percentage
-				 * matches, otherwise disregard.
-				 */
-				return getResult(measurementMade);
-			}
+			/*
+			 * If all the values are collected, then check whether the expected percentage
+			 * matches, otherwise disregard.
+			 */
+			return getResult(measurementMade);
+
 		}
 
 
@@ -106,9 +101,8 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 	 * Helper method to aggregate the measurement in case if the measurement comes 
 	 * from one of the resource containers in the target group.
 	 */
-	protected void aggregateMeasurement(final MeasurementMade measurementMade, final MP measuringPoint) {
-		if (this.isMeasuringPointInTargetGroup(measuringPoint)
-				&& measurementMade.getEntity().getMetricDesciption().getId().equals(this.metricSetDescription.getId())) {
+	protected void aggregateMeasurement(final MeasurementMade measurementMade) {
+		if (measurementMade.getEntity().getMetricDesciption().getId().equals(this.metricSetDescription.getId())) {
 			aggregator.aggregate(this.getValueForAggregation(measurementMade.getEntity()));
 		}
 	}
@@ -119,15 +113,4 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 		return value;
 	}
 	
-	/**
-	 * Checks whether the measuring point is somewhere in the target group and thus, whether
-	 * its measurements are relevant for this trigger. Since each measuring point has a
-	 * different way of retrieving such information, it has to be implemented by the concrete
-	 * trigger.
-	 * 
-	 * @param measuringPoint The measuring point to check.
-	 * @return true if the measuring point lies somewhere in the target group, i.e.
-	 * 		   is relevant for this trigger.
-	 */
-	protected abstract boolean isMeasuringPointInTargetGroup(final MP measuringPoint);
 }
