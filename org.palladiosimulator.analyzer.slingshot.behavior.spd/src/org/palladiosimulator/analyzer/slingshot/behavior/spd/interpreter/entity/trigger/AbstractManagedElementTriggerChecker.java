@@ -8,6 +8,7 @@ import javax.measure.quantity.Dimensionless;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.FixedLengthWindowAggregation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
@@ -20,13 +21,16 @@ import org.palladiosimulator.spd.triggers.expectations.ExpectedPrimitive;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 
 /**
- * This abstract class implements the base functionality for {@link ManagedElementsStateStimulus} elements. Measurements
- * for this elements need to be aggregated first, which is done by {@link #aggregateMeasurement(MeasurementMade, MeasuringPoint)}.
- * Afterwards, {@link #getResult(DESEvent)} checks whether enough measurements were made, and whether the calculated value
- * triggers the policy.
+ * This abstract class implements the base functionality for
+ * {@link ManagedElementsStateStimulus} elements. Measurements for this elements
+ * need to be aggregated first, which is done by
+ * {@link #aggregateMeasurement(MeasurementMade, MeasuringPoint)}. Afterwards,
+ * {@link #getResult(DESEvent)} checks whether enough measurements were made,
+ * and whether the calculated value triggers the policy.
  * 
- * Classes that extend this checker need to implement {@link #isMeasuringPointInTargetGroup(MeasuringPoint)}, since each
- * measuring point has a different way of retrieving the right Resource container.
+ * The precondition is that the measuring point, where the measurements are
+ * coming from, are inside the target group. This is done in the
+ * {@link TargetGroupChecker} filter, that should be placed before this filter.
  * 
  * @author Julijan Katic
  *
