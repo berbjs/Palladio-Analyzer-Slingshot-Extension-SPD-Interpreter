@@ -37,7 +37,9 @@ public class QueueLengthTriggerChecker extends TriggerChecker<QueueLength> {
 	@Override
 	public FilterResult doProcess(final FilterObjectWrapper event) {
 		if (event.getEventToFilter() instanceof final MeasurementMade measurementMade
-				&& isCorrectPassiveResource(measurementMade.getEntity().getMeasuringPoint())) {
+				&& isCorrectPassiveResource(measurementMade.getEntity().getMeasuringPoint())
+				&& measurementMade.getEntity().getMetricDesciption()
+						.equals(MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC_TUPLE)) {
 
 			final Measure<Long, Dimensionless> value = measurementMade.getEntity()
 					.getMeasureForMetric(MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC);
