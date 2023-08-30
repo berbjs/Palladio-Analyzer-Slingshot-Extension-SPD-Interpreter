@@ -1,5 +1,6 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.palladiosimulator.analyzer.slingshot.core.Slingshot;
@@ -55,10 +56,9 @@ public class TargetGroupUtils {
 	 * @see #isContainerInCompetingConsumersGroup(ResourceContainer,
 	 *      CompetingConsumersGroup)
 	 */
-	public static boolean isContainerInServiceGroup(final ResourceContainer container, final ServiceGroup serviceGroup) {
-		final Stream<AssemblyContext> contextsToConsider = getAllContextsToConsider(serviceGroup);
-		
-		return isResourceContainerInContextsToConsider(container, contextsToConsider);
+	public static boolean isContainerInServiceGroup(final ResourceContainer container,
+			final ServiceGroup serviceGroup) {
+		return isResourceContainerInContextsToConsider(container, () -> getAllContextsToConsider(serviceGroup));
 	}
 
 	/**
@@ -76,9 +76,8 @@ public class TargetGroupUtils {
 	 */
 	public static boolean isContainerInCompetingConsumersGroup(final ResourceContainer container,
 			final CompetingConsumersGroup competingConsumersGroup) {
-		final Stream<AssemblyContext> contextsToConsider = getAllContextsToConsider(competingConsumersGroup);
-
-		return isResourceContainerInContextsToConsider(container, contextsToConsider);
+		return isResourceContainerInContextsToConsider(container,
+				() -> getAllContextsToConsider(competingConsumersGroup));
 	}
 
 	/**
@@ -131,9 +130,9 @@ public class TargetGroupUtils {
 			return getAllContextsToConsider(serviceGroup).anyMatch(ac -> ac.getId().equals(context.getId()));
 		}
 		if (targetGroup instanceof final ElasticInfrastructure elasticInfrastructure) {
-			final Stream<ResourceContainer> containersToConsider = getContainerRelatedToContext(context);
 			return elasticInfrastructure.getPCM_ResourceEnvironment().getResourceContainer_ResourceEnvironment()
-					.stream().anyMatch(rc -> containersToConsider.anyMatch(rcp -> rcp.getId().equals(rc.getId())));
+					.stream().anyMatch(rc -> getContainerRelatedToContext(context)
+							.anyMatch(rcp -> rcp.getId().equals(rc.getId())));
 		}
 		if (targetGroup instanceof final CompetingConsumersGroup competingConsumers) {
 			return getAllContextsToConsider(competingConsumers).anyMatch(ac -> ac.getId().equals(context.getId()));
@@ -247,9 +246,10 @@ public class TargetGroupUtils {
 	 * container.
 	 */
 	private static boolean isResourceContainerInContextsToConsider(final ResourceContainer container,
-			final Stream<AssemblyContext> contextsToConsider) {
+			final Supplier<Stream<AssemblyContext>> contextsToConsider) {
 		return allocation.getAllocationContexts_Allocation().stream()
 				.filter(ac -> contextsToConsider
+						.get()
 						.anyMatch(asc -> ac.getAssemblyContext_AllocationContext().getId().equals(asc.getId())))
 				.map(AllocationContext::getResourceContainer_AllocationContext)
 				.anyMatch(rc -> rc.getId().equals(container.getId()));
