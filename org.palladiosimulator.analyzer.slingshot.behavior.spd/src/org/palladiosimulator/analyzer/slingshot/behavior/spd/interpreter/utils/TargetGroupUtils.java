@@ -233,8 +233,8 @@ public class TargetGroupUtils {
 			final CompetingConsumersGroup competingConsumersGroup) {
 		return configuration.getTargetCfgs().stream().filter(CompetingConsumersGroupCfg.class::isInstance)
 				.map(CompetingConsumersGroupCfg.class::cast)
-				.filter(sgc -> sgc.getUnit().getId().equals(competingConsumersGroup.getUnitAssembly().getId()))
-				.flatMap(sgc -> sgc.getElements().stream());
+				.filter(ccgc -> ccgc.getUnit().getId().equals(competingConsumersGroup.getUnitAssembly().getId()))
+				.flatMap(ccgc -> Stream.concat(Stream.of(ccgc.getBrokerAssembly()), ccgc.getElements().stream()));
 	}
 
 	/**
