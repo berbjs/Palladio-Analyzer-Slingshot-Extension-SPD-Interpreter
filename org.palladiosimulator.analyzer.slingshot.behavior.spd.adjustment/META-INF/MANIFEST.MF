@@ -23,3 +23,4 @@ Require-Bundle: org.palladiosimulator.analyzer.slingshot.behavior.spd.data;bundl
  org.palladiosimulator.spd.semantic;bundle-version="1.0.0",
  org.palladiosimulator.analyzer.slingshot.ui.events;bundle-version="1.0.0",
  org.palladiosimulator.analyzer.slingshot.workflow.events;bundle-version="1.0.0"
+Export-Package: org.palladiosimulator.analyzer.slingshot.behavior.spd.monitor
