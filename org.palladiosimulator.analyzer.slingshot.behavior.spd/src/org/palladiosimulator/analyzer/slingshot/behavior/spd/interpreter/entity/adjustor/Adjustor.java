@@ -40,12 +40,19 @@ public class Adjustor implements Filter {
 		if(cooldownConstraint.isPresent()) {
 			double cooldownTime=cooldownConstraint.get().getCooldownTime();
 			
-			if(currentSimTime > objectWrapper.getState().getCoolDownEnd()) {
-				//cooldown ended 
-				objectWrapper.getState().setNumberOfScalesInCooldown(0);
-				objectWrapper.getState().setCoolDownEnd(currentSimTime+cooldownTime);
-			}else {
-				objectWrapper.getState().incrementNumberOfAdjustmentsInCooldown();
+			if(cooldownTime!=0) {
+				if(currentSimTime > objectWrapper.getState().getCoolDownEnd()) {
+					//cooldown ended 
+					objectWrapper.getState().setNumberOfScalesInCooldown(0);
+					objectWrapper.getState().setCoolDownEnd(currentSimTime+cooldownTime);
+				} 
+				else if (currentSimTime==objectWrapper.getState().getCoolDownEnd()) 
+				{
+					objectWrapper.getState().setCoolDownEnd(currentSimTime+cooldownTime);
+				}
+				else {
+					objectWrapper.getState().incrementNumberOfAdjustmentsInCooldown();
+				}
 			}
 		}
 		return FilterResult.success(new ModelAdjustmentRequested(this.policy));
