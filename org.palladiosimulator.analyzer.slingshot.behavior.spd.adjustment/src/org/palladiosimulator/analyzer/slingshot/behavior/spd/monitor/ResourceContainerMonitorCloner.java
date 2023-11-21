@@ -6,9 +6,11 @@ import java.util.List;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPointRepository;
+import org.palladiosimulator.monitorrepository.MeasurementSpecification;
 import org.palladiosimulator.monitorrepository.Monitor;
 import org.palladiosimulator.monitorrepository.MonitorRepository;
 import org.palladiosimulator.monitorrepository.MonitorRepositoryFactory;
+import org.palladiosimulator.monitorrepository.ProcessingType;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcmmeasuringpoint.ActiveResourceMeasuringPoint;
@@ -136,12 +138,50 @@ public class ResourceContainerMonitorCloner {
 		monitor.setActivated(originalMonitor.isActivated());
 		monitor.setEntityName(originalMonitor.getEntityName() + "-copy");
 		monitor.setId(EcoreUtil.generateUUID());
-		monitor.getMeasurementSpecifications().addAll(originalMonitor.getMeasurementSpecifications());
+		originalMonitor.getMeasurementSpecifications().stream().map(spec -> createMeasurementSpec(spec, monitor))
+				.forEach(monitor.getMeasurementSpecifications()::add);
 
 		monitor.setMonitorRepository(monitorRepository);
 		monitorRepository.getMonitors().add(monitor);
 
 		return monitor;
+	}
+
+	private MeasurementSpecification createMeasurementSpec(final MeasurementSpecification originalSpec,
+			final Monitor newMonitor) {
+		final MeasurementSpecification newSpecification = MonitorRepositoryFactory.eINSTANCE
+				.createMeasurementSpecification();
+		newSpecification.setMetricDescription(originalSpec.getMetricDescription());
+		newSpecification.setId(EcoreUtil.generateUUID());
+		newSpecification.setMonitor(newMonitor);
+		newSpecification.setProcessingType(createProcessingType(originalSpec.getProcessingType(), newSpecification));
+
+		// IMPORTANT: For some very weird reason you cannot .getName()?
+		// final String originalName = originalSpec.getName();
+		// newSpecification.setName(originalName + "-copy");
+
+		newSpecification.setTriggersSelfAdaptations(originalSpec.isTriggersSelfAdaptations());
+		return newSpecification;
+	}
+
+	/**
+	 * This copies the processing type as well. Since ProcessingType is abstract, we
+	 * need to use E-Attributes and E-References to copy the actual attributes in
+	 * the class.
+	 * 
+	 * @param original
+	 * @return
+	 */
+	private ProcessingType createProcessingType(final ProcessingType original,
+			final MeasurementSpecification newSpecification) {
+		final EcoreUtil.Copier copier = new EcoreUtil.Copier();
+		final ProcessingType pt = (ProcessingType) copier.copy(original);
+		copier.copyReferences();
+
+		pt.setMeasurementSpecification(newSpecification);
+		pt.setId(EcoreUtil.generateUUID());
+
+		return pt;
 	}
 
 	private Monitor createMonitor(final ProcessingResourceSpecification spec, final Monitor originalMonitor) {
@@ -164,4 +204,5 @@ public class ResourceContainerMonitorCloner {
 
 		return null;
 	}
+
 }
