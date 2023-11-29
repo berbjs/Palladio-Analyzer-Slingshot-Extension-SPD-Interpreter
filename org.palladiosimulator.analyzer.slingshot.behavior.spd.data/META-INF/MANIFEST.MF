@@ -7,6 +7,7 @@ Automatic-Module-Name: org.palladiosimulator.analyzer.slingshot.behavior.spd.dat
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.palladiosimulator.analyzer.slingshot.common;bundle-version="1.0.0",
  org.palladiosimulator.pcm,
- org.palladiosimulator.spd
+ org.palladiosimulator.spd,
+ org.palladiosimulator.monitorrepository
 Export-Package: org.palladiosimulator.analyzer.slingshot.behavior.spd.data,
  org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment
