@@ -13,6 +13,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVT
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToReconfigurator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjusted;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmentRequested;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.AllocationChange;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ModelChange;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.MonitorChange;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ResourceEnvironmentChange;
@@ -25,6 +26,9 @@ import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcon
 import org.palladiosimulator.analyzer.slingshot.eventdriver.returntypes.Result;
 import org.palladiosimulator.monitorrepository.MonitorRepository;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.semanticspd.Configuration;
@@ -80,7 +84,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		// Set the enacted policy for the next transformation
 		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
 		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
-
+		final List<AllocationContext> oldAllocationContexts = new ArrayList<>(allocation.getAllocationContexts_Allocation());
 
 		final boolean result = this.reconfigurator.execute(this.transformations);
 
@@ -94,16 +98,27 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			 */
 			final List<ResourceContainer> newResourceContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 			newResourceContainers.removeAll(oldContainers);
-
+			
 			final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
 			deletedResourceContainers.removeAll(environment.getResourceContainer_ResourceEnvironment());
 			
+			
+			final List<AllocationContext> newAllocationContexts =  new ArrayList<>(allocation.getAllocationContexts_Allocation());
+			newAllocationContexts.removeAll(oldAllocationContexts);
+			
+			
 			final List<ModelChange<?>> changes = new ArrayList<>();
 
+			
+			
 			changes.add(ResourceEnvironmentChange.builder()
 					.resourceEnvironment(environment).simulationTime(event.time()).oldResourceContainers(oldContainers)
 					.newResourceContainers(newResourceContainers).deletedResourceContainers(deletedResourceContainers)
 					.build());
+			
+			
+			changes.add(AllocationChange.builder().allocation(allocation).newAllocationContexts(newAllocationContexts).build());
+			
 
 			changes.addAll(this.createMonitors(newResourceContainers, event.time()));
 
