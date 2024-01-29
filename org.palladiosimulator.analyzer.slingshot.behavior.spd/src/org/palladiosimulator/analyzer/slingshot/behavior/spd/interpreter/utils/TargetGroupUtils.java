@@ -1,8 +1,9 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.utils;
 
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.palladiosimulator.analyzer.slingshot.core.Slingshot;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -12,7 +13,9 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.semanticspd.CompetingConsumersGroupCfg;
 import org.palladiosimulator.semanticspd.Configuration;
+import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.ServiceGroupCfg;
+import org.palladiosimulator.semanticspd.TargetGroupCfg;
 import org.palladiosimulator.spd.targets.CompetingConsumersGroup;
 import org.palladiosimulator.spd.targets.ElasticInfrastructure;
 import org.palladiosimulator.spd.targets.ServiceGroup;
@@ -39,10 +42,22 @@ public class TargetGroupUtils {
 	 * @return true iff the container is part of the environment.
 	 */
 	public static boolean isContainerInElasticInfrastructure(final ResourceContainer container, final ElasticInfrastructure targetGroup) {
-		return targetGroup.getPCM_ResourceEnvironment()
-						  .getResourceContainer_ResourceEnvironment()
-						  .stream()
-						  .anyMatch(rc -> rc.getId().equals(container.getId()));
+		
+		List<ElasticInfrastructureCfg> elasticInfraCfgs = configuration.getTargetCfgs().stream()
+														  .filter(cfg->cfg instanceof ElasticInfrastructureCfg c)
+														  .map(c -> (ElasticInfrastructureCfg)c)
+														  .filter(c -> c.getUnit().getId().equals(targetGroup.getUnit().getId()))
+														  .collect(Collectors.toList());
+		
+		assert elasticInfraCfgs.size() == 1;
+		
+		return elasticInfraCfgs.get(0).getElements().stream().anyMatch(rc -> rc.getId().equals(container.getId()));
+														  
+		
+//		return targetGroup.getPCM_ResourceEnvironment()
+//						  .getResourceContainer_ResourceEnvironment()
+//						  .stream()
+//						  .anyMatch(rc -> rc.getId().equals(container.getId()));
 	}
 	
 	/**
