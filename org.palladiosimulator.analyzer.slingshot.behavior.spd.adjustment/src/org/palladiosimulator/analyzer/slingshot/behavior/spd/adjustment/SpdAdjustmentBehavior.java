@@ -27,15 +27,12 @@ import org.palladiosimulator.analyzer.slingshot.eventdriver.returntypes.Result;
 import org.palladiosimulator.monitorrepository.MonitorRepository;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
 import org.palladiosimulator.spd.SPD;
-import org.palladiosimulator.spd.targets.ElasticInfrastructure;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
 public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
@@ -98,27 +95,27 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			 */
 			final List<ResourceContainer> newResourceContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 			newResourceContainers.removeAll(oldContainers);
-			
+
 			final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
 			deletedResourceContainers.removeAll(environment.getResourceContainer_ResourceEnvironment());
-			
-			
+
+
 			final List<AllocationContext> newAllocationContexts =  new ArrayList<>(allocation.getAllocationContexts_Allocation());
 			newAllocationContexts.removeAll(oldAllocationContexts);
-			
-			
+
+
 			final List<ModelChange<?>> changes = new ArrayList<>();
 
-			
-			
+
+
 			changes.add(ResourceEnvironmentChange.builder()
 					.resourceEnvironment(environment).simulationTime(event.time()).oldResourceContainers(oldContainers)
 					.newResourceContainers(newResourceContainers).deletedResourceContainers(deletedResourceContainers)
 					.build());
-			
-			
+
+
 			changes.add(AllocationChange.builder().allocation(allocation).newAllocationContexts(newAllocationContexts).build());
-			
+
 
 			changes.addAll(this.createMonitors(newResourceContainers, event.time()));
 
