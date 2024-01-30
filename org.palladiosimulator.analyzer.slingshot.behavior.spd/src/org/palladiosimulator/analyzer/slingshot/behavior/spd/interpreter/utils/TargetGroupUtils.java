@@ -52,12 +52,7 @@ public class TargetGroupUtils {
 		assert elasticInfraCfgs.size() == 1;
 		
 		return elasticInfraCfgs.get(0).getElements().stream().anyMatch(rc -> rc.getId().equals(container.getId()));
-														  
-		
-//		return targetGroup.getPCM_ResourceEnvironment()
-//						  .getResourceContainer_ResourceEnvironment()
-//						  .stream()
-//						  .anyMatch(rc -> rc.getId().equals(container.getId()));
+												
 	}
 	
 	/**
