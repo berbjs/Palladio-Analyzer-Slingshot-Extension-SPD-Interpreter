@@ -27,22 +27,22 @@ import org.palladiosimulator.spd.util.SpdSwitch;
 class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 
 	private static final Logger LOGGER = Logger.getLogger(SpdInterpreter.class);
-	
+
 	private final Map<TargetGroup, TargetGroupState> targetGroupStates = new HashMap<>();
 
 	@Override
 	public InterpretationResult caseSPD(final SPD spd) {
 		LOGGER.debug("Interpreting SPD Model " + spd.getEntityName() + "[" + spd.getId() + "]");
 
-		
+
 		spd.getTargetGroups().stream().forEach(target -> targetGroupStates.put(target, new TargetGroupState(target)));
-		
+
 		return spd.getScalingPolicies().stream()
 									   .map(this::doSwitch)
 									   .reduce(InterpretationResult::add)
 									   .orElseGet(() -> InterpretationResult.EMPTY_RESULT);
 	}
-	
+
 	@Override
 	public InterpretationResult caseScalingPolicy(final ScalingPolicy policy) {
 		LOGGER.debug("Interpreting ScalingPolicy Model " + policy.getEntityName() + "[" + policy.getId() + "]");
@@ -50,7 +50,7 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 		if (!policy.isActive()) {
 			return new InterpretationResult();
 		}
-		
+
 		final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter(policy)).doSwitch(policy.getScalingTrigger());
 		return (new InterpretationResult())
 				.adjustorContext(new SPDAdjustorContext(policy, intrResult.getTriggerChecker(), intrResult.getEventsToListen(), targetGroupStates.get(policy.getTargetGroup())))

@@ -4,6 +4,8 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.spd.constraints.AbstractConstraint;
 import org.palladiosimulator.spd.constraints.policy.CooldownConstraint;
 import org.palladiosimulator.spd.constraints.policy.IntervalConstraint;
+import org.palladiosimulator.spd.constraints.policy.PolicyConstraint;
+import org.palladiosimulator.spd.constraints.target.TargetConstraint;
 import org.palladiosimulator.spd.constraints.target.ThrashingConstraint;
 
 /**

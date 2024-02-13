@@ -2,7 +2,6 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import java.util.Optional;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmentRequested;
-
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
@@ -12,7 +11,7 @@ import org.palladiosimulator.spd.constraints.policy.CooldownConstraint;
 /**
  * This filter creates an {@link ModelAdjustmentRequested} event
  * at the end of the filter chain, which should trigger an adjustment.
- * 
+ *
  * @author Julijan Katic, Floriment Klinaku
  */
 public class Adjustor implements Filter {
@@ -27,24 +26,24 @@ public class Adjustor implements Filter {
 
 	@Override
 	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
-		double currentSimTime = objectWrapper.getEventToFilter().time();
+		final double currentSimTime = objectWrapper.getEventToFilter().time();
 		// We reached the end, so we can safely say that here the adjustment happens.
 		objectWrapper.getState().setLatestAdjustmentAtSimulationTime(
 				objectWrapper.getEventToFilter().time());
 		objectWrapper.getState().incrementNumberScales();
 
-		
+
 		objectWrapper.getState().getTargetGroupState().addEnactedPolicy(currentSimTime, policy);
-		
-		Optional<CooldownConstraint> cooldownConstraint = policy.getPolicyConstraints().stream()
+
+		final Optional<CooldownConstraint> cooldownConstraint = policy.getPolicyConstraints().stream()
                 .filter(obj -> obj instanceof CooldownConstraint)
                 .map(obj -> (CooldownConstraint) obj).findAny();
 
 		if(cooldownConstraint.isPresent()) {
-			double cooldownTime=cooldownConstraint.get().getCooldownTime();
-			
+			final double cooldownTime=cooldownConstraint.get().getCooldownTime();
+
 			if(currentSimTime > objectWrapper.getState().getCoolDownEnd()) {
-				//cooldown ended 
+				//cooldown ended
 				objectWrapper.getState().setNumberOfScalesInCooldown(0);
 				objectWrapper.getState().setCoolDownEnd(currentSimTime+cooldownTime);
 			}else {

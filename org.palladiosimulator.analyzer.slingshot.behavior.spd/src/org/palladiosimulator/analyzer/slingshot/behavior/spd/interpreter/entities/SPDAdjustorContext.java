@@ -13,9 +13,9 @@ import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.EventHandler;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.returntypes.Result;
-import org.palladiosimulator.spd.ScalingPolicy;import org.palladiosimulator.spd.constraints.target.ThrashingConstraint;
+import org.palladiosimulator.spd.ScalingPolicy;
+import org.palladiosimulator.spd.constraints.target.ThrashingConstraint;
 import org.palladiosimulator.spd.triggers.ScalingTrigger;
-import org.palladiosimulator.spd.triggers.stimuli.TargetGroupStateStimulus;
 
 public final class SPDAdjustorContext {
 
@@ -32,10 +32,10 @@ public final class SPDAdjustorContext {
 			final Filter triggerChecker,
 			final List<Subscriber.Builder<? extends DESEvent>> associatedHandlers, final TargetGroupState targetGroupState) {
 		this.scalingPolicy = policy;
-	
+
 		state = new SPDAdjustorState(policy, targetGroupState);
 		previousState = new SPDAdjustorState(policy, targetGroupState);
-		
+
 		this.filterChain = new FilterChain(this::doOnDisregard, state);
 
 		initializeFilterChain(triggerChecker);
@@ -65,13 +65,13 @@ public final class SPDAdjustorContext {
 		this.filterChain.add(triggerChecker);
 
 
-		scalingPolicy.getTargetGroup().getTargetConstraints().stream().filter(constraint -> constraint instanceof ThrashingConstraint thrashingConstraint).map(constraint -> (ThrashingConstraint) constraint).forEach(constraint -> 
+		scalingPolicy.getTargetGroup().getTargetConstraints().stream().filter(constraint -> constraint instanceof final ThrashingConstraint thrashingConstraint).map(constraint -> (ThrashingConstraint) constraint).forEach(constraint ->
 				this.filterChain.add(AbstractConstraintFilter.createAbstractConstraintFilter(constraint)));
-		
+
 		scalingPolicy.getPolicyConstraints().forEach(constraint ->
 		this.filterChain.add(AbstractConstraintFilter.createAbstractConstraintFilter(constraint))
 				);
-		
+
 		this.filterChain.add(new Adjustor(this.scalingPolicy));
 	}
 
