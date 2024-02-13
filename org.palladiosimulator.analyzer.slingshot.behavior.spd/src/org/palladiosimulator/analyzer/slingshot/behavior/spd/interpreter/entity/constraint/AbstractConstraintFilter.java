@@ -29,7 +29,7 @@ public abstract class AbstractConstraintFilter<T extends AbstractConstraint> imp
 			return new ThrashingConstraintFilter(thrashingConstraint);
 		}
 		else {
-			throw new UnsupportedOperationException("Currently, only cooldown and intervall is supported");
+			throw new UnsupportedOperationException("Currently, only cooldown, intervall and thrashing constraints are supported");
 		}
 	}
 }
