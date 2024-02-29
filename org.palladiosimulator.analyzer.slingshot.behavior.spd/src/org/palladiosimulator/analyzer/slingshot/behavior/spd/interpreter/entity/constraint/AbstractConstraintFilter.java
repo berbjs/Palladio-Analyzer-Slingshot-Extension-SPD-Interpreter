@@ -4,6 +4,9 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.spd.constraints.AbstractConstraint;
 import org.palladiosimulator.spd.constraints.policy.CooldownConstraint;
 import org.palladiosimulator.spd.constraints.policy.IntervalConstraint;
+import org.palladiosimulator.spd.constraints.policy.PolicyConstraint;
+import org.palladiosimulator.spd.constraints.target.TargetConstraint;
+import org.palladiosimulator.spd.constraints.target.ThrashingConstraint;
 
 /**
  * Defines accordingly to {@link PolicyConstraint} or {@link TargetConstraint} whether
@@ -24,8 +27,11 @@ public abstract class AbstractConstraintFilter<T extends AbstractConstraint> imp
 			return new CooldownConstraintFilter(cooldownConstraint);
 		} else if (constraint instanceof final IntervalConstraint intervallConstraint) {
 			return new IntervalConstraintFilter(intervallConstraint);
-		} else {
-			throw new UnsupportedOperationException("Currently, only cooldown and intervall is supported");
+		} else if (constraint instanceof final ThrashingConstraint thrashingConstraint) {
+			return new ThrashingConstraintFilter(thrashingConstraint);
+		}
+		else {
+			throw new UnsupportedOperationException("Currently, only cooldown, intervall and thrashing constraints are supported");
 		}
 	}
 }

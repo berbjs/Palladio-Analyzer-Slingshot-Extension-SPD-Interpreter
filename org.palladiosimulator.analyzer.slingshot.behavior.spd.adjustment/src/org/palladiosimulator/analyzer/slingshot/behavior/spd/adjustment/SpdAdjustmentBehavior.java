@@ -13,7 +13,11 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVT
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment.qvto.QVToReconfigurator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjusted;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmentRequested;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.AllocationChange;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ModelChange;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.MonitorChange;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment.ResourceEnvironmentChange;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.monitor.ResourceContainerMonitorCloner;
 import org.palladiosimulator.analyzer.slingshot.common.annotations.Nullable;
 import org.palladiosimulator.analyzer.slingshot.core.extension.SimulationBehaviorExtension;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.Subscribe;
@@ -22,6 +26,7 @@ import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcon
 import org.palladiosimulator.analyzer.slingshot.eventdriver.returntypes.Result;
 import org.palladiosimulator.monitorrepository.MonitorRepository;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.semanticspd.Configuration;
@@ -41,6 +46,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	private final Iterable<QVToModelTransformation> transformations;
 	private final Allocation allocation;
 	private final Configuration semanticConfiguration;
+	private final MonitorRepository monitorRepository;
 
 	@Inject
 	public SpdAdjustmentBehavior(
@@ -56,6 +62,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		this.spd = spd;
 		this.reconfigurator = reconfigurator;
 		this.transformations = transformations;
+		this.monitorRepository = monitorRepository;
 	}
 
 	@Override
@@ -74,7 +81,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		// Set the enacted policy for the next transformation
 		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
 		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
-
+		final List<AllocationContext> oldAllocationContexts = new ArrayList<>(allocation.getAllocationContexts_Allocation());
 
 		final boolean result = this.reconfigurator.execute(this.transformations);
 
@@ -92,20 +99,57 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 			final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
 			deletedResourceContainers.removeAll(environment.getResourceContainer_ResourceEnvironment());
 
-			return Result.of(new ModelAdjusted(true, List.of(ResourceEnvironmentChange.builder()
-																.resourceEnvironment(environment)
-																.simulationTime(event.time())
-																.oldResourceContainers(oldContainers)
-																.newResourceContainers(newResourceContainers)
-																.deletedResourceContainers(deletedResourceContainers)
-																.build())));
+
+			final List<AllocationContext> newAllocationContexts =  new ArrayList<>(allocation.getAllocationContexts_Allocation());
+			newAllocationContexts.removeAll(oldAllocationContexts);
+
+
+			final List<ModelChange<?>> changes = new ArrayList<>();
+
+
+
+			changes.add(ResourceEnvironmentChange.builder()
+					.resourceEnvironment(environment).simulationTime(event.time()).oldResourceContainers(oldContainers)
+					.newResourceContainers(newResourceContainers).deletedResourceContainers(deletedResourceContainers)
+					.build());
+
+
+			changes.add(AllocationChange.builder().allocation(allocation).newAllocationContexts(newAllocationContexts).build());
+
+
+			changes.addAll(this.createMonitors(newResourceContainers, event.time()));
+
+			return Result.of(new ModelAdjusted(true, changes));
 		} else {
 			return Result.of(new ModelAdjusted(false, Collections.emptyList()));
 		}
 
 	}
 
+	private List<MonitorChange> createMonitors(final List<ResourceContainer> newContainers, final double simulationTime) {
+		final ResourceContainer unitContainer = getUnitContainer();
+		if (unitContainer != null && !newContainers.isEmpty()) {
+			final ResourceContainerMonitorCloner cloner = new ResourceContainerMonitorCloner(this.monitorRepository,
+					monitorRepository.getMonitors().get(0).getMeasuringPoint().getMeasuringPointRepository(),
+					unitContainer);
 
+			return newContainers.stream()
+						.flatMap(container -> cloner.createMonitorsForResourceContainer(container).stream())
+						.map(newMonitor -> new MonitorChange(newMonitor, null, simulationTime))
+						.toList();
+		}
+
+		return Collections.emptyList();
+	}
+
+	private ResourceContainer getUnitContainer() {
+		return this.semanticConfiguration.getTargetCfgs().stream()
+				.filter(ElasticInfrastructureCfg.class::isInstance)
+				.map(ElasticInfrastructureCfg.class::cast)
+				.map(el -> el.getUnit())
+				.findAny()
+				.orElse(null);
+	}
 
 	/*
 	 * We leave the following methods for now, as we will need to make the Configuration through
