@@ -16,12 +16,12 @@ import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
  * A window-based aggregator with a window size of the last {@code windowSize}
  * measurements.
  * 
- * This implementation allows for applying an aggregation function
+ * This implementation allows the application of the aggregation function
  * {@link #aggrFunction} to the considered values in {@link #valuesToConsider}.
  * 
- * It is named simple while it simply collects values from as offered from the
+ * It is named simple while it simply collects values through the
  * {@link #aggregate(double, double)} method into a queue and allows the
- * application of an aggregate function on that structure.
+ * application of the aggregate function on the collected items.
  * 
  * In addition, it offers a helper method
  * {@link #getFromAggregationMethod(AGGREGATIONMETHOD)} to get a desired window
@@ -31,7 +31,8 @@ import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
  * For simulation, this implementation is not advised while it has to keep all
  * measurements in the queue and is inefficient and slow. Therefore, more
  * efficient aggregations have to be employed, see
- * SlidingTimeWindowAggregationBasedOnEMA.
+ * {@link #SlidingTimeWindowAggregationBasedOnEMA} which is an efficient variant when the 
+ * aggregation method is AVERAGE.
  * 
  * @author Julijan Katic, Floriment Klinaku
  */
@@ -46,7 +47,7 @@ public class FixedLengthWindowSimpleAggregation extends AbstractWindowAggregatio
 	private double currentValue;
 	private final Function<Collection<Double>, Double> aggrFunction;
 
-	public FixedLengthWindowSimpleAggregation(final int windowSize,
+	private FixedLengthWindowSimpleAggregation(final int windowSize,
 			final Function<Collection<Double>, Double> aggrFunction) {
 		this.windowSize = windowSize;
 		this.valuesToConsider = new ArrayDeque<>(windowSize);

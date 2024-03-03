@@ -9,7 +9,7 @@ public abstract non-sealed class AbstractWindowAggregation implements WindowAggr
 	@Override
 	public double getCurrentValue() throws AssertionError {
 		if (!isEmittable())
-			throw new AssertionError(isEmittable());
+		    	throw new IllegalStateException("Cant get current value when it it non emittable.");
 		
 		return getCurrentVal();
 	}

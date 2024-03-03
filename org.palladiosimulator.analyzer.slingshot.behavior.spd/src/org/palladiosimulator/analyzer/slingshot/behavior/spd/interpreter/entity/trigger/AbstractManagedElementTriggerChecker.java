@@ -8,10 +8,9 @@ import javax.measure.quantity.Duration;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.SlidingTimeWindowAggregation;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.FixedLengthWindowSimpleAggregation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.SlidingTimeWindowAggregationBasedOnEMA;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.WindowAggregation;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.functions.MeanAggregation;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
@@ -21,6 +20,7 @@ import org.palladiosimulator.metricspec.BaseMetricDescription;
 import org.palladiosimulator.metricspec.MetricSetDescription;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.spd.targets.TargetGroup;
+import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedPrimitive;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
@@ -63,8 +63,13 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 		this.managedElementsStateStimulus = stimulus;
 		this.metricSetDescription = metricSetDescription;
 		this.baseMetricDescription = baseMetricDescription;
-//		this.aggregator = FixedLengthWindowAggregation.getFromAggregationMethod(stimulus.getAggregationOverElements());
-		this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60,10,0.2);
+		
+		if(stimulus.getAggregationOverElements().equals(AGGREGATIONMETHOD.AVERAGE)) {
+		    this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60,10,0.2);		    
+		}else {
+		    this.aggregator = FixedLengthWindowSimpleAggregation.getFromAggregationMethod(stimulus.getAggregationOverElements());
+		}
+		
 	}
 
 	@Override
@@ -101,7 +106,6 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 		}
 		
 		final double aggregatedValue = this.aggregator.getCurrentValue();
-		System.out.println("Aggregated value, "+aggregatedValue);
 		if (this.compareToTrigger(aggregatedValue) == ComparatorResult.IN_ACCORDANCE) {
 			return FilterResult.success(event);
 		}

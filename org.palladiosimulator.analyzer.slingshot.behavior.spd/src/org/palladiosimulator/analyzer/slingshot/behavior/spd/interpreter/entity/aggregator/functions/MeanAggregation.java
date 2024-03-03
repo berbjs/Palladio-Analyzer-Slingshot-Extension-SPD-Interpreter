@@ -15,7 +15,7 @@ public class MeanAggregation  implements Function<Collection<Double>, Double> {
 		return t.stream()
 				 .mapToDouble(Double::doubleValue)
 				 .average()
-				 .orElse(0.0);
+				 .orElseThrow();
 	}
 
 }
