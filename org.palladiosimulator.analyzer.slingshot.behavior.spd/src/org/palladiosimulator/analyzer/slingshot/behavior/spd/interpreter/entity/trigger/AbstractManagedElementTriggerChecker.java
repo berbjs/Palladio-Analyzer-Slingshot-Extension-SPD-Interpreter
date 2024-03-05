@@ -91,7 +91,7 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 		}
 
 
-		return FilterResult.disregard("");
+		return FilterResult.disregard("Not a measurement made event.");
 	}
 
 	/**
@@ -102,14 +102,14 @@ public abstract class AbstractManagedElementTriggerChecker<T extends ManagedElem
 	 */
 	protected FilterResult getResult(final DESEvent event) {
 		if (!this.aggregator.isEmittable()) {
-			return FilterResult.disregard("There are not enough values yet to aggregate.");
+			return FilterResult.disregard("Values not emittable.");
 		}
 		
 		final double aggregatedValue = this.aggregator.getCurrentValue();
 		if (this.compareToTrigger(aggregatedValue) == ComparatorResult.IN_ACCORDANCE) {
 			return FilterResult.success(event);
 		}
-		return FilterResult.disregard();
+		return FilterResult.disregard("Value and Expectation not in accordance.");
 	}
 
 	/**
