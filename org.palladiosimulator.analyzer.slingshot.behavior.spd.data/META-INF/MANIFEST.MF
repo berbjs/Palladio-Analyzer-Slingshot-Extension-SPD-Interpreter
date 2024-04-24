@@ -4,7 +4,7 @@ Bundle-Name: Data
 Bundle-SymbolicName: org.palladiosimulator.analyzer.slingshot.behavior.spd.data
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: org.palladiosimulator.analyzer.slingshot.behavior.spd.data
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.palladiosimulator.analyzer.slingshot.common;bundle-version="1.0.0",
  org.palladiosimulator.spd,
  org.palladiosimulator.monitorrepository
