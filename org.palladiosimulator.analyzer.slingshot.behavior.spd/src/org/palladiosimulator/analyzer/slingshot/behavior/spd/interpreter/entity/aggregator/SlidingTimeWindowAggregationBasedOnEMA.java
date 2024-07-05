@@ -1,18 +1,32 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator;
 
 /**
- * The {@link #SlidingTimeWindowAggregationBasedOnEMA(int, double, double)}
- * implements an exponential moving average. Similarly, to other
- * WindowAggregation(s), it allows to define a {@link #durationNoEmit} to
- * control the emitting frequency.
+ * The {@link #SlidingTimeWindowAggregationBasedOnEMA(int, double, double)} implements an
+ * exponential moving average. Similarly, to other WindowAggregation(s), it allows to define a
+ * {@link #durationNoEmit} to control the emitting frequency.
  * 
- * In addition, it provides a smoothingFactor that defines the weight of a new
- * value to the aggregated value.
+ * In addition, it provides a smoothingFactor that defines the weight of a new value to the
+ * aggregated value.
  *
- * This implementation does not allow the application of arbitrary aggregation
- * functions. It implements a moving average.
+ * This implementation does not allow the application of arbitrary aggregation functions. It
+ * implements a moving average.
  * 
- * @author Floriment Klinaku
+ * Further, the implementation makes the following assumption: It assumes that when no value is
+ * added for a certain time period, then the utilization of the resource is 0 during that period.
+ * This is happening because of the current implementation that updates the resource state only when
+ * Jobs arrive or leave.
+ * 
+ * Implications:
+ * 
+ * To compensate, this implementation, corrects the EMA model by multiplying the resulting
+ * utilization with an exponential factor that depends on the time difference between the last
+ * update and the recent one. The farther the last update time the more zeros are assumed and the
+ * more the overall utilization is decreased.
+ * 
+ * Caution: This EMA Aggregation method is suitable for how the utilization of active resources is
+ * implemented in Slingshot. It may not be applicable to other types of measurements.
+ * 
+ * @author Floriment Klinaku, Sarah Stieß
  *
  */
 public class SlidingTimeWindowAggregationBasedOnEMA extends AbstractWindowAggregation {
