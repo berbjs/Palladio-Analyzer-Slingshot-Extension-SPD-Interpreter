@@ -1,6 +1,7 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger;
 
 import org.palladiosimulator.spd.triggers.BaseTrigger;
+import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedValue;
@@ -34,6 +35,8 @@ public interface ValueComparator {
 			return new SimpleFireOnValueComparator((SimpleFireOnValue) trigger);
 		} else if (trigger instanceof SimpleFireOnTrend) {
 			return new SimpleFireOnTrendComparator((SimpleFireOnTrend) trigger);
+		} else if (trigger instanceof SimpleFireOnOutput) {
+			return new SimpleFireOnOutputComparator((SimpleFireOnOutput) trigger);
 		}
 		throw new IllegalArgumentException("Only SimpleFireOnValue and SimpleFireOnTrend are supported,"
 				+ " but trigger is " + trigger.getClass().getSimpleName());

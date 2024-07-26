@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ScalingTriggerInterpreter.InterpretationResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalANDComboundFilter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.LogicalORCompoundFilter;
@@ -13,6 +14,7 @@ import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
 import org.palladiosimulator.spd.triggers.LogicalOperator;
+import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.util.TriggersSwitch;
@@ -46,6 +48,12 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 		return super.caseSimpleFireOnTrend(object);
 	}
 	
+	@Override
+	public InterpretationResult caseSimpleFireOnOutput(SimpleFireOnOutput object) {
+		final OutputInterpreter outputInterpreter = new OutputInterpreter(this, object);
+		return outputInterpreter.doSwitch(object.getStimulus());
+	}
+
 	static final class InterpretationResult {
 
 		private Filter triggerChecker;

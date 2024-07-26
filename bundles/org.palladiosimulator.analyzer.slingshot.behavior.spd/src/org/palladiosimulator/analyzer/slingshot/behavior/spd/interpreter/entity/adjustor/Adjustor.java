@@ -1,12 +1,16 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.adjustor;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.ModelAdjustmentRequested;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.spd.ScalingPolicy;
+import org.palladiosimulator.spd.adjustments.AdjustmentsFactory;
 import org.palladiosimulator.spd.constraints.policy.CooldownConstraint;
+import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
+import org.palladiosimulator.spd.adjustments.StepAdjustment;
 
 /**
  * This filter creates an {@link ModelAdjustmentRequested} event
@@ -57,7 +61,8 @@ public class Adjustor implements Filter {
 				}
 			}
 		}
-		return FilterResult.success(new ModelAdjustmentRequested(this.policy));
+		// TODO IMPORTANT test if this replacement of this.policy with objectWrapper.getState().getScalingPolicy() doesn't break anything
+		return FilterResult.success(new ModelAdjustmentRequested(objectWrapper.getState().getScalingPolicy()));
 	}
 
 }

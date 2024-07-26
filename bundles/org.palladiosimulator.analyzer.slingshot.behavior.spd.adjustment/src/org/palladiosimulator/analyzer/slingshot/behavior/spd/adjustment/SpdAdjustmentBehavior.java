@@ -33,6 +33,10 @@ import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
 import org.palladiosimulator.spd.SPD;
+import org.palladiosimulator.spd.adjustments.AdjustmentType;
+import org.palladiosimulator.spd.adjustments.StepAdjustment;
+import org.palladiosimulator.spd.ScalingPolicy;
+import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
 public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
@@ -52,10 +56,10 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	public SpdAdjustmentBehavior(
 			final Allocation allocation,
 			final @Nullable MonitorRepository monitorRepository,
-			final @Nullable Configuration semanticConfiguration,
+			final @Nullable Configuration semanticConfiguration, // Provided by SemanticModelProvider
 			final @Nullable SPD spd,
 			final QVToReconfigurator reconfigurator,
-			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) {
+			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) { // This one is provided by SpdAdjustorModule.getTransformations
 		this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
 		this.allocation = allocation;
 		this.semanticConfiguration = semanticConfiguration;
@@ -74,12 +78,27 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
 		final ResourceEnvironment environment = allocation.getTargetResourceEnvironment_Allocation();
 
-		/* Since the model is provided by the user, the model will be available in the cache already. */
-		//final Configuration configuration = createConfiguration(event, environment);
-		//this.reconfigurator.getModelCache().storeModel(configuration);
-
-		// Set the enacted policy for the next transformation
-		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+		/* Since the model is provided by the user, the model will be available in the cache already.
+		 * A special case is the predictive trigger that supports both scaling up and down with varying
+		 * magnitude. It changes the scaling policy, thus a new model will need to be cached
+		 *  */
+		if (event.getScalingPolicy().getScalingTrigger() instanceof SimpleFireOnOutput) {
+			LOGGER.debug("SimpleFireOnOutput Trigger detected, caching new model!");
+			final Configuration configuration = createConfiguration(event, environment);
+			ScalingPolicy newPolicy = event.getScalingPolicy();
+			configuration.setEnactedPolicy(newPolicy);
+			this.reconfigurator.getModelCache().storeModel(configuration);
+			this.semanticConfiguration.setEnactedPolicy(newPolicy);
+		} else {
+			// Set the enacted policy for the next transformation
+			this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+		}
+		LOGGER.debug("ADJUSTING ACCORDING TO " + event.getScalingPolicy().getEntityName());
+		LOGGER.debug("ENACTED POLICY " + this.semanticConfiguration.getEnactedPolicy().getEntityName());
+		LOGGER.debug("ENACTED POLICIES FOR targetCfg:");
+		for (ScalingPolicy targetPolicy: this.semanticConfiguration.getTargetCfgs().get(0).getEnactedPolicies()) {
+			LOGGER.debug(targetPolicy.getEntityName());
+		}
 		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 		final List<AllocationContext> oldAllocationContexts = new ArrayList<>(allocation.getAllocationContexts_Allocation());
 

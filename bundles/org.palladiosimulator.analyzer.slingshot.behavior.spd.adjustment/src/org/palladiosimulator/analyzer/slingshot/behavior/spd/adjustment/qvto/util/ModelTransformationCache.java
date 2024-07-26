@@ -36,7 +36,7 @@ public class ModelTransformationCache {
 	public ModelTransformationCache(final URI... initialTransformations) {
 		this.cache = new HashMap<>();
 		this.modelTransformationFactory = new ModelTransformationFactory();
-		store(initialTransformations);
+		store(initialTransformations); // In my case: No initial transformations are given
 	}
 	
 	/**
@@ -51,7 +51,7 @@ public class ModelTransformationCache {
 	 *             cache.
 	 */
 	public final void store(final URI... transformationUris) {
-		final URI[] uris = Objects.requireNonNull(transformationUris);
+		final URI[] uris = Objects.requireNonNull(transformationUris); // First call: no transformations given
 		for (final URI transformationUri : uris) {
 			if (contains(transformationUri)) {
 				throw new IllegalArgumentException("Transformation " + transformationUri + " already in store.");
