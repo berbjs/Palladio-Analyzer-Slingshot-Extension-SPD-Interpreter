@@ -17,13 +17,33 @@ import org.palladiosimulator.spd.ScalingPolicy;
 public final class ModelAdjustmentRequested extends AbstractSimulationEvent implements SpdBasedEvent {
 
 	private final ScalingPolicy scalingPolicy;
+	private final ScalingDirection scalingDirection;
+	private final int scalingMagnitude;
+	
+	public ModelAdjustmentRequested(final ScalingPolicy scalingPolicy, final ScalingDirection scalingDirection, final int scalingMagnitude) {
+		this.scalingPolicy = Objects.requireNonNull(scalingPolicy);
+		this.scalingDirection = scalingDirection;
+		this.scalingMagnitude = scalingMagnitude;
+	}
 	
 	public ModelAdjustmentRequested(final ScalingPolicy scalingPolicy) {
 		this.scalingPolicy = Objects.requireNonNull(scalingPolicy);
+		this.scalingDirection = ScalingDirection.UNDEFINED;
+		this.scalingMagnitude = 0;
 	}
 	
 	public ScalingPolicy getScalingPolicy() {
 		return this.scalingPolicy;
 	}
 	
+	public ScalingDirection getScalingDirection() {
+		return this.scalingDirection;
+	}
+
+	/**
+	 * @return the magnitude of scaling if {@link #getScalingDirection()}  != {@link ScalingDirection#UNDEFINED}, else 0
+	 */
+	public int getScalingMagnitude() {
+		return this.scalingMagnitude;
+	}
 }

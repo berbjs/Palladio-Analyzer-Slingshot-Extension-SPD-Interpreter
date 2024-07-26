@@ -33,6 +33,10 @@ import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
 import org.palladiosimulator.spd.SPD;
+import org.palladiosimulator.spd.adjustments.AdjustmentType;
+import org.palladiosimulator.spd.adjustments.StepAdjustment;
+import org.palladiosimulator.spd.ScalingPolicy;
+import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
 public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
@@ -52,10 +56,10 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	public SpdAdjustmentBehavior(
 			final Allocation allocation,
 			final @Nullable MonitorRepository monitorRepository,
-			final @Nullable Configuration semanticConfiguration,
+			final @Nullable Configuration semanticConfiguration, // Provided by SemanticModelProvider
 			final @Nullable SPD spd,
 			final QVToReconfigurator reconfigurator,
-			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) {
+			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) { // This one is provided by SpdAdjustorModule.getTransformations
 		this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
 		this.allocation = allocation;
 		this.semanticConfiguration = semanticConfiguration;
@@ -75,11 +79,34 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		final ResourceEnvironment environment = allocation.getTargetResourceEnvironment_Allocation();
 
 		/* Since the model is provided by the user, the model will be available in the cache already. */
-		//final Configuration configuration = createConfiguration(event, environment);
-		//this.reconfigurator.getModelCache().storeModel(configuration);
-
-		// Set the enacted policy for the next transformation
-		this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+		// TODO IMPORTANT I could change the configuration here s.t. the scaling - the model is then *not* actually provided by the user itself anymore
+		if (event.getScalingPolicy().getScalingTrigger() instanceof SimpleFireOnOutput) {
+			
+			LOGGER.debug("SimpleFireOnOutput Trigger detected, doing my magic!");
+			final Configuration configuration = createConfiguration(event, environment);
+			ScalingPolicy newPolicy = event.getScalingPolicy();
+			/**AdjustmentType newAdjustment = event.getScalingPolicy().getAdjustmentType();
+			if (newAdjustment instanceof StepAdjustment) {
+				StepAdjustment newAbsoluteAdjustment = (StepAdjustment) newAdjustment;
+				// Just invert the step value for now
+				newAbsoluteAdjustment.setStepValue(20);
+				newPolicy.setAdjustmentType(newAbsoluteAdjustment);
+			} else {
+				newPolicy.setAdjustmentType(newAdjustment);
+			}*/
+			configuration.setEnactedPolicy(newPolicy);
+			this.reconfigurator.getModelCache().storeModel(configuration);
+			this.semanticConfiguration.setEnactedPolicy(newPolicy);
+		} else {
+			// Set the enacted policy for the next transformation
+			this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+		}
+		LOGGER.debug("ADJUSTING ACCORDING TO " + event.getScalingPolicy().getEntityName());
+		LOGGER.debug("ENACTED POLICY " + this.semanticConfiguration.getEnactedPolicy().getEntityName());
+		LOGGER.debug("ENACTED POLICIES FOR targetCfg:");
+		for (ScalingPolicy targetPolicy: this.semanticConfiguration.getTargetCfgs().get(0).getEnactedPolicies()) {
+			LOGGER.debug(targetPolicy.getEntityName());
+		}
 		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
 		final List<AllocationContext> oldAllocationContexts = new ArrayList<>(allocation.getAllocationContexts_Allocation());
 
@@ -200,6 +227,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		configuration.setAllocation(allocation);
 		configuration.setResourceEnvironment(environment);
 		configuration.setSpd(spd);
+		// TODO IMPORTANT somehow change the policy specified in event.getScalingPolicy() here if this is a SimpleFireOnOutput trigger (event.getScalingPolicy().getScalingTrigger() instanceof SimpleFireOnOutput)
 		configuration.setSystem(allocation.getSystem_Allocation());
 		configuration.setRepository(allocation.getSystem_Allocation().getAssemblyContexts__ComposedStructure().get(0).getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent()); // TODO: What to do here?
 		configuration.setEnactedPolicy(event.getScalingPolicy());

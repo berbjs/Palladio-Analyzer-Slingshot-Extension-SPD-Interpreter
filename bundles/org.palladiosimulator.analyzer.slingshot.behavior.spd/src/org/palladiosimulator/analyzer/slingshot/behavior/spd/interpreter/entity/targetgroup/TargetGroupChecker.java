@@ -2,6 +2,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import java.util.Objects;
 
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
@@ -30,10 +31,16 @@ public class TargetGroupChecker implements Filter {
 			}
 			return FilterResult.disregard("The measurement is not inside this target group");
 		}
-		if (!(event instanceof SimulationTimeReached)) {
+		final SimulationTimeReached simulationTimeReached;
+		if (event instanceof RepeatedSimulationTimeReached){
+			RepeatedSimulationTimeReached tempRepeatedSimulationTimeReached = (RepeatedSimulationTimeReached) event;
+			simulationTimeReached = new SimulationTimeReached(tempRepeatedSimulationTimeReached.getTargetGroupId(),
+					tempRepeatedSimulationTimeReached.time(), tempRepeatedSimulationTimeReached.delay());
+		} else if ((event instanceof SimulationTimeReached || event instanceof RepeatedSimulationTimeReached)) {
+			simulationTimeReached = (SimulationTimeReached) event;
+		} else {
 			return FilterResult.disregard("The event can only be checked if it is a MeasurementMade OR SimulationTimeReached at the moment.");
 		}
-		final SimulationTimeReached simulationTimeReached = (SimulationTimeReached) event;
 		if (simulationTimeReached.getTargetGroupId().equals(targetGroup.getId())) {
 			return FilterResult.success(event);
 		}
