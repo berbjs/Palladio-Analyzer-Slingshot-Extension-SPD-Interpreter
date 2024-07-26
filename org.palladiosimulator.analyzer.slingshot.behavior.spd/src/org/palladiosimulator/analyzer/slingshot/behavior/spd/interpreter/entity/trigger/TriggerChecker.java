@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
+import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.NoExpectation;
@@ -71,10 +72,10 @@ public abstract class TriggerChecker<T extends Stimulus> implements Filter {
 			}
 			
 			return ComparatorResult.WRONG_EXPECTED_VALUE;
-		} else if (trigger instanceof SimpleFireOnTrend) {
+		} else if (trigger instanceof SimpleFireOnTrend | trigger instanceof SimpleFireOnOutput) {
 			return this.valueComparator.compare(value, trigger.getExpectedValue());
 		}
-		
+
 		return ComparatorResult.WRONG_TRIGGER;
 	}
 	
