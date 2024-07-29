@@ -78,22 +78,14 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 	public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
 		final ResourceEnvironment environment = allocation.getTargetResourceEnvironment_Allocation();
 
-		/* Since the model is provided by the user, the model will be available in the cache already. */
-		// TODO IMPORTANT I could change the configuration here s.t. the scaling - the model is then *not* actually provided by the user itself anymore
+		/* Since the model is provided by the user, the model will be available in the cache already.
+		 * A special case is the predictive trigger that supports both scaling up and down with varying
+		 * magnitude. It changes the scaling policy, thus a new model will need to be cached
+		 *  */
 		if (event.getScalingPolicy().getScalingTrigger() instanceof SimpleFireOnOutput) {
-			
-			LOGGER.debug("SimpleFireOnOutput Trigger detected, doing my magic!");
+			LOGGER.debug("SimpleFireOnOutput Trigger detected, caching new model!");
 			final Configuration configuration = createConfiguration(event, environment);
 			ScalingPolicy newPolicy = event.getScalingPolicy();
-			/**AdjustmentType newAdjustment = event.getScalingPolicy().getAdjustmentType();
-			if (newAdjustment instanceof StepAdjustment) {
-				StepAdjustment newAbsoluteAdjustment = (StepAdjustment) newAdjustment;
-				// Just invert the step value for now
-				newAbsoluteAdjustment.setStepValue(20);
-				newPolicy.setAdjustmentType(newAbsoluteAdjustment);
-			} else {
-				newPolicy.setAdjustmentType(newAdjustment);
-			}*/
 			configuration.setEnactedPolicy(newPolicy);
 			this.reconfigurator.getModelCache().storeModel(configuration);
 			this.semanticConfiguration.setEnactedPolicy(newPolicy);
@@ -227,7 +219,6 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 		configuration.setAllocation(allocation);
 		configuration.setResourceEnvironment(environment);
 		configuration.setSpd(spd);
-		// TODO IMPORTANT somehow change the policy specified in event.getScalingPolicy() here if this is a SimpleFireOnOutput trigger (event.getScalingPolicy().getScalingTrigger() instanceof SimpleFireOnOutput)
 		configuration.setSystem(allocation.getSystem_Allocation());
 		configuration.setRepository(allocation.getSystem_Allocation().getAssemblyContexts__ComposedStructure().get(0).getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent()); // TODO: What to do here?
 		configuration.setEnactedPolicy(event.getScalingPolicy());
