@@ -30,7 +30,7 @@ public class OutputInterpreterWrapper<T extends Stimulus> implements Filter{
 		if (Math.random() < 0.5) {
 			value = 1;
 		}
-		newAdjustment.setStepValue(value); // TODO IMPORTANT set step value here, somehow get it out of the event supplied by the objectWrapper
+		newAdjustment.setStepValue(value);
 		event.getState().getScalingPolicy().setAdjustmentType(newAdjustment);
 		return filterResult;
 	}
