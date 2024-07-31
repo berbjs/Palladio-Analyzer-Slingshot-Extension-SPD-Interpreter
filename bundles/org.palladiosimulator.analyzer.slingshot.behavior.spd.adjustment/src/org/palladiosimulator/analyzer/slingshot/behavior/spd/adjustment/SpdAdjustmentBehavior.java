@@ -1,6 +1,5 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.adjustment;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,202 +32,228 @@ import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
 import org.palladiosimulator.spd.SPD;
-import org.palladiosimulator.spd.adjustments.AdjustmentType;
-import org.palladiosimulator.spd.adjustments.StepAdjustment;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
 public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 
-	private static final Logger LOGGER = Logger.getLogger(SpdAdjustmentBehavior.class);
+    private static final Logger LOGGER = Logger.getLogger(SpdAdjustmentBehavior.class);
 
-	private final boolean activated;
+    private final boolean activated;
 
-	private final SPD spd;
-	private final QVToReconfigurator reconfigurator;
-	private final Iterable<QVToModelTransformation> transformations;
-	private final Allocation allocation;
-	private final Configuration semanticConfiguration;
-	private final MonitorRepository monitorRepository;
+    private final SPD spd;
+    private final QVToReconfigurator reconfigurator;
+    private final Iterable<QVToModelTransformation> transformations;
+    private final Allocation allocation;
+    private final Configuration semanticConfiguration;
+    private final MonitorRepository monitorRepository;
 
-	@Inject
-	public SpdAdjustmentBehavior(
-			final Allocation allocation,
-			final @Nullable MonitorRepository monitorRepository,
-			final @Nullable Configuration semanticConfiguration, // Provided by SemanticModelProvider
-			final @Nullable SPD spd,
-			final QVToReconfigurator reconfigurator,
-			@Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) { // This one is provided by SpdAdjustorModule.getTransformations
-		this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
-		this.allocation = allocation;
-		this.semanticConfiguration = semanticConfiguration;
-		this.spd = spd;
-		this.reconfigurator = reconfigurator;
-		this.transformations = transformations;
-		this.monitorRepository = monitorRepository;
-	}
+    @Inject
+    public SpdAdjustmentBehavior(final Allocation allocation, final @Nullable MonitorRepository monitorRepository,
+            final @Nullable Configuration semanticConfiguration, // Provided by
+                                                                 // SemanticModelProvider
+            final @Nullable SPD spd, final QVToReconfigurator reconfigurator,
+            @Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) { // This
+                                                                                                           // one
+                                                                                                           // is
+                                                                                                           // provided
+                                                                                                           // by
+                                                                                                           // SpdAdjustorModule.getTransformations
+        this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
+        this.allocation = allocation;
+        this.semanticConfiguration = semanticConfiguration;
+        this.spd = spd;
+        this.reconfigurator = reconfigurator;
+        this.transformations = transformations;
+        this.monitorRepository = monitorRepository;
+    }
 
-	@Override
-	public boolean isActive() {
-		return this.activated;
-	}
+    @Override
+    public boolean isActive() {
+        return this.activated;
+    }
 
-	@Subscribe
-	public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
-		final ResourceEnvironment environment = allocation.getTargetResourceEnvironment_Allocation();
+    @Subscribe
+    public Result<ModelAdjusted> onModelAdjustmentRequested(final ModelAdjustmentRequested event) {
+        final ResourceEnvironment environment = allocation.getTargetResourceEnvironment_Allocation();
 
-		/* Since the model is provided by the user, the model will be available in the cache already.
-		 * A special case is the predictive trigger that supports both scaling up and down with varying
-		 * magnitude. It changes the scaling policy, thus a new model will need to be cached
-		 *  */
-		if (event.getScalingPolicy().getScalingTrigger() instanceof SimpleFireOnOutput) {
-			LOGGER.debug("SimpleFireOnOutput Trigger detected, caching new model!");
-			final Configuration configuration = createConfiguration(event, environment);
-			ScalingPolicy newPolicy = event.getScalingPolicy();
-			configuration.setEnactedPolicy(newPolicy);
-			this.reconfigurator.getModelCache().storeModel(configuration);
-			this.semanticConfiguration.setEnactedPolicy(newPolicy);
-		} else {
-			// Set the enacted policy for the next transformation
-			this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
-		}
-		LOGGER.debug("ADJUSTING ACCORDING TO " + event.getScalingPolicy().getEntityName());
-		LOGGER.debug("ENACTED POLICY " + this.semanticConfiguration.getEnactedPolicy().getEntityName());
-		LOGGER.debug("ENACTED POLICIES FOR targetCfg:");
-		for (ScalingPolicy targetPolicy: this.semanticConfiguration.getTargetCfgs().get(0).getEnactedPolicies()) {
-			LOGGER.debug(targetPolicy.getEntityName());
-		}
-		final List<ResourceContainer> oldContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
-		final List<AllocationContext> oldAllocationContexts = new ArrayList<>(allocation.getAllocationContexts_Allocation());
+        /*
+         * Since the model is provided by the user, the model will be available in the cache
+         * already. A special case is the predictive trigger that supports both scaling up and down
+         * with varying magnitude. It changes the scaling policy, thus a new model will need to be
+         * cached
+         */
+        if (event.getScalingPolicy()
+            .getScalingTrigger() instanceof SimpleFireOnOutput) {
+            LOGGER.debug("SimpleFireOnOutput Trigger detected, caching new model!");
+            final Configuration configuration = this.semanticConfiguration;// createConfiguration(event,
+                                                                           // environment);
+            configuration.setEnactedPolicy(event.getScalingPolicy());
+            this.reconfigurator.getModelCache()
+                .storeModel(configuration);
+        }
+        // Set the enacted policy for the next transformation
+        this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
+        LOGGER.debug("ADJUSTING ACCORDING TO " + event.getScalingPolicy()
+            .getEntityName());
+        LOGGER.debug("ENACTING POLICY " + this.semanticConfiguration.getEnactedPolicy()
+            .getEntityName());
+        LOGGER.debug("PREVIOUSLY ENACTED POLICIES FOR targetCfg:");
+        for (ScalingPolicy targetPolicy : this.semanticConfiguration.getTargetCfgs()
+            .get(0)
+            .getEnactedPolicies()) {
+            LOGGER.debug(targetPolicy.getEntityName());
+        }
+        final List<ResourceContainer> oldContainers = new ArrayList<>(
+                environment.getResourceContainer_ResourceEnvironment());
+        final List<AllocationContext> oldAllocationContexts = new ArrayList<>(
+                allocation.getAllocationContexts_Allocation());
 
-		final boolean result = this.reconfigurator.execute(this.transformations);
+        final boolean result = this.reconfigurator.execute(this.transformations);
 
-		LOGGER.debug("RECONFIGURATION WAS " + result);
+        LOGGER.debug("RECONFIGURATION WAS " + result);
 
-		if (result) {
-			LOGGER.debug("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment().size());
+        if (result) {
+            LOGGER
+                .debug("Number of resource container is now: " + environment.getResourceContainer_ResourceEnvironment()
+                    .size());
 
-			/*
-			 * Calculate what the new and deleted resource containers are for tracking.
-			 */
-			final List<ResourceContainer> newResourceContainers = new ArrayList<>(environment.getResourceContainer_ResourceEnvironment());
-			newResourceContainers.removeAll(oldContainers);
+            /*
+             * Calculate what the new and deleted resource containers are for tracking.
+             */
+            final List<ResourceContainer> newResourceContainers = new ArrayList<>(
+                    environment.getResourceContainer_ResourceEnvironment());
+            newResourceContainers.removeAll(oldContainers);
 
-			final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
-			deletedResourceContainers.removeAll(environment.getResourceContainer_ResourceEnvironment());
+            final List<ResourceContainer> deletedResourceContainers = new ArrayList<>(oldContainers);
+            deletedResourceContainers.removeAll(environment.getResourceContainer_ResourceEnvironment());
 
+            final List<AllocationContext> newAllocationContexts = new ArrayList<>(
+                    allocation.getAllocationContexts_Allocation());
+            newAllocationContexts.removeAll(oldAllocationContexts);
 
-			final List<AllocationContext> newAllocationContexts =  new ArrayList<>(allocation.getAllocationContexts_Allocation());
-			newAllocationContexts.removeAll(oldAllocationContexts);
+            final List<ModelChange<?>> changes = new ArrayList<>();
 
+            changes.add(ResourceEnvironmentChange.builder()
+                .resourceEnvironment(environment)
+                .simulationTime(event.time())
+                .oldResourceContainers(oldContainers)
+                .newResourceContainers(newResourceContainers)
+                .deletedResourceContainers(deletedResourceContainers)
+                .build());
 
-			final List<ModelChange<?>> changes = new ArrayList<>();
+            changes.add(AllocationChange.builder()
+                .allocation(allocation)
+                .newAllocationContexts(newAllocationContexts)
+                .build());
 
+            changes.addAll(this.createMonitors(newResourceContainers, event.time()));
 
+            return Result.of(new ModelAdjusted(true, changes));
+        } else {
+            return Result.of(new ModelAdjusted(false, Collections.emptyList()));
+        }
 
-			changes.add(ResourceEnvironmentChange.builder()
-					.resourceEnvironment(environment).simulationTime(event.time()).oldResourceContainers(oldContainers)
-					.newResourceContainers(newResourceContainers).deletedResourceContainers(deletedResourceContainers)
-					.build());
+    }
 
+    /**
+     * Create new monitors for all new containers created by the reconfiguration transformation.
+     *
+     * The news monitors match the monitors defined for the original container.
+     *
+     * @param newContainers
+     *            containers created by the reconfiguration transformation
+     * @param simulationTime
+     *            time of the reconfiguration
+     * @return List of newly created monitors for all resource containers in {@code newContainers}.
+     */
+    private List<MonitorChange> createMonitors(final List<ResourceContainer> newContainers,
+            final double simulationTime) {
+        if (newContainers.isEmpty() || this.getUnitContainer(newContainers.get(0)) == null) {
+            return Collections.emptyList();
+        }
 
-			changes.add(AllocationChange.builder().allocation(allocation).newAllocationContexts(newAllocationContexts).build());
+        final ResourceContainer unitContainer = getUnitContainer(newContainers.get(0));
 
+        final ResourceContainerMonitorCloner cloner = new ResourceContainerMonitorCloner(this.monitorRepository,
+                monitorRepository.getMonitors()
+                    .get(0)
+                    .getMeasuringPoint()
+                    .getMeasuringPointRepository(),
+                unitContainer);
 
-			changes.addAll(this.createMonitors(newResourceContainers, event.time()));
+        return newContainers.stream()
+            .flatMap(container -> cloner.createMonitorsForResourceContainer(container)
+                .stream())
+            .map(newMonitor -> new MonitorChange(newMonitor, null, simulationTime))
+            .toList();
+    }
 
-			return Result.of(new ModelAdjusted(true, changes));
-		} else {
-			return Result.of(new ModelAdjusted(false, Collections.emptyList()));
-		}
+    /**
+     * Get the resource container which {@code referenceContainer} is a replica of.
+     *
+     * I.e. get the {@code unit} of of the {@link ElasticInfrastructureCfg} that has
+     * {@code referenceContainer} in its elements.
+     *
+     * @param referenceContainer
+     *            a replicated resource container, must not be null.
+     * @return Unit resource container which {@code referenceContainer} is a replica of.
+     */
+    private ResourceContainer getUnitContainer(final ResourceContainer referenceContainer) {
+        assert referenceContainer != null : "Reference Container is null but must not be null.";
 
-	}
+        return this.semanticConfiguration.getTargetCfgs()
+            .stream()
+            .filter(ElasticInfrastructureCfg.class::isInstance)
+            .map(ElasticInfrastructureCfg.class::cast)
+            .filter(eicfg -> eicfg.getElements()
+                .contains(referenceContainer))
+            .map(el -> el.getUnit())
+            .findAny()
+            .orElse(null);
+    }
 
-	/**
-	 * Create new monitors for all new containers created by the reconfiguration
-	 * transformation.
-	 *
-	 * The news monitors match the monitors defined for the original container.
-	 *
-	 * @param newContainers  containers created by the reconfiguration
-	 *                       transformation
-	 * @param simulationTime time of the reconfiguration
-	 * @return List of newly created monitors for all resource containers in
-	 *         {@code newContainers}.
-	 */
-	private List<MonitorChange> createMonitors(final List<ResourceContainer> newContainers, final double simulationTime) {
-		if (newContainers.isEmpty() || this.getUnitContainer(newContainers.get(0)) == null) {
-			return Collections.emptyList();
-		}
+    /*
+     * We leave the following methods for now, as we will need to make the Configuration through a
+     * dedicated launch tab instead.
+     */
 
-		final ResourceContainer unitContainer = getUnitContainer(newContainers.get(0));
+    private ElasticInfrastructureCfg createElasticInfrastructureCfg(final ResourceEnvironment environment) {
+        final ElasticInfrastructureCfg targetGroupConfig = SemanticspdFactory.eINSTANCE
+            .createElasticInfrastructureCfg();
+        targetGroupConfig.setResourceEnvironment(environment);
+        targetGroupConfig.setUnit(environment.getResourceContainer_ResourceEnvironment()
+            .stream()
+            .findAny()
+            .get());
+        targetGroupConfig.getElements()
+            .addAll(environment.getResourceContainer_ResourceEnvironment());
+        return targetGroupConfig;
+    }
 
-		final ResourceContainerMonitorCloner cloner = new ResourceContainerMonitorCloner(this.monitorRepository,
-				monitorRepository.getMonitors().get(0).getMeasuringPoint().getMeasuringPointRepository(),
-				unitContainer);
+    /**
+     * Helper method for creating the {@link Configuration}
+     */
+    private Configuration createConfiguration(final ModelAdjustmentRequested event,
+            final ResourceEnvironment environment) {
+        final Configuration configuration = SemanticspdFactory.eINSTANCE.createConfiguration();
+        configuration.setAllocation(allocation);
+        configuration.setResourceEnvironment(environment);
+        configuration.setSpd(spd);
+        configuration.setSystem(allocation.getSystem_Allocation());
+        configuration.setRepository(allocation.getSystem_Allocation()
+            .getAssemblyContexts__ComposedStructure()
+            .get(0)
+            .getEncapsulatedComponent__AssemblyContext()
+            .getRepository__RepositoryComponent()); // TODO: What to do here?
+        configuration.setEnactedPolicy(event.getScalingPolicy());
 
-		return newContainers.stream()
-				.flatMap(container -> cloner.createMonitorsForResourceContainer(container).stream())
-				.map(newMonitor -> new MonitorChange(newMonitor, null, simulationTime))
-				.toList();
-	}
+        final ElasticInfrastructureCfg targetGroupConfig = createElasticInfrastructureCfg(environment);
+        configuration.getTargetCfgs()
+            .add(targetGroupConfig);
 
-	/**
-	 * Get the resource container which {@code referenceContainer} is a replica of.
-	 *
-	 * I.e. get the {@code unit} of of the {@link ElasticInfrastructureCfg} that has
-	 * {@code referenceContainer} in its elements.
-	 *
-	 * @param referenceContainer a replicated resource container, must not be null.
-	 * @return Unit resource container which {@code referenceContainer} is a replica
-	 *         of.
-	 */
-	private ResourceContainer getUnitContainer(final ResourceContainer referenceContainer) {
-		assert referenceContainer != null : "Reference Container is null but must not be null.";
-
-		return this.semanticConfiguration.getTargetCfgs().stream()
-				.filter(ElasticInfrastructureCfg.class::isInstance)
-				.map(ElasticInfrastructureCfg.class::cast)
-				.filter(eicfg -> eicfg.getElements().contains(referenceContainer))
-				.map(el -> el.getUnit())
-				.findAny()
-				.orElse(null);
-	}
-
-	/*
-	 * We leave the following methods for now, as we will need to make the Configuration through
-	 * a dedicated launch tab instead.
-	 */
-
-	private ElasticInfrastructureCfg createElasticInfrastructureCfg(final ResourceEnvironment environment) {
-		final ElasticInfrastructureCfg targetGroupConfig = SemanticspdFactory.eINSTANCE.createElasticInfrastructureCfg();
-		targetGroupConfig.setResourceEnvironment(environment);
-		targetGroupConfig.setUnit(environment.getResourceContainer_ResourceEnvironment().stream().findAny().get());
-		targetGroupConfig.getElements().addAll(environment.getResourceContainer_ResourceEnvironment());
-		targetGroupConfig.setUnit(null);
-		return targetGroupConfig;
-	}
-
-	/**
-	 * Helper method for creating the {@link Configuration}
-	 */
-	private Configuration createConfiguration(final ModelAdjustmentRequested event,
-			final ResourceEnvironment environment) {
-		final Configuration configuration = SemanticspdFactory.eINSTANCE.createConfiguration();
-		configuration.setAllocation(allocation);
-		configuration.setResourceEnvironment(environment);
-		configuration.setSpd(spd);
-		configuration.setSystem(allocation.getSystem_Allocation());
-		configuration.setRepository(allocation.getSystem_Allocation().getAssemblyContexts__ComposedStructure().get(0).getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent()); // TODO: What to do here?
-		configuration.setEnactedPolicy(event.getScalingPolicy());
-
-		final ElasticInfrastructureCfg targetGroupConfig = createElasticInfrastructureCfg(environment);
-		configuration.getTargetCfgs().add(targetGroupConfig);
-
-
-
-		return configuration;
-	}
+        return configuration;
+    }
 
 }

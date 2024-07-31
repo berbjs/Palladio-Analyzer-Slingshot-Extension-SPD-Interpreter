@@ -22,10 +22,9 @@ public final class SimulationTimeChecker extends TriggerChecker<SimulationTime> 
 	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
 		final DESEvent event = objectWrapper.getEventToFilter();
 		final SimulationTimeReached simulationTimeReached;
-		if (event instanceof RepeatedSimulationTimeReached) {
-			RepeatedSimulationTimeReached tempRepeatedSimulationTimeReached = (RepeatedSimulationTimeReached) event;
-			simulationTimeReached = new SimulationTimeReached(tempRepeatedSimulationTimeReached.getTargetGroupId(),
-					tempRepeatedSimulationTimeReached.time(), tempRepeatedSimulationTimeReached.delay());
+		if (event instanceof RepeatedSimulationTimeReached repeatedSimulationTimeReached) {
+			simulationTimeReached = new SimulationTimeReached(repeatedSimulationTimeReached.getTargetGroupId(),
+			        repeatedSimulationTimeReached.time(), repeatedSimulationTimeReached.delay());
 		} else if (event instanceof SimulationTimeReached) {
 			simulationTimeReached = (SimulationTimeReached) event;
 		} else {
