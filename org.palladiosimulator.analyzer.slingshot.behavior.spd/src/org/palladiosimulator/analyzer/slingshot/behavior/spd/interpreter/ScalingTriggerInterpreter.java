@@ -16,7 +16,6 @@ import org.palladiosimulator.spd.triggers.LogicalOperator;
 import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
-import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 import org.palladiosimulator.spd.triggers.util.TriggersSwitch;
 
 public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInterpreter.InterpretationResult> {
@@ -51,12 +50,7 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
 
     @Override
     public InterpretationResult caseSimpleFireOnOutput(SimpleFireOnOutput object) {
-        for (Stimulus stimulus : object.getStimulus()) {
-
-        }
-        final OutputInterpreter outputInterpreter = new OutputInterpreter(this, object);
-        return outputInterpreter.doSwitch(object.getStimulus()
-            .get(0));
+        return OutputInterpreter.getInterpretationResult(this, object);
     }
 
     static final class InterpretationResult {
