@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
-import org.palladiosimulator.spd.adjustments.models.QThresholdsModel;
+import org.palladiosimulator.spd.adjustments.models.ImprovedQLearningModel;
 
-public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
+public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator {
 
-    public QThresholdsModelEvaluator(QThresholdsModel model, List<ModelAggregatorWrapper<?>> stimuliListeners) {
+    public ImprovedQLearningModelEvaluator(ImprovedQLearningModel model,
+            List<ModelAggregatorWrapper<?>> stimuliListeners) {
         super(stimuliListeners);
     }
 
