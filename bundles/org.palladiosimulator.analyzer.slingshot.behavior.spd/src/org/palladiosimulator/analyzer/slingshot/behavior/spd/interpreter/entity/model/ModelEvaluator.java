@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model;
 
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 

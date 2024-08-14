@@ -1,4 +1,4 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model;
 
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 
@@ -11,13 +11,12 @@ public class RandomModelEvaluator extends ModelEvaluator {
     @Override
     public int getDecision() {
         final double rand = Math.random();
-//        if (rand < (1 / 3)) {
-//            return 1;
-//        } else if (rand < (2 / 3)) {
-//            return -1;
-//        }
-//        return 0;
-        return 2;
+        if (rand < (1.f / 3.f)) {
+            return 1;
+        } else if (rand < (2.f / 3.f)) {
+            return -1;
+        }
+        return 0;
     }
 
     @Override
