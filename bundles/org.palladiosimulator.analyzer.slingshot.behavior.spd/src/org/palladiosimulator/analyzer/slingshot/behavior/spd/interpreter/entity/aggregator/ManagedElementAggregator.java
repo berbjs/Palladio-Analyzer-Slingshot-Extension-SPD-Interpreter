@@ -5,48 +5,43 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Duration;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
-import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.metricspec.BaseMetricDescription;
 import org.palladiosimulator.metricspec.MetricSetDescription;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
-import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 
 /**
- * This abstract class implements the base functionality for {@link ManagedElementsStateStimulus}
+ * This class implements the base functionality for aggregating {@link ManagedElementsStateStimulus}
  * elements. Measurements for this elements need to be aggregated first, which is done by
- * {@link #aggregateMeasurement(MeasurementMade, MeasuringPoint)}. Afterwards,
- * {@link #getResult(DESEvent)} checks whether enough measurements were made, and whether the
- * calculated value triggers the policy.
+ * {@link #aggregateMeasurement(MeasurementMade)}. Afterwards, {@link #getResult()} checks whether
+ * enough measurements were made, and which value is aggregated.
  * 
  * The precondition is that the measuring point, where the measurements are coming from, are inside
  * the target group. This is done in the {@link TargetGroupChecker} filter, that should be placed
  * before this filter.
  * 
- * @author Julijan Katic
+ * @author Jens Berberich, based on work by Julijan Katic
  *
  * @param <T>
  *            The concrete element the class is checking for.
  */
-public class ManagedElementAggregator<T extends AggregatedStimulus> extends ModelAggregatorWrapper {
+public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> extends ModelAggregatorWrapper<T> {
     protected final WindowAggregation aggregator;
 
-    @SuppressWarnings("unchecked")
     public ManagedElementAggregator(final T stimulus, final TargetGroup targetGroup,
             final MetricSetDescription metricSetDescription, final BaseMetricDescription baseMetricDescription) {
         super(stimulus, targetGroup, metricSetDescription, baseMetricDescription);
         // TODO IMPORTANT change + enhance aggregation based on newly introduced types
-        if (stimulus.getAggregationMethod()
+        if (stimulus.getAggregationOverElements()
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
             this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60, 10, 0.2);
         } else {
             this.aggregator = FixedLengthWindowSimpleAggregation
-                .getFromAggregationMethod(stimulus.getAggregationMethod());
+                .getFromAggregationMethod(stimulus.getAggregationOverElements());
         }
     }
 

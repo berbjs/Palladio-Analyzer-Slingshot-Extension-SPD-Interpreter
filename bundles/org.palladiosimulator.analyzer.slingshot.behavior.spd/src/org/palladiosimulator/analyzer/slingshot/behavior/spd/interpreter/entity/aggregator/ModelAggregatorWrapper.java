@@ -4,15 +4,15 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementM
 import org.palladiosimulator.metricspec.BaseMetricDescription;
 import org.palladiosimulator.metricspec.MetricSetDescription;
 import org.palladiosimulator.spd.targets.TargetGroup;
+import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
-public abstract class ModelAggregatorWrapper<T> {
+public abstract class ModelAggregatorWrapper<T extends Stimulus> {
 
     protected TargetGroup targetGroup;
     protected T managedElementsStateStimulus;
     protected MetricSetDescription metricSetDescription;
     protected BaseMetricDescription baseMetricDescription;
 
-    @SuppressWarnings("unchecked")
     public ModelAggregatorWrapper(final T stimulus, final TargetGroup targetGroup,
             final MetricSetDescription metricSetDescription, final BaseMetricDescription baseMetricDescription) {
 
