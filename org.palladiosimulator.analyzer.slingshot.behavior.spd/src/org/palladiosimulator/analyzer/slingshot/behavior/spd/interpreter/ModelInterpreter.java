@@ -36,15 +36,18 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     private List<ModelAggregatorWrapper<?>> getStimuliListeners() {
         List<ModelAggregatorWrapper<?>> stimuliListenerList = new ArrayList<>();
+        int windowSize = ((int) ((ModelBasedAdjustment) this.triggerInterpreter.policy.getAdjustmentType())
+            .getUsedModel()
+            .getInterval());
         for (Stimulus stimulus : this.stimuli) {
             if (stimulus instanceof AggregatedStimulus aggregatedStimulus) {
                 stimuliListenerList.add(
                         new AnyStimulusAggregator<>(aggregatedStimulus, this.triggerInterpreter.policy.getTargetGroup(),
-                                MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
+                                windowSize, MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
                                 MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE));
             } else if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
                 stimuliListenerList.add(new ManagedElementAggregator<>(managedElementsStateStimulus,
-                        this.triggerInterpreter.policy.getTargetGroup(),
+                        this.triggerInterpreter.policy.getTargetGroup(), windowSize,
                         MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
                         MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE));
             }

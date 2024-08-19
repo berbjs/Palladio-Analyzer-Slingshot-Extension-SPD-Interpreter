@@ -91,7 +91,7 @@ public class AnyStimulusAggregator<T extends AggregatedStimulus> extends ModelAg
     private AnyStimulusAggregator<T>.StimulusChecker stimulusChecker;
     private static final Logger LOGGER = Logger.getLogger(OutputInterpreterWrapper.class);
 
-    public AnyStimulusAggregator(final T stimulus, final TargetGroup targetGroup,
+    public AnyStimulusAggregator(final T stimulus, final TargetGroup targetGroup, int windowSize,
             final MetricSetDescription metricSetDescription, final BaseMetricDescription baseMetricDescription) {
         super(stimulus, targetGroup, metricSetDescription, baseMetricDescription);
         // TODO IMPORTANT change + enhance aggregation based on newly introduced types
@@ -118,8 +118,8 @@ public class AnyStimulusAggregator<T extends AggregatedStimulus> extends ModelAg
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
             this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60, 10, 0.2);
         } else {
-            this.aggregator = FixedLengthWindowSimpleAggregation
-                .getFromAggregationMethod(stimulus.getAggregationMethod());
+            this.aggregator = SlidingTimeWindowAggregation.getFromAggregationMethod(stimulus.getAggregationMethod(),
+                    windowSize, 0.0);
         }
     }
 
