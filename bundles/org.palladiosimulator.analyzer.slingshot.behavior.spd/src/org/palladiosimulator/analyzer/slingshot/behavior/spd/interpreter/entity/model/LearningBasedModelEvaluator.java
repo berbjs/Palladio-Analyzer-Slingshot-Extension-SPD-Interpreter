@@ -9,11 +9,13 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementM
 public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
 
     protected final List<ModelAggregatorWrapper<?>> aggregatorList;
+    protected final RewardEvaluator rewardEvaluator;
 
     public LearningBasedModelEvaluator(List<ModelAggregatorWrapper<?>> stimuliListeners,
             RewardEvaluator rewardEvaluator) {
         super();
         this.aggregatorList = stimuliListeners;
+        this.rewardEvaluator = rewardEvaluator;
     }
 
     @Override
@@ -21,5 +23,6 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
         for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
+        this.rewardEvaluator.addMeasurement(measurement.getEntity());
     }
 }

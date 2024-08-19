@@ -3,10 +3,9 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.measure.Measure;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.spd.adjustments.models.rewards.BaseReward;
 import org.palladiosimulator.spd.adjustments.models.rewards.FunctionReward;
 
@@ -21,15 +20,20 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     class AdditionFunction extends Function {
         @Override
         double getFunctionResult(List<Double> measures) {
-            // TODO Auto-generated method stub
-            return 0;
+            return measures.stream()
+                .reduce(0.0, Double::sum);
         }
     }
 
     class SubtractionFunction extends Function {
         @Override
         double getFunctionResult(List<Double> measures) {
-            return measures.get(0) - measures.get(1);
+            measures.get(0);
+            return measures.stream()
+                .skip(1)
+                .reduce(measures.get(0), (a, b) -> {
+                    return a - b;
+                });
         }
     }
 
@@ -61,9 +65,9 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
         case EXPONENTIAL -> {
             if (reward.getRewards()
                 .size() != 1) {
-                LOGGER.error("Subtraction takes only one input, but " + reward.getRewards()
+                LOGGER.error("Exponential takes only one input, but " + reward.getRewards()
                     .size() + " inputs were specified");
-                throw new Exception("Subtraction takes only one input, but " + reward.getRewards()
+                throw new Exception("Exponential takes only one input, but " + reward.getRewards()
                     .size() + " inputs were specified");
             }
             this.function = new ExponentialFunction();
@@ -83,14 +87,21 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
         this.inputRewards = inputRewards;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public double getReward(Measure measure) {
+    public double getReward() {
         List<Double> inputs = new ArrayList<Double>(this.inputRewards.size());
         for (RewardEvaluator evaluator : this.inputRewards) {
-            inputs.add(evaluator.getReward(measure));
+            inputs.add(evaluator.getReward());
         }
         return this.function.getFunctionResult(inputs);
+    }
+
+    @Override
+    public void addMeasurement(SlingshotMeasuringValue measure) {
+        for (RewardEvaluator evaluator : this.inputRewards) {
+            evaluator.addMeasurement(measure);
+            ;
+        }
     }
 
 }
