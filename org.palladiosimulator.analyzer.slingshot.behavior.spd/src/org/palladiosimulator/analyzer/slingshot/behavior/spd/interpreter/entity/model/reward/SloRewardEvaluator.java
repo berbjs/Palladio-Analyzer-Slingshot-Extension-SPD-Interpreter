@@ -1,7 +1,10 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward;
 
 import javax.measure.Measure;
+import javax.measure.quantity.Quantity;
 
+import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
+import org.palladiosimulator.monitorrepository.MeasurementSpecification;
 import org.palladiosimulator.servicelevelobjective.ServiceLevelObjective;
 import org.palladiosimulator.spd.adjustments.models.rewards.SLOReward;
 
@@ -13,6 +16,7 @@ import org.palladiosimulator.spd.adjustments.models.rewards.SLOReward;
 public class SloRewardEvaluator extends RewardEvaluator {
     private final ServiceLevelObjective serviceLevelObjective;
     private final double factor;
+    private Measure<Object, Quantity> aggregatedMeasure;
 
     public SloRewardEvaluator(SLOReward reward) {
         this.factor = reward.getFactor();
@@ -39,11 +43,25 @@ public class SloRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public double getReward(Measure measure) {
-        if (violatesObjective(measure)) {
+    public double getReward() {
+        if (violatesObjective(this.aggregatedMeasure)) {
             return 0;
         } else {
             return this.factor;
+        }
+    }
+
+    @Override
+    public void addMeasurement(SlingshotMeasuringValue measure) {
+        // TODO IMPORTANT do some more sophisticated aggregation here, perhaps average with reset
+        // after each interval?
+        MeasurementSpecification measurementSpecification = this.serviceLevelObjective.getMeasurementSpecification();
+        if (measurementSpecification.getMonitor()
+            .getMeasuringPoint()
+            .getResourceURIRepresentation()
+            .equals(measure.getMeasuringPoint()
+                .getResourceURIRepresentation())) {
+            this.aggregatedMeasure = measure.getMeasureForMetric(measurementSpecification.getMetricDescription());
         }
     }
 }

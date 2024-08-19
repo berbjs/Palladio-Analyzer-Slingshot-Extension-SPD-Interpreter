@@ -7,12 +7,16 @@ import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AnyStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ManagedElementAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models.ImprovedQLearningModelEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models.ModelEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models.QThresholdsModelEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models.RandomModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ImprovedQLearningModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.QThresholdsModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.RandomModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardInterpreter;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
+import org.palladiosimulator.spd.adjustments.ModelBasedAdjustment;
 import org.palladiosimulator.spd.adjustments.models.ImprovedQLearningModel;
+import org.palladiosimulator.spd.adjustments.models.LearningBasedModel;
 import org.palladiosimulator.spd.adjustments.models.QThresholdsModel;
 import org.palladiosimulator.spd.adjustments.models.RandomModel;
 import org.palladiosimulator.spd.adjustments.models.util.ModelsSwitch;
@@ -48,6 +52,11 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
         return stimuliListenerList;
     }
 
+    private RewardEvaluator getRewardEvaluator(LearningBasedModel model) {
+        RewardInterpreter rewardInterpreter = new RewardInterpreter();
+        return rewardInterpreter.doSwitch(model.getReward());
+    }
+
     @Override
     public ModelEvaluator caseRandomModel(RandomModel object) {
         return new RandomModelEvaluator();
@@ -55,11 +64,11 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel object) {
-        return new QThresholdsModelEvaluator(object, getStimuliListeners());
+        return new QThresholdsModelEvaluator(object, getStimuliListeners(), getRewardEvaluator(object));
     }
 
     @Override
     public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel object) {
-        return new ImprovedQLearningModelEvaluator(object, getStimuliListeners());
+        return new ImprovedQLearningModelEvaluator(object, getStimuliListeners(), getRewardEvaluator(object));
     }
 }
