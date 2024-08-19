@@ -32,7 +32,7 @@ import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> extends ModelAggregatorWrapper<T> {
     protected final WindowAggregation aggregator;
 
-    public ManagedElementAggregator(final T stimulus, final TargetGroup targetGroup,
+    public ManagedElementAggregator(final T stimulus, final TargetGroup targetGroup, int windowSize,
             final MetricSetDescription metricSetDescription, final BaseMetricDescription baseMetricDescription) {
         super(stimulus, targetGroup, metricSetDescription, baseMetricDescription);
         // TODO IMPORTANT change + enhance aggregation based on newly introduced types
@@ -40,8 +40,8 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
             this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60, 10, 0.2);
         } else {
-            this.aggregator = FixedLengthWindowSimpleAggregation
-                .getFromAggregationMethod(stimulus.getAggregationOverElements());
+            this.aggregator = SlidingTimeWindowAggregation
+                .getFromAggregationMethod(stimulus.getAggregationOverElements(), windowSize, 0.0);
         }
     }
 
