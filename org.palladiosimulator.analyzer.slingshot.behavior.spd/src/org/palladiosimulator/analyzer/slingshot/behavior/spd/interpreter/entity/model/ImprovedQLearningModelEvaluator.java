@@ -17,9 +17,10 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     @Override
     public int getDecision() throws Exception {
         List<Double> input = new ArrayList<>();
-        for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
+        for (ModelAggregatorWrapper<?> modelAggregatorWrapper : this.aggregatorList) {
             input.add(modelAggregatorWrapper.getResult());
         }
+        this.rewardEvaluator.getReward();
         // TODO IMPORTANT Add model evaluation here
         return 0;
     }

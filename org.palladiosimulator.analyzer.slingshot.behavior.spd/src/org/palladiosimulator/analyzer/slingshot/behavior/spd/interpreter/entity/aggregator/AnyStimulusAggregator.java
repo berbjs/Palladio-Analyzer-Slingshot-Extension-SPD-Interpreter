@@ -116,7 +116,7 @@ public class AnyStimulusAggregator<T extends AggregatedStimulus> extends ModelAg
         }
         if (stimulus.getAggregationMethod()
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
-            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60, 10, 0.2);
+            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, windowSize / 2, 0.2);
         } else {
             this.aggregator = SlidingTimeWindowAggregation.getFromAggregationMethod(stimulus.getAggregationMethod(),
                     windowSize, 0.0);

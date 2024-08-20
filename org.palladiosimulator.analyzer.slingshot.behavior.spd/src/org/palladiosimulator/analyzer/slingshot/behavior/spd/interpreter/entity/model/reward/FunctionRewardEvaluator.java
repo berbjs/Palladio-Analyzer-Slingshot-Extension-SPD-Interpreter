@@ -100,7 +100,6 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     public void addMeasurement(SlingshotMeasuringValue measure) {
         for (RewardEvaluator evaluator : this.inputRewards) {
             evaluator.addMeasurement(measure);
-            ;
         }
     }
 
