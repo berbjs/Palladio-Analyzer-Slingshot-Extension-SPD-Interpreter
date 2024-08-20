@@ -4,6 +4,7 @@ import javax.measure.Measure;
 import javax.measure.quantity.Quantity;
 
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
+import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.monitorrepository.MeasurementSpecification;
 import org.palladiosimulator.servicelevelobjective.ServiceLevelObjective;
 import org.palladiosimulator.spd.adjustments.models.rewards.SLOReward;
@@ -45,16 +46,17 @@ public class SloRewardEvaluator extends RewardEvaluator {
     @Override
     public double getReward() {
         if (violatesObjective(this.aggregatedMeasure)) {
-            return 0;
-        } else {
             return this.factor;
+        } else {
+            return 0;
         }
     }
 
     @Override
-    public void addMeasurement(SlingshotMeasuringValue measure) {
+    public void addMeasurement(MeasurementMade measurementMade) {
         // TODO IMPORTANT do some more sophisticated aggregation here, perhaps average with reset
         // after each interval? However, this will need to be done as measurement
+        SlingshotMeasuringValue measure = measurementMade.getEntity();
         MeasurementSpecification measurementSpecification = this.serviceLevelObjective.getMeasurementSpecification();
         if (measurementSpecification.getMonitor()
             .getMeasuringPoint()

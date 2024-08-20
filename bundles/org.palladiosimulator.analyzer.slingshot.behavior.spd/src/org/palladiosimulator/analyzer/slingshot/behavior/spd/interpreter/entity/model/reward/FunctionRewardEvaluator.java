@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
+import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.adjustments.models.rewards.BaseReward;
 import org.palladiosimulator.spd.adjustments.models.rewards.FunctionReward;
 
@@ -40,14 +40,33 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     class ExponentialFunction extends Function {
         @Override
         double getFunctionResult(List<Double> measures) {
+            assert measures.size() == 1;
             return Math.exp((double) measures.get(0));
+        }
+    }
+
+    class DivisionFunction extends Function {
+        @Override
+        double getFunctionResult(List<Double> measures) {
+            assert measures.size() == 2;
+            return measures.get(0) / measures.get(1);
+        }
+    }
+
+    class MultiplicationFunction extends Function {
+        @Override
+        double getFunctionResult(List<Double> measures) {
+            return measures.stream()
+                .reduce(1.0, (i, j) -> {
+                    return i * j;
+                });
         }
     }
 
     final Function function;
     final List<RewardEvaluator> inputRewards;
 
-    public FunctionRewardEvaluator(FunctionReward reward) throws Exception {
+    public FunctionRewardEvaluator(FunctionReward reward, RewardInterpreter rewardInterpreter) throws Exception {
         switch (reward.getAggregationMethod()) {
         case ADDITION -> {
             this.function = new AdditionFunction();
@@ -72,6 +91,19 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
             }
             this.function = new ExponentialFunction();
         }
+        case DIVISION -> {
+            if (reward.getRewards()
+                .size() != 2) {
+                LOGGER.error("Division takes only exactly two inputs, but " + reward.getRewards()
+                    .size() + " inputs were specified");
+                throw new Exception("Division takes only exactly two inputs, but " + reward.getRewards()
+                    .size() + " inputs were specified");
+            }
+            this.function = new DivisionFunction();
+        }
+        case MULTIPLICATION -> {
+            this.function = new MultiplicationFunction();
+        }
         default -> {
             LOGGER.error("Unexpected function type " + reward.getAggregationMethod() + " encountered for a reward ");
             throw new Exception(
@@ -80,7 +112,6 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
         }
         ;
         List<RewardEvaluator> inputRewards = new ArrayList<RewardEvaluator>();
-        RewardInterpreter rewardInterpreter = new RewardInterpreter();
         for (BaseReward nestedReward : reward.getRewards()) {
             inputRewards.add(rewardInterpreter.doSwitch(nestedReward));
         }
@@ -88,7 +119,7 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public double getReward() {
+    public double getReward() throws Exception {
         List<Double> inputs = new ArrayList<Double>(this.inputRewards.size());
         for (RewardEvaluator evaluator : this.inputRewards) {
             inputs.add(evaluator.getReward());
@@ -97,9 +128,9 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public void addMeasurement(SlingshotMeasuringValue measure) {
+    public void addMeasurement(MeasurementMade measurementMade) {
         for (RewardEvaluator evaluator : this.inputRewards) {
-            evaluator.addMeasurement(measure);
+            evaluator.addMeasurement(measurementMade);
         }
     }
 

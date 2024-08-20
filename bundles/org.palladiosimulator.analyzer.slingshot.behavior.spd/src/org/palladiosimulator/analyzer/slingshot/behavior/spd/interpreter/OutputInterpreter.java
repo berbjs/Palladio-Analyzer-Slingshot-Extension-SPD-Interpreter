@@ -35,8 +35,7 @@ final class OutputInterpreter {
                     .getId(),
                 usedModel.getInitalIntervalDelay() + usedModel.getInterval(), 0.f, usedModel.getInterval());
 
-        final ModelInterpreter modelInterpreter = new ModelInterpreter(trigger.getStimulus(),
-                scalingTriggerInterpreter);
+        final ModelInterpreter modelInterpreter = new ModelInterpreter(scalingTriggerInterpreter);
         final ModelEvaluator model = modelInterpreter.doSwitch(usedModel);
 
         return (new InterpretationResult()).scheduleEvent(event)
@@ -44,7 +43,7 @@ final class OutputInterpreter {
                 .name("simulationTimeReached"))
             .listenEvent(Subscriber.builder(MeasurementMade.class)
                 .name("measurementMade"))
-            .triggerChecker(new OutputInterpreterWrapper(model, trigger.getStimulus()));
+            .triggerChecker(new OutputInterpreterWrapper(model));
     }
 
     @SuppressWarnings("unchecked")
