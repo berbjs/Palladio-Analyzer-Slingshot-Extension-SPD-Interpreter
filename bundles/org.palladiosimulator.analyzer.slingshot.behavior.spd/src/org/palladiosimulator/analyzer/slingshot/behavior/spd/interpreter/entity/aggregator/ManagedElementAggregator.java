@@ -38,7 +38,7 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
         // TODO IMPORTANT change + enhance aggregation based on newly introduced types
         if (stimulus.getAggregationOverElements()
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
-            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(60, 10, 0.2);
+            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, windowSize / 2, 0.2);
         } else {
             this.aggregator = SlidingTimeWindowAggregation
                 .getFromAggregationMethod(stimulus.getAggregationOverElements(), windowSize, 0.0);
