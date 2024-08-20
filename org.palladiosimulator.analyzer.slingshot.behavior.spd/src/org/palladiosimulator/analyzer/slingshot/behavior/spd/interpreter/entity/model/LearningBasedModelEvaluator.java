@@ -23,6 +23,6 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
         for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
-        this.rewardEvaluator.addMeasurement(measurement.getEntity());
+        this.rewardEvaluator.addMeasurement(measurement);
     }
 }

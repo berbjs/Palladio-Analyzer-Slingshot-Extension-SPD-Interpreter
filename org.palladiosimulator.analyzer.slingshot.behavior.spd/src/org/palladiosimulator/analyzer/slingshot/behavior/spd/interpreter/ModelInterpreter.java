@@ -26,52 +26,56 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
-    private EList<Stimulus> stimuli;
     private ScalingTriggerInterpreter triggerInterpreter;
 
-    public ModelInterpreter(EList<Stimulus> stimuli, ScalingTriggerInterpreter triggerInterpreter) {
-        this.stimuli = stimuli;
+    public ModelInterpreter(ScalingTriggerInterpreter triggerInterpreter) {
         this.triggerInterpreter = triggerInterpreter;
     }
 
-    private List<ModelAggregatorWrapper<?>> getStimuliListeners() {
+    private List<ModelAggregatorWrapper<?>> getStimuliListeners(EList<Stimulus> stimuli) {
         List<ModelAggregatorWrapper<?>> stimuliListenerList = new ArrayList<>();
-        int windowSize = ((int) ((ModelBasedAdjustment) this.triggerInterpreter.policy.getAdjustmentType())
-            .getUsedModel()
-            .getInterval());
-        for (Stimulus stimulus : this.stimuli) {
-            if (stimulus instanceof AggregatedStimulus aggregatedStimulus) {
-                stimuliListenerList.add(
-                        new AnyStimulusAggregator<>(aggregatedStimulus, this.triggerInterpreter.policy.getTargetGroup(),
-                                windowSize, MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
-                                MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE));
-            } else if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
-                stimuliListenerList.add(new ManagedElementAggregator<>(managedElementsStateStimulus,
-                        this.triggerInterpreter.policy.getTargetGroup(), windowSize,
-                        MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
-                        MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE));
-            }
+        for (Stimulus stimulus : stimuli) {
+            stimuliListenerList.add(extracted(stimulus));
         }
         return stimuliListenerList;
     }
 
+    @SuppressWarnings("rawtypes")
+    public ModelAggregatorWrapper extracted(Stimulus stimulus) {
+        int windowSize = ((int) ((ModelBasedAdjustment) this.triggerInterpreter.policy.getAdjustmentType())
+            .getUsedModel()
+            .getInterval());
+        if (stimulus instanceof AggregatedStimulus aggregatedStimulus) {
+            return new AnyStimulusAggregator<>(aggregatedStimulus, this.triggerInterpreter.policy.getTargetGroup(),
+                    windowSize, MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
+                    MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
+        } else if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
+            return new ManagedElementAggregator<>(managedElementsStateStimulus,
+                    this.triggerInterpreter.policy.getTargetGroup(), windowSize,
+                    MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
+                    MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
+        }
+        return null; // TODO IMPORTANT FIXME
+    }
+
     private RewardEvaluator getRewardEvaluator(LearningBasedModel model) {
-        RewardInterpreter rewardInterpreter = new RewardInterpreter();
+        RewardInterpreter rewardInterpreter = new RewardInterpreter(this);
         return rewardInterpreter.doSwitch(model.getReward());
     }
 
     @Override
-    public ModelEvaluator caseRandomModel(RandomModel object) {
+    public ModelEvaluator caseRandomModel(RandomModel model) {
         return new RandomModelEvaluator();
     }
 
     @Override
-    public ModelEvaluator caseQThresholdsModel(QThresholdsModel object) {
-        return new QThresholdsModelEvaluator(object, getStimuliListeners(), getRewardEvaluator(object));
+    public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
+        return new QThresholdsModelEvaluator(model, getStimuliListeners(model.getInputs()), getRewardEvaluator(model));
     }
 
     @Override
-    public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel object) {
-        return new ImprovedQLearningModelEvaluator(object, getStimuliListeners(), getRewardEvaluator(object));
+    public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
+        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model.getInputs()),
+                getRewardEvaluator(model));
     }
 }
