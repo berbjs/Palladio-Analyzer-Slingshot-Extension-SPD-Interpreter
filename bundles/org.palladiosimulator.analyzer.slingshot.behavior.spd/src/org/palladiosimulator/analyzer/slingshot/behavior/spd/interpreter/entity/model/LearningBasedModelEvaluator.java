@@ -21,5 +21,9 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
         for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
+<<<<<<< Upstream, based on origin/master
+=======
+        this.rewardEvaluator.addMeasurement(measurement);
+>>>>>>> 21ff2c8 Improved Reward Evaluation + Model Interpretation
     }
 }
