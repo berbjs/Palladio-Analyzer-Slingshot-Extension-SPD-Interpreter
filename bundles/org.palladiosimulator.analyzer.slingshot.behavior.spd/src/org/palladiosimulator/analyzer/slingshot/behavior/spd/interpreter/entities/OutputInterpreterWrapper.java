@@ -3,7 +3,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entiti
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimulationTimeReached;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.models.ModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.adjustments.AdjustmentsFactory;
 import org.palladiosimulator.spd.adjustments.StepAdjustment;
@@ -12,13 +12,10 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 public class OutputInterpreterWrapper implements Filter {
     private final ModelEvaluator model;
 
-    private EList<Stimulus> stimuli;
-
     private static final Logger LOGGER = Logger.getLogger(OutputInterpreterWrapper.class);
 
     public OutputInterpreterWrapper(ModelEvaluator model, EList<Stimulus> stimuli) {
         this.model = model;
-        this.stimuli = stimuli;
     }
 
     @Override

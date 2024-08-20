@@ -54,7 +54,7 @@ public class SloRewardEvaluator extends RewardEvaluator {
     @Override
     public void addMeasurement(SlingshotMeasuringValue measure) {
         // TODO IMPORTANT do some more sophisticated aggregation here, perhaps average with reset
-        // after each interval?
+        // after each interval? However, this will need to be done as measurement
         MeasurementSpecification measurementSpecification = this.serviceLevelObjective.getMeasurementSpecification();
         if (measurementSpecification.getMonitor()
             .getMeasuringPoint()
