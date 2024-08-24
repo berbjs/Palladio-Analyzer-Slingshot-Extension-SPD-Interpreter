@@ -12,30 +12,30 @@ import org.palladiosimulator.analyzer.slingshot.core.api.SimulationDriver;
 import org.palladiosimulator.analyzer.slingshot.core.extension.SimulationBehaviorExtension;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.Subscribe;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcontract.OnEvent;
-import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.returntypes.Result;
 import org.palladiosimulator.spd.SPD;
 
 @OnEvent(when = RepeatedSimulationTimeReached.class, then = RepeatedSimulationTimeReached.class, cardinality = SINGLE)
 public class RepeatedSimulationTimeReachedRepeater implements SimulationBehaviorExtension {
-	private static final Logger LOGGER = Logger.getLogger(RepeatedSimulationTimeReached.class);
-	private final SimulationDriver driver;
+    private static final Logger LOGGER = Logger.getLogger(RepeatedSimulationTimeReached.class);
+    private final SimulationDriver driver;
 
-	@Inject
-	public RepeatedSimulationTimeReachedRepeater(final SimulationDriver driver, @Nullable final SPD spdModel) {
-		this.driver = driver;
-	}
+    @Inject
+    public RepeatedSimulationTimeReachedRepeater(final SimulationDriver driver, @Nullable final SPD spdModel) {
+        this.driver = driver;
+    }
 
-	@Subscribe
-	public Result<SpdBasedEvent> onRepeatedSimulationTimeReached(
-			final RepeatedSimulationTimeReached repeatedSimulationTimeReached) {
-		RepeatedSimulationTimeReached newRepeatedSimulationTimeReached = new RepeatedSimulationTimeReached(
-				repeatedSimulationTimeReached.getTargetGroupId(),
-				repeatedSimulationTimeReached.time() + repeatedSimulationTimeReached.getRepetitionTime(),
-				repeatedSimulationTimeReached.delay(), repeatedSimulationTimeReached.getRepetitionTime());
-		driver.registerEventHandler(
-				Subscriber.builder(RepeatedSimulationTimeReached.class).name("Simulation time loop").build());
-		return Result.of(newRepeatedSimulationTimeReached);
-	}
+    @Subscribe
+    public Result<SpdBasedEvent> onRepeatedSimulationTimeReached(
+            final RepeatedSimulationTimeReached repeatedSimulationTimeReached) {
+        RepeatedSimulationTimeReached newRepeatedSimulationTimeReached = new RepeatedSimulationTimeReached(
+                repeatedSimulationTimeReached.getTargetGroupId(),
+                repeatedSimulationTimeReached.time() + repeatedSimulationTimeReached.getRepetitionTime(),
+                repeatedSimulationTimeReached.delay(), repeatedSimulationTimeReached.getRepetitionTime());
+        // TODO IMPORTANT look at this
+        LOGGER.debug("Repeating the RepeatedSimulationTimeReached event: Received at "
+                + repeatedSimulationTimeReached.time() + ", Repeated at " + newRepeatedSimulationTimeReached.time());
+        return Result.of(newRepeatedSimulationTimeReached);
+    }
 
 }
