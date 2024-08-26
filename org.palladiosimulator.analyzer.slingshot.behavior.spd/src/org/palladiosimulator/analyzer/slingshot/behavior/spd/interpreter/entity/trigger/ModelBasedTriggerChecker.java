@@ -1,18 +1,36 @@
-package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities;
+package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger;
 
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimulationTimeReached;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.adjustments.AdjustmentsFactory;
 import org.palladiosimulator.spd.adjustments.StepAdjustment;
 
-public class OutputInterpreterWrapper implements Filter {
+/**
+ * This class listens to events of the type {@link RepeatedSimulationTimeReached} and
+ * {@link MeasurementMade} and handles them accordingly:
+ * 
+ * - Events of type {@link RepeatedSimulationTimeReached} will be forwarded to the given
+ * {@link ModelEvaluator} {@link #model} where a scaling decision is made and then returned. If
+ * necessary, a new adjustment with the returned adjustment value is created.
+ * 
+ * - Events of type {@link MeasurementMade} will also be forwarded to
+ * {@link ModelEvaluator#recordUsage(MeasurementMade)}, where they will be recorded (both for input
+ * aggregation and for the reward)
+ * 
+ * @author Jens Berberich
+ *
+ */
+public class ModelBasedTriggerChecker implements Filter {
     private final ModelEvaluator model;
 
-    private static final Logger LOGGER = Logger.getLogger(OutputInterpreterWrapper.class);
+    private static final Logger LOGGER = Logger.getLogger(ModelBasedTriggerChecker.class);
 
-    public OutputInterpreterWrapper(ModelEvaluator model) {
+    public ModelBasedTriggerChecker(ModelEvaluator model) {
         this.model = model;
     }
 
