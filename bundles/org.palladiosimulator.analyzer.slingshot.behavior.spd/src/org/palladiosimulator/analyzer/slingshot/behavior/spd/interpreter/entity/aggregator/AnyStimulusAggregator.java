@@ -7,29 +7,27 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Duration;
 
 import org.apache.log4j.Logger;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.OutputInterpreterWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.ModelBasedTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
-import org.palladiosimulator.metricspec.BaseMetricDescription;
-import org.palladiosimulator.metricspec.MetricSetDescription;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcmmeasuringpoint.OperationReference;
-import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
 import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.NumberOfElements;
 import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
 import org.palladiosimulator.spd.triggers.stimuli.QueueLength;
+import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
 /**
- * This class implements the base functionality for aggregating {@link ManagedElementsStateStimulus}
- * elements. Measurements for this elements need to be aggregated first, which is done by
- * {@link #aggregateMeasurement(MeasurementMade)}. Afterwards, {@link #getResult()} checks whether
- * enough measurements were made, and which value is aggregated.
+ * This class implements the base functionality for forwarding the latest measurement for
+ * non-aggregated stimuli. Measurements for this elements need to be aggregated first, which is done
+ * by {@link #aggregateMeasurement(MeasurementMade)}. Afterwards, {@link #getResult()} checks
+ * whether enough measurements were made, and which value is aggregated.
  * 
  * The precondition is that the measuring point, where the measurements are coming from, are inside
  * the target group. This is done in the {@link TargetGroupChecker} filter, that should be placed
@@ -40,7 +38,7 @@ import org.palladiosimulator.spd.triggers.stimuli.QueueLength;
  * @param <T>
  *            The concrete element the class is checking for.
  */
-public class AnyStimulusAggregator<T extends AggregatedStimulus> extends ModelAggregatorWrapper<T> {
+public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWrapper<T> {
     abstract class StimulusChecker {
         abstract Optional<Measure<Double, ?>> checkStimulus(MeasurementMade measurementMade);
     }
@@ -89,37 +87,32 @@ public class AnyStimulusAggregator<T extends AggregatedStimulus> extends ModelAg
 
     protected final WindowAggregation aggregator;
     private AnyStimulusAggregator<T>.StimulusChecker stimulusChecker;
-    private static final Logger LOGGER = Logger.getLogger(OutputInterpreterWrapper.class);
+    private static final Logger LOGGER = Logger.getLogger(ModelBasedTriggerChecker.class);
 
-    public AnyStimulusAggregator(final T stimulus, final TargetGroup targetGroup, int windowSize,
-            final MetricSetDescription metricSetDescription, final BaseMetricDescription baseMetricDescription) {
-        super(stimulus, targetGroup, metricSetDescription, baseMetricDescription);
-        // TODO IMPORTANT change + enhance aggregation based on newly introduced types
-        if (stimulus.getAggregatedStimulus() instanceof AggregatedStimulus
-                | stimulus.getAggregatedStimulus() instanceof ManagedElementsStateStimulus) {
-            LOGGER.error("AggregatedStimulus needs to contain a stimulus that is not by itself aggregated");
-            throw new IllegalArgumentException(
-                    "AggregatedStimulus needs to contain a stimulus that is not by itself aggregated");
+    public AnyStimulusAggregator(final T stimulus, int windowSize, AGGREGATIONMETHOD aggregationMethod) {
+        if (stimulus instanceof AggregatedStimulus | stimulus instanceof ManagedElementsStateStimulus) {
+            LOGGER.error("Function only for non-aggregated stimuli!");
+            throw new IllegalArgumentException("Function only for non-aggregated stimuli!");
         }
         // QueueLength, NumberOfElements, OperationResponseTime
-        else if (stimulus.getAggregatedStimulus() instanceof OperationResponseTime operationResponseTime) {
+        else if (stimulus instanceof OperationResponseTime operationResponseTime) {
             this.stimulusChecker = new OperationResponseTimeStimulusChecker(operationResponseTime);
             this.baseMetricDescription = MetricDescriptionConstants.RESPONSE_TIME_METRIC;
             this.metricSetDescription = MetricDescriptionConstants.RESPONSE_TIME_METRIC_TUPLE;
-        } else if (stimulus.getAggregatedStimulus() instanceof NumberOfElements numberOfElements) {
+        } else if (stimulus instanceof NumberOfElements numberOfElements) {
             this.stimulusChecker = new NumberOfElementsStimulusChecker(numberOfElements);
-        } else if (stimulus.getAggregatedStimulus() instanceof QueueLength queueLenght) {
+            this.baseMetricDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS;
+            this.metricSetDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS_OVER_TIME;
+        } else if (stimulus instanceof QueueLength queueLenght) {
             LOGGER.debug("Queue Length stimuli are not yet supported");
             // TODO IMPORTANT implement queue length aggregator
             this.baseMetricDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC;
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC_TUPLE;
         }
-        if (stimulus.getAggregationMethod()
-            .equals(AGGREGATIONMETHOD.AVERAGE)) {
+        if (aggregationMethod.equals(AGGREGATIONMETHOD.AVERAGE)) {
             this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, windowSize / 2, 0.2);
         } else {
-            this.aggregator = SlidingTimeWindowAggregation.getFromAggregationMethod(stimulus.getAggregationMethod(),
-                    windowSize, 0.0);
+            this.aggregator = SlidingTimeWindowAggregation.getFromAggregationMethod(aggregationMethod, windowSize, 0.0);
         }
     }
 

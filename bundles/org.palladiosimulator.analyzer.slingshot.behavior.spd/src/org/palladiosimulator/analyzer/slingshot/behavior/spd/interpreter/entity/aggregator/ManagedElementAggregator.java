@@ -7,12 +7,14 @@ import javax.measure.quantity.Duration;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.metricspec.BaseMetricDescription;
-import org.palladiosimulator.metricspec.MetricSetDescription;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
-import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
+import org.palladiosimulator.spd.triggers.stimuli.CPUUtilization;
+import org.palladiosimulator.spd.triggers.stimuli.HDDUtilization;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
+import org.palladiosimulator.spd.triggers.stimuli.MemoryUtilization;
+import org.palladiosimulator.spd.triggers.stimuli.NetworkUtilization;
+import org.palladiosimulator.spd.triggers.stimuli.TaskCount;
 
 /**
  * This class implements the base functionality for aggregating {@link ManagedElementsStateStimulus}
@@ -32,10 +34,27 @@ import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> extends ModelAggregatorWrapper<T> {
     protected final WindowAggregation aggregator;
 
-    public ManagedElementAggregator(final T stimulus, final TargetGroup targetGroup, int windowSize,
-            final MetricSetDescription metricSetDescription, final BaseMetricDescription baseMetricDescription) {
-        super(stimulus, targetGroup, metricSetDescription, baseMetricDescription);
-        // TODO IMPORTANT change + enhance aggregation based on newly introduced types
+    public ManagedElementAggregator(final T stimulus, int windowSize) {
+        if (stimulus instanceof TaskCount) {
+            // TODO IMPORTANT set metricSetDescription + baseMetricDescription
+            this.metricSetDescription = MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC_TUPLE;
+            this.baseMetricDescription = MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC;
+        } else if (stimulus instanceof CPUUtilization) {
+            this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
+            this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
+        } else if (stimulus instanceof HDDUtilization) {
+            // TODO IMPORTANT verify correctly set metricSetDescription + baseMetricDescription
+            this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
+            this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
+        } else if (stimulus instanceof MemoryUtilization) {
+            // TODO IMPORTANT set metricSetDescription + baseMetricDescription
+            this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
+            this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
+        } else if (stimulus instanceof NetworkUtilization) {
+            // TODO IMPORTANT set metricSetDescription + baseMetricDescription
+            this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
+            this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
+        }
         if (stimulus.getAggregationOverElements()
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
             this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, windowSize / 2, 0.2);
