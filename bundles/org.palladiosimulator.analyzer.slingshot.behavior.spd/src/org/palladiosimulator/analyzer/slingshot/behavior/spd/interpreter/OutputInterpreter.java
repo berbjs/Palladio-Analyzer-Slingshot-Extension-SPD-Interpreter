@@ -2,8 +2,8 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ScalingTriggerInterpreter.InterpretationResult;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.OutputInterpreterWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.ModelBasedTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.adjustments.AdjustmentType;
@@ -43,7 +43,7 @@ final class OutputInterpreter {
                 .name("simulationTimeReached"))
             .listenEvent(Subscriber.builder(MeasurementMade.class)
                 .name("measurementMade"))
-            .triggerChecker(new OutputInterpreterWrapper(model));
+            .triggerChecker(new ModelBasedTriggerChecker(model));
     }
 
     @SuppressWarnings("unchecked")
