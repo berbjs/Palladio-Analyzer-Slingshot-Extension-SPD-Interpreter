@@ -11,7 +11,7 @@ public class UtilizationRewardEvaluator extends RewardEvaluator {
     private ModelAggregatorWrapper aggregator;
 
     public UtilizationRewardEvaluator(UtilizationReward object, ModelInterpreter modelInterpreter) {
-        this.aggregator = modelInterpreter.extracted(object.getStimulus());
+        this.aggregator = modelInterpreter.getAggregatorForStimulus(object.getStimulus());
     }
 
     @Override
