@@ -9,7 +9,4 @@ Require-Bundle: org.palladiosimulator.analyzer.slingshot.common;bundle-version="
  org.palladiosimulator.spd,
  org.palladiosimulator.monitorrepository,
  org.palladiosimulator.analyzer.slingshot.eventdriver
-Export-Package: org.palladiosimulator.analyzer.slingshot.behavior.spd.data,
- org.palladiosimulator.analyzer.slingshot.behavior.spd.data.adjustment
-Import-Package: org.apache.log4j,
- org.palladiosimulator.analyzer.slingshot.core.api
+Export-Package: org.palladiosimulator.analyzer.slingshot.behavior.spd.data
