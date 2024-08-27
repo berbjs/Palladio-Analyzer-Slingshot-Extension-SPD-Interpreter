@@ -32,7 +32,7 @@ public class SlidingTimeWindowAggregation extends AbstractWindowAggregation {
     private final double durationNoEmit; // determines the emitting frequency
     private final Function<Collection<DataPoint>, Double> aggregationFunction;
 
-    public SlidingTimeWindowAggregation(int winSizeSeconds, double noEmitDuration,
+    public SlidingTimeWindowAggregation(double winSizeSeconds, double noEmitDuration,
             Function<Collection<DataPoint>, Double> aggrFunction) {
         this.window = new LinkedList<>();
         this.windowSizeInSeconds = winSizeSeconds;
@@ -55,7 +55,7 @@ public class SlidingTimeWindowAggregation extends AbstractWindowAggregation {
     }
 
     public static SlidingTimeWindowAggregation getFromAggregationMethod(final AGGREGATIONMETHOD aggregationMethod,
-            final int winSizeSeconds, final double noEmitDuration) {
+            final double winSizeSeconds, final double noEmitDuration) {
         return switch (aggregationMethod) {
         case MIN -> new SlidingTimeWindowAggregation(winSizeSeconds, noEmitDuration, new MinAggregation());
         case AVERAGE -> new SlidingTimeWindowAggregation(winSizeSeconds, noEmitDuration, new MeanAggregation());

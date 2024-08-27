@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.spd.adjustments.models.rewards.BaseReward;
-import org.palladiosimulator.spd.adjustments.models.rewards.FunctionReward;
+import org.palladiosimulator.spd.models.rewards.BaseReward;
+import org.palladiosimulator.spd.models.rewards.FunctionReward;
 
 public class FunctionRewardEvaluator extends RewardEvaluator {
 

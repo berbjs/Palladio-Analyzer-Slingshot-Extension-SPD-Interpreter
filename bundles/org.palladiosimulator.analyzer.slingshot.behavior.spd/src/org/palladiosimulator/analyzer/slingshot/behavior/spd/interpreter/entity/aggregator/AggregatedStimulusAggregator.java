@@ -22,7 +22,7 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
  *            The concrete element the class is checking for.
  */
 public class AggregatedStimulusAggregator<T extends AggregatedStimulus> extends AnyStimulusAggregator<Stimulus> {
-    public AggregatedStimulusAggregator(final T stimulus, int windowSize) {
+    public AggregatedStimulusAggregator(final T stimulus, final double windowSize) {
         super(stimulus.getAggregatedStimulus(), windowSize, stimulus.getAggregationMethod());
     }
 }

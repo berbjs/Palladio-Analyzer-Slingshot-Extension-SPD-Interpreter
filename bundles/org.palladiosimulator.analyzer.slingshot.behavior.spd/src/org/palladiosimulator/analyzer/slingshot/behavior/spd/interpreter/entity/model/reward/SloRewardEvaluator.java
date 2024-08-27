@@ -7,7 +7,7 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotM
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.monitorrepository.MeasurementSpecification;
 import org.palladiosimulator.servicelevelobjective.ServiceLevelObjective;
-import org.palladiosimulator.spd.adjustments.models.rewards.SLOReward;
+import org.palladiosimulator.spd.models.rewards.SLOReward;
 
 /**
  * 

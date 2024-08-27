@@ -7,8 +7,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.spd.adjustments.AdjustmentsFactory;
-import org.palladiosimulator.spd.adjustments.StepAdjustment;
+import org.palladiosimulator.spd.ModelBasedScalingPolicy;
 
 /**
  * This class listens to events of the type {@link RepeatedSimulationTimeReached} and
@@ -46,15 +45,9 @@ public class ModelBasedTriggerChecker implements Filter {
                 LOGGER.info("Some aggregator was unable to be aggregated");
                 return FilterResult.disregard(event.getEventToFilter());
             }
-            if (!(event.getState()
-                .getScalingPolicy()
-                .getAdjustmentType() instanceof StepAdjustment stepAdjustment)
-                    || (stepAdjustment.getStepValue() != value)) {
-                StepAdjustment newAdjustment = AdjustmentsFactory.eINSTANCE.createStepAdjustment();
-                newAdjustment.setStepValue(value);
-                event.getState()
-                    .getScalingPolicy()
-                    .setAdjustmentType(newAdjustment);
+            if (event.getState()
+                .getScalingPolicy() instanceof ModelBasedScalingPolicy modelBasedScalingPolicy) {
+                modelBasedScalingPolicy.setAdjustment(value);
             }
         } else if (event.getEventToFilter() instanceof MeasurementMade measurementMade) {
             // TODO IMPORTANT do the aggregation here

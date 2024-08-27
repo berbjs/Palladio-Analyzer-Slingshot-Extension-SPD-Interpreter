@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardEvaluator;
-import org.palladiosimulator.spd.adjustments.models.QThresholdsModel;
+import org.palladiosimulator.spd.models.QThresholdsModel;
 
 public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 

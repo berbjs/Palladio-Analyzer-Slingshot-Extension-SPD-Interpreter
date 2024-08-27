@@ -14,12 +14,11 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.RandomModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardInterpreter;
-import org.palladiosimulator.spd.adjustments.ModelBasedAdjustment;
-import org.palladiosimulator.spd.adjustments.models.ImprovedQLearningModel;
-import org.palladiosimulator.spd.adjustments.models.LearningBasedModel;
-import org.palladiosimulator.spd.adjustments.models.QThresholdsModel;
-import org.palladiosimulator.spd.adjustments.models.RandomModel;
-import org.palladiosimulator.spd.adjustments.models.util.ModelsSwitch;
+import org.palladiosimulator.spd.models.ImprovedQLearningModel;
+import org.palladiosimulator.spd.models.LearningBasedModel;
+import org.palladiosimulator.spd.models.QThresholdsModel;
+import org.palladiosimulator.spd.models.RandomModel;
+import org.palladiosimulator.spd.models.util.ModelsSwitch;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
 import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
@@ -27,25 +26,17 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
-    private ScalingTriggerInterpreter triggerInterpreter;
-
-    public ModelInterpreter(ScalingTriggerInterpreter triggerInterpreter) {
-        this.triggerInterpreter = triggerInterpreter;
-    }
-
-    private List<ModelAggregatorWrapper<?>> getStimuliListeners(EList<Stimulus> stimuli) {
+    private List<ModelAggregatorWrapper<?>> getStimuliListeners(EList<Stimulus> stimuli, LearningBasedModel model) {
         List<ModelAggregatorWrapper<?>> stimuliListenerList = new ArrayList<>();
-        for (Stimulus stimulus : stimuli) {
-            stimuliListenerList.add(getAggregatorForStimulus(stimulus));
+        for (Stimulus stimulus : model.getInputs()) {
+            stimuliListenerList.add(getAggregatorForStimulus(stimulus, model));
         }
         return stimuliListenerList;
     }
 
     @SuppressWarnings("rawtypes")
-    public ModelAggregatorWrapper getAggregatorForStimulus(Stimulus stimulus) {
-        int windowSize = ((int) ((ModelBasedAdjustment) this.triggerInterpreter.policy.getAdjustmentType())
-            .getUsedModel()
-            .getInterval());
+    public ModelAggregatorWrapper getAggregatorForStimulus(Stimulus stimulus, LearningBasedModel model) {
+        double windowSize = model.getInterval();
         if (stimulus instanceof AggregatedStimulus aggregatedStimulus) {
             return new AggregatedStimulusAggregator<>(aggregatedStimulus, windowSize);
         } else if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
@@ -58,7 +49,7 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
     }
 
     private RewardEvaluator getRewardEvaluator(LearningBasedModel model) {
-        RewardInterpreter rewardInterpreter = new RewardInterpreter(this);
+        RewardInterpreter rewardInterpreter = new RewardInterpreter(this, model);
         return rewardInterpreter.doSwitch(model.getReward());
     }
 
@@ -69,12 +60,13 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getStimuliListeners(model.getInputs()), getRewardEvaluator(model));
+        return new QThresholdsModelEvaluator(model, getStimuliListeners(model.getInputs(), model),
+                getRewardEvaluator(model));
     }
 
     @Override
     public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
-        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model.getInputs()),
+        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model.getInputs(), model),
                 getRewardEvaluator(model));
     }
 }

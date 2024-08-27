@@ -3,15 +3,17 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.spd.adjustments.models.rewards.UtilizationReward;
+import org.palladiosimulator.spd.models.LearningBasedModel;
+import org.palladiosimulator.spd.models.rewards.UtilizationReward;
 
 public class UtilizationRewardEvaluator extends RewardEvaluator {
 
     @SuppressWarnings("rawtypes")
     private ModelAggregatorWrapper aggregator;
 
-    public UtilizationRewardEvaluator(UtilizationReward object, ModelInterpreter modelInterpreter) {
-        this.aggregator = modelInterpreter.getAggregatorForStimulus(object.getStimulus());
+    public UtilizationRewardEvaluator(UtilizationReward object, ModelInterpreter modelInterpreter,
+            LearningBasedModel model) {
+        this.aggregator = modelInterpreter.getAggregatorForStimulus(object.getStimulus(), model);
     }
 
     @Override

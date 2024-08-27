@@ -13,7 +13,6 @@ import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
 import org.palladiosimulator.spd.ScalingPolicy;
 import org.palladiosimulator.spd.triggers.ComposedTrigger;
 import org.palladiosimulator.spd.triggers.LogicalOperator;
-import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 import org.palladiosimulator.spd.triggers.SimpleFireOnTrend;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.util.TriggersSwitch;
@@ -46,11 +45,6 @@ public class ScalingTriggerInterpreter extends TriggersSwitch<ScalingTriggerInte
     public InterpretationResult caseSimpleFireOnTrend(final SimpleFireOnTrend object) {
         // TODO Auto-generated method stub
         return super.caseSimpleFireOnTrend(object);
-    }
-
-    @Override
-    public InterpretationResult caseSimpleFireOnOutput(SimpleFireOnOutput object) {
-        return OutputInterpreter.getInterpretationResult(this, object);
     }
 
     static final class InterpretationResult {
