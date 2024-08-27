@@ -89,7 +89,7 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
     private AnyStimulusAggregator<T>.StimulusChecker stimulusChecker;
     private static final Logger LOGGER = Logger.getLogger(ModelBasedTriggerChecker.class);
 
-    public AnyStimulusAggregator(final T stimulus, int windowSize, AGGREGATIONMETHOD aggregationMethod) {
+    public AnyStimulusAggregator(final T stimulus, double windowSize, AGGREGATIONMETHOD aggregationMethod) {
         if (stimulus instanceof AggregatedStimulus | stimulus instanceof ManagedElementsStateStimulus) {
             LOGGER.error("Function only for non-aggregated stimuli!");
             throw new IllegalArgumentException("Function only for non-aggregated stimuli!");

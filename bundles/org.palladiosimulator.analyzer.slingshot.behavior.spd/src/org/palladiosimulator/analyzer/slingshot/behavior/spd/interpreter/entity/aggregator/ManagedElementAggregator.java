@@ -34,7 +34,7 @@ import org.palladiosimulator.spd.triggers.stimuli.TaskCount;
 public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> extends ModelAggregatorWrapper<T> {
     protected final WindowAggregation aggregator;
 
-    public ManagedElementAggregator(final T stimulus, int windowSize) {
+    public ManagedElementAggregator(final T stimulus, final double windowSize) {
         if (stimulus instanceof TaskCount) {
             // TODO IMPORTANT set metricSetDescription + baseMetricDescription
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC_TUPLE;

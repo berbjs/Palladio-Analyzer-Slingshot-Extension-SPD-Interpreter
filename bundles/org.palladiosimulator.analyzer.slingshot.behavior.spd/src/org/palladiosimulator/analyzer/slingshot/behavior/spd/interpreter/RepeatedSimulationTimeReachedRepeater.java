@@ -32,7 +32,6 @@ public class RepeatedSimulationTimeReachedRepeater implements SimulationBehavior
                 repeatedSimulationTimeReached.getTargetGroupId(),
                 repeatedSimulationTimeReached.time() + repeatedSimulationTimeReached.getRepetitionTime(),
                 repeatedSimulationTimeReached.delay(), repeatedSimulationTimeReached.getRepetitionTime());
-        // TODO IMPORTANT look at this
         LOGGER.debug("Repeating the RepeatedSimulationTimeReached event: Received at "
                 + repeatedSimulationTimeReached.time() + ", Repeated at " + newRepeatedSimulationTimeReached.time());
         return Result.of(newRepeatedSimulationTimeReached);

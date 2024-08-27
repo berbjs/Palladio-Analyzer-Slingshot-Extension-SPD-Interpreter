@@ -31,9 +31,9 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.semanticspd.Configuration;
 import org.palladiosimulator.semanticspd.ElasticInfrastructureCfg;
 import org.palladiosimulator.semanticspd.SemanticspdFactory;
+import org.palladiosimulator.spd.ModelBasedScalingPolicy;
 import org.palladiosimulator.spd.SPD;
 import org.palladiosimulator.spd.ScalingPolicy;
-import org.palladiosimulator.spd.triggers.SimpleFireOnOutput;
 
 @OnEvent(when = ModelAdjustmentRequested.class, then = ModelAdjusted.class, cardinality = EventCardinality.SINGLE)
 public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
@@ -54,12 +54,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
             final @Nullable Configuration semanticConfiguration, // Provided by
                                                                  // SemanticModelProvider
             final @Nullable SPD spd, final QVToReconfigurator reconfigurator,
-            @Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) { // This
-                                                                                                           // one
-                                                                                                           // is
-                                                                                                           // provided
-                                                                                                           // by
-                                                                                                           // SpdAdjustorModule.getTransformations
+            @Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) {
         this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
         this.allocation = allocation;
         this.semanticConfiguration = semanticConfiguration;
@@ -84,11 +79,9 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
          * with varying magnitude. It changes the scaling policy, thus a new model will need to be
          * cached
          */
-        if (event.getScalingPolicy()
-            .getScalingTrigger() instanceof SimpleFireOnOutput) {
-            LOGGER.debug("SimpleFireOnOutput Trigger detected, caching new model!");
-            final Configuration configuration = this.semanticConfiguration;// createConfiguration(event,
-                                                                           // environment);
+        if (event.getScalingPolicy() instanceof ModelBasedScalingPolicy modelBasedScalingPolicy) {
+            LOGGER.debug("Model-based scaling policy detected, caching new adjustment!");
+            final Configuration configuration = this.semanticConfiguration;
             configuration.setEnactedPolicy(event.getScalingPolicy());
             this.reconfigurator.getModelCache()
                 .storeModel(configuration);
@@ -247,7 +240,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
             .get(0)
             .getEncapsulatedComponent__AssemblyContext()
             .getRepository__RepositoryComponent()); // TODO: What to do here?
-        configuration.setEnactedPolicy(event.getScalingPolicy());
+        configuration.setEnactedPolicy((ScalingPolicy) event.getScalingPolicy());
 
         final ElasticInfrastructureCfg targetGroupConfig = createElasticInfrastructureCfg(environment);
         configuration.getTargetCfgs()
