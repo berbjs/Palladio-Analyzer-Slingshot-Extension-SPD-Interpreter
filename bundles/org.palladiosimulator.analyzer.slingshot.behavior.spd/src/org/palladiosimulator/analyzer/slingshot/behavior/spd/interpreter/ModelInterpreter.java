@@ -54,7 +54,7 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseRandomModel(RandomModel model) {
-        return new RandomModelEvaluator();
+        return new RandomModelEvaluator(model);
     }
 
     @Override
