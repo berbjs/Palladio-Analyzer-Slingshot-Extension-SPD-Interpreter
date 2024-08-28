@@ -36,7 +36,6 @@ public class ModelBasedTriggerChecker implements Filter {
     @Override
     public FilterResult doProcess(FilterObjectWrapper event) {
         if (event.getEventToFilter() instanceof RepeatedSimulationTimeReached) {
-            // TODO IMPORTANT do the model evaluation (+ update) here
             int value;
             try {
                 value = model.getDecision();
@@ -50,7 +49,6 @@ public class ModelBasedTriggerChecker implements Filter {
                 modelBasedScalingPolicy.setAdjustment(value);
             }
         } else if (event.getEventToFilter() instanceof MeasurementMade measurementMade) {
-            // TODO IMPORTANT do the aggregation here
             LOGGER.debug("Received a datapoint collection event!");
             this.model.recordUsage(measurementMade);
             return FilterResult.disregard(event.getEventToFilter());

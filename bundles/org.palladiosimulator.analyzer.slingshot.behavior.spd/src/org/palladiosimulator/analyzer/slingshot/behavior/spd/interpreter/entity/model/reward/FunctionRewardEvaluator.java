@@ -128,9 +128,9 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public void addMeasurement(MeasurementMade measurementMade) {
+    public void recordMeasurement(MeasurementMade measurementMade) {
         for (RewardEvaluator evaluator : this.inputRewards) {
-            evaluator.addMeasurement(measurementMade);
+            evaluator.recordMeasurement(measurementMade);
         }
     }
 

@@ -28,7 +28,7 @@ public class UtilizationRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public void addMeasurement(MeasurementMade measurementMade) {
+    public void recordMeasurement(MeasurementMade measurementMade) {
         this.aggregator.aggregateMeasurement(measurementMade);
     }
 

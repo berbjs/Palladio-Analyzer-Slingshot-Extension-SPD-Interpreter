@@ -79,7 +79,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
          * with varying magnitude. It changes the scaling policy, thus a new model will need to be
          * cached
          */
-        if (event.getScalingPolicy() instanceof ModelBasedScalingPolicy modelBasedScalingPolicy) {
+        if (event.getScalingPolicy() instanceof ModelBasedScalingPolicy) {
             LOGGER.debug("Model-based scaling policy detected, caching new adjustment!");
             final Configuration configuration = this.semanticConfiguration;
             configuration.setEnactedPolicy(event.getScalingPolicy());
@@ -240,7 +240,7 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
             .get(0)
             .getEncapsulatedComponent__AssemblyContext()
             .getRepository__RepositoryComponent()); // TODO: What to do here?
-        configuration.setEnactedPolicy((ScalingPolicy) event.getScalingPolicy());
+        configuration.setEnactedPolicy(event.getScalingPolicy());
 
         final ElasticInfrastructureCfg targetGroupConfig = createElasticInfrastructureCfg(environment);
         configuration.getTargetCfgs()

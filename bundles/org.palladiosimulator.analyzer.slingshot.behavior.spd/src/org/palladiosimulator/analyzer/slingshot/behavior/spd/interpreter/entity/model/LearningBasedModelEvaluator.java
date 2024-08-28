@@ -11,8 +11,7 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
     protected final List<ModelAggregatorWrapper<?>> aggregatorList;
     protected final RewardEvaluator rewardEvaluator;
 
-    public LearningBasedModelEvaluator(List<ModelAggregatorWrapper<?>> stimuliListeners,
-            RewardEvaluator rewardEvaluator) {
+    LearningBasedModelEvaluator(List<ModelAggregatorWrapper<?>> stimuliListeners, RewardEvaluator rewardEvaluator) {
         super();
         this.aggregatorList = stimuliListeners;
         this.rewardEvaluator = rewardEvaluator;
@@ -23,6 +22,6 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
         for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
-        this.rewardEvaluator.addMeasurement(measurement);
+        this.rewardEvaluator.recordMeasurement(measurement);
     }
 }

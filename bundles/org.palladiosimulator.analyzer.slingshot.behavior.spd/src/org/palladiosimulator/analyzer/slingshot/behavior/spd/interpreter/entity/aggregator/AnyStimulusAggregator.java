@@ -8,7 +8,6 @@ import javax.measure.quantity.Duration;
 
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.ModelBasedTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
@@ -87,10 +86,10 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
 
     protected final WindowAggregation aggregator;
     private AnyStimulusAggregator<T>.StimulusChecker stimulusChecker;
-    private static final Logger LOGGER = Logger.getLogger(ModelBasedTriggerChecker.class);
+    private static final Logger LOGGER = Logger.getLogger(AnyStimulusAggregator.class);
 
     public AnyStimulusAggregator(final T stimulus, double windowSize, AGGREGATIONMETHOD aggregationMethod) {
-        if (stimulus instanceof AggregatedStimulus | stimulus instanceof ManagedElementsStateStimulus) {
+        if (stimulus instanceof AggregatedStimulus || stimulus instanceof ManagedElementsStateStimulus) {
             LOGGER.error("Function only for non-aggregated stimuli!");
             throw new IllegalArgumentException("Function only for non-aggregated stimuli!");
         }
@@ -103,7 +102,7 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
             this.stimulusChecker = new NumberOfElementsStimulusChecker(numberOfElements);
             this.baseMetricDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS;
             this.metricSetDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS_OVER_TIME;
-        } else if (stimulus instanceof QueueLength queueLenght) {
+        } else if (stimulus instanceof QueueLength) {
             LOGGER.debug("Queue Length stimuli are not yet supported");
             // TODO IMPORTANT implement queue length aggregator
             this.baseMetricDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC;

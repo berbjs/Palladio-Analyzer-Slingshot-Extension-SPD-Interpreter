@@ -16,7 +16,7 @@ public class StaticRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public void addMeasurement(MeasurementMade measurementMade) {
+    public void recordMeasurement(MeasurementMade measurementMade) {
         // As the reward is static, no measurement aggregation is performed
         return;
     }

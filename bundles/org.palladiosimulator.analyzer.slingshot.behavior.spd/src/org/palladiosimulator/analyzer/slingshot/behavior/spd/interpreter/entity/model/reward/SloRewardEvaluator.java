@@ -53,7 +53,7 @@ public class SloRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public void addMeasurement(MeasurementMade measurementMade) {
+    public void recordMeasurement(MeasurementMade measurementMade) {
         // TODO IMPORTANT do some more sophisticated aggregation here, perhaps average with reset
         // after each interval? However, this will need to be done as measurement
         SlingshotMeasuringValue measure = measurementMade.getEntity();

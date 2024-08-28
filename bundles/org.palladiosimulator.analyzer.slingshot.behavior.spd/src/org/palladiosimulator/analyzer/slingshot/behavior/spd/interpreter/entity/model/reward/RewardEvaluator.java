@@ -5,5 +5,5 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementM
 public abstract class RewardEvaluator {
     public abstract double getReward() throws Exception;
 
-    public abstract void addMeasurement(MeasurementMade measurementMade);
+    public abstract void recordMeasurement(MeasurementMade measurementMade);
 }

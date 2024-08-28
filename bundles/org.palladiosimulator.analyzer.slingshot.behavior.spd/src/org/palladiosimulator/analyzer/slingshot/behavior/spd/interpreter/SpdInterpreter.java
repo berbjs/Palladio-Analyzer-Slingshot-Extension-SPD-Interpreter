@@ -63,7 +63,6 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
 
     @Override
     public InterpretationResult caseModelBasedScalingPolicy(ModelBasedScalingPolicy policy) {
-        // TODO IMPORTANT Auto-generated method stub
         LOGGER.debug("Interpreting ReactiveScalingPolicy Model " + policy.getEntityName() + "[" + policy.getId() + "]");
 
         if (!policy.isActive()) {
