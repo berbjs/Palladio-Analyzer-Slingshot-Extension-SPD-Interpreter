@@ -14,36 +14,38 @@ import org.palladiosimulator.spd.targets.TargetGroup;
 
 public class TargetGroupChecker implements Filter {
 
-	private final TargetGroup targetGroup;
-	private final MeasuringPointInsideTargetGroup measuringPointInsideTargetGroupSwitch;
-	
-	public TargetGroupChecker(final TargetGroup targetGroup) {
-		this.targetGroup = Objects.requireNonNull(targetGroup);
-		this.measuringPointInsideTargetGroupSwitch = new MeasuringPointInsideTargetGroup(targetGroup);
-	}
-	
-	@Override
-	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
-		final DESEvent event = objectWrapper.getEventToFilter();
-		if (event instanceof final MeasurementMade mm) {
-			if (this.measuringPointInsideTargetGroupSwitch.doSwitch(mm.getEntity().getMeasuringPoint())) {
-				return FilterResult.success(event);
-			}
-			return FilterResult.disregard("The measurement is not inside this target group");
-		}
-		final SimulationTimeReached simulationTimeReached;
-		if (event instanceof RepeatedSimulationTimeReached){
-			RepeatedSimulationTimeReached tempRepeatedSimulationTimeReached = (RepeatedSimulationTimeReached) event;
-			simulationTimeReached = new SimulationTimeReached(tempRepeatedSimulationTimeReached.getTargetGroupId(),
-					tempRepeatedSimulationTimeReached.time(), tempRepeatedSimulationTimeReached.delay());
-		} else if ((event instanceof SimulationTimeReached || event instanceof RepeatedSimulationTimeReached)) {
-			simulationTimeReached = (SimulationTimeReached) event;
-		} else {
-			return FilterResult.disregard("The event can only be checked if it is a MeasurementMade OR SimulationTimeReached at the moment.");
-		}
-		if (simulationTimeReached.getTargetGroupId().equals(targetGroup.getId())) {
-			return FilterResult.success(event);
-		}
-		return FilterResult.disregard("The target group does not match the event.");
-	}
+    private final TargetGroup targetGroup;
+    private final MeasuringPointInsideTargetGroup measuringPointInsideTargetGroupSwitch;
+
+    public TargetGroupChecker(final TargetGroup targetGroup) {
+        this.targetGroup = Objects.requireNonNull(targetGroup);
+        this.measuringPointInsideTargetGroupSwitch = new MeasuringPointInsideTargetGroup(targetGroup);
+    }
+
+    @Override
+    public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
+        final DESEvent event = objectWrapper.getEventToFilter();
+        if (event instanceof final MeasurementMade mm) {
+            if (this.measuringPointInsideTargetGroupSwitch.doSwitch(mm.getEntity()
+                .getMeasuringPoint())) {
+                return FilterResult.success(event);
+            }
+            return FilterResult.disregard("The measurement is not inside this target group");
+        }
+        final SimulationTimeReached simulationTimeReached;
+        if (event instanceof RepeatedSimulationTimeReached repeatedSimulationTimeReached) {
+            simulationTimeReached = new SimulationTimeReached(repeatedSimulationTimeReached.getTargetGroupId(),
+                    repeatedSimulationTimeReached.time(), repeatedSimulationTimeReached.delay());
+        } else if ((event instanceof SimulationTimeReached || event instanceof RepeatedSimulationTimeReached)) {
+            simulationTimeReached = (SimulationTimeReached) event;
+        } else {
+            return FilterResult.disregard(
+                    "The event can only be checked if it is a MeasurementMade OR SimulationTimeReached at the moment.");
+        }
+        if (simulationTimeReached.getTargetGroupId()
+            .equals(targetGroup.getId())) {
+            return FilterResult.success(event);
+        }
+        return FilterResult.disregard("The target group does not match the event.");
+    }
 }

@@ -3,7 +3,6 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AggregatedStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AnyStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ManagedElementAggregator;
@@ -12,8 +11,6 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.QThresholdsModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.RandomModelEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardInterpreter;
 import org.palladiosimulator.spd.models.ImprovedQLearningModel;
 import org.palladiosimulator.spd.models.LearningBasedModel;
 import org.palladiosimulator.spd.models.QThresholdsModel;
@@ -26,7 +23,7 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
-    private List<ModelAggregatorWrapper<?>> getStimuliListeners(EList<Stimulus> stimuli, LearningBasedModel model) {
+    private List<ModelAggregatorWrapper<?>> getStimuliListeners(LearningBasedModel model) {
         List<ModelAggregatorWrapper<?>> stimuliListenerList = new ArrayList<>();
         for (Stimulus stimulus : model.getInputs()) {
             stimuliListenerList.add(getAggregatorForStimulus(stimulus, model));
@@ -48,14 +45,6 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
         }
     }
 
-<<<<<<< Upstream, based on origin/master
-=======
-    private RewardEvaluator getRewardEvaluator(LearningBasedModel model) {
-        RewardInterpreter rewardInterpreter = new RewardInterpreter(this, model);
-        return rewardInterpreter.doSwitch(model.getReward());
-    }
-
->>>>>>> 844da26 Adjustments to support the new ScalingTriggers
     @Override
     public ModelEvaluator caseRandomModel(RandomModel model) {
         return new RandomModelEvaluator();
@@ -63,21 +52,11 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-<<<<<<< Upstream, based on origin/master
-        return new QThresholdsModelEvaluator(model, getStimuliListeners());
-=======
-        return new QThresholdsModelEvaluator(model, getStimuliListeners(model.getInputs(), model),
-                getRewardEvaluator(model));
->>>>>>> 844da26 Adjustments to support the new ScalingTriggers
+        return new QThresholdsModelEvaluator(model, getStimuliListeners(model), getRewardEvaluator(model));
     }
 
     @Override
     public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
-<<<<<<< Upstream, based on origin/master
-        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners());
-=======
-        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model.getInputs(), model),
-                getRewardEvaluator(model));
->>>>>>> 844da26 Adjustments to support the new ScalingTriggers
+        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model));
     }
 }
