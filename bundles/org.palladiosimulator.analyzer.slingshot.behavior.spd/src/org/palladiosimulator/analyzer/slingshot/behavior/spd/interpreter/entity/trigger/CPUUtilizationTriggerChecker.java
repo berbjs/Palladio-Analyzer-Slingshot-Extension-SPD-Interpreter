@@ -10,15 +10,11 @@ import org.palladiosimulator.spd.triggers.expectations.ExpectedPercentage;
 
 public class CPUUtilizationTriggerChecker extends AbstractManagedElementTriggerChecker<CPUUtilization> {
 
-	public CPUUtilizationTriggerChecker(final BaseTrigger trigger,
-										final CPUUtilization stimulus,
-								 		final TargetGroup targetGroup) {
-		super(trigger, 
-				stimulus, 
-				targetGroup,
-				Set.of(ExpectedPercentage.class),
-				MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
-				MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
-	}
+    public CPUUtilizationTriggerChecker(final BaseTrigger trigger, final CPUUtilization stimulus,
+            final TargetGroup targetGroup) {
+        super(trigger, stimulus, targetGroup, Set.of(ExpectedPercentage.class),
+                MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE,
+                MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE);
+    }
 
 }

@@ -21,35 +21,36 @@ import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
 
 public final class OperationResponseTimeTriggerChecker extends TriggerChecker<OperationResponseTime> {
 
-	public OperationResponseTimeTriggerChecker(final BaseTrigger trigger) {
-		super(trigger, OperationResponseTime.class, Set.of(ExpectedTime.class));
-	}
+    public OperationResponseTimeTriggerChecker(final BaseTrigger trigger) {
+        super(trigger, OperationResponseTime.class, Set.of(ExpectedTime.class));
+    }
 
-	@Override
-	public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
-		final DESEvent event = objectWrapper.getEventToFilter();
-		if (event instanceof final MeasurementMade measurementMade) {
-			final SlingshotMeasuringValue measuringValue = measurementMade.getEntity();
+    @Override
+    public FilterResult doProcess(final FilterObjectWrapper objectWrapper) {
+        final DESEvent event = objectWrapper.getEventToFilter();
+        if (event instanceof final MeasurementMade measurementMade) {
+            final SlingshotMeasuringValue measuringValue = measurementMade.getEntity();
 
-			final MeasuringPoint point = measuringValue.getMeasuringPoint();
-			if (point instanceof final OperationReference reference) {
-				final OperationSignature referencedSignature = reference.getOperationSignature();
-				final OperationSignature thisSignature = getStimulus().getOperationSignature();
+            final MeasuringPoint point = measuringValue.getMeasuringPoint();
+            if (point instanceof final OperationReference reference) {
+                final OperationSignature referencedSignature = reference.getOperationSignature();
+                final OperationSignature thisSignature = getStimulus().getOperationSignature();
 
-				if(thisSignature.getId().equals(referencedSignature.getId())) {
-					final Measure<Double,Duration> measure = measuringValue.getMeasureForMetric(MetricDescriptionConstants.RESPONSE_TIME_METRIC);
-					final double operationTime = measure.doubleValue(SI.SECOND);
+                if (thisSignature.getId()
+                    .equals(referencedSignature.getId())) {
+                    final Measure<Double, Duration> measure = measuringValue
+                        .getMeasureForMetric(MetricDescriptionConstants.RESPONSE_TIME_METRIC);
+                    final double operationTime = measure.doubleValue(SI.SECOND);
 
-					if (this.compareToTrigger(operationTime) == ComparatorResult.IN_ACCORDANCE) {
-						return FilterResult.success(event);
-					}
-				} else {
-					return FilterResult.disregard("The signatures do not match");
-				}
-			}
-		}
-		
-		
-		return FilterResult.disregard();
-	}
+                    if (this.compareToTrigger(operationTime) == ComparatorResult.IN_ACCORDANCE) {
+                        return FilterResult.success(event);
+                    }
+                } else {
+                    return FilterResult.disregard("The signatures do not match");
+                }
+            }
+        }
+
+        return FilterResult.disregard();
+    }
 }

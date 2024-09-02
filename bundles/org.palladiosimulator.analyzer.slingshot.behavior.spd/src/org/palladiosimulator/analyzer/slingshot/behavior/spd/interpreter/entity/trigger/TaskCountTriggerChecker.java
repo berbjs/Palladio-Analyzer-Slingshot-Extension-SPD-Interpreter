@@ -14,20 +14,17 @@ import org.palladiosimulator.spd.triggers.expectations.ExpectedCount;
 
 public class TaskCountTriggerChecker extends AbstractManagedElementTriggerChecker<TaskCount> {
 
-	public TaskCountTriggerChecker(final BaseTrigger trigger, final TaskCount stimulus, final TargetGroup targetGroup) {
-		super(trigger, 
-				stimulus,
-				targetGroup, 
-				Set.of(ExpectedCount.class), 
-				MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC_TUPLE,
-				MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC);
-	}
-	
-	/* We need to retrieve the correct type (Long) instead of Double */
-	@Override
-	protected double getValueForAggregation(final SlingshotMeasuringValue smv) {
-		final Measure<Long, Dimensionless> measure = smv.getMeasureForMetric(this.baseMetricDescription);
-		final long value = measure.getValue();
-		return value;
-	}
+    public TaskCountTriggerChecker(final BaseTrigger trigger, final TaskCount stimulus, final TargetGroup targetGroup) {
+        super(trigger, stimulus, targetGroup, Set.of(ExpectedCount.class),
+                MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC_TUPLE,
+                MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC);
+    }
+
+    /* We need to retrieve the correct type (Long) instead of Double */
+    @Override
+    protected double getValueForAggregation(final SlingshotMeasuringValue smv) {
+        final Measure<Long, Dimensionless> measure = smv.getMeasureForMetric(this.baseMetricDescription);
+        final long value = measure.getValue();
+        return value;
+    }
 }
