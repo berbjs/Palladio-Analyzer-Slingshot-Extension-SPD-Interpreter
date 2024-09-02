@@ -4,7 +4,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelIn
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.models.LearningBasedModel;
-import org.palladiosimulator.spd.models.rewards.UtilizationReward;
+import org.palladiosimulator.spdmodelreward.UtilizationReward;
 
 public class UtilizationRewardEvaluator extends RewardEvaluator {
 

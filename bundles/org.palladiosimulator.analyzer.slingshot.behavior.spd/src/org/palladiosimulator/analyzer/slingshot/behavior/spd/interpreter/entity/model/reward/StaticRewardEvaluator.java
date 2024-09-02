@@ -1,7 +1,7 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward;
 
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.spd.models.rewards.StaticReward;
+import org.palladiosimulator.spdmodelreward.StaticReward;
 
 public class StaticRewardEvaluator extends RewardEvaluator {
     private double rewardValue;

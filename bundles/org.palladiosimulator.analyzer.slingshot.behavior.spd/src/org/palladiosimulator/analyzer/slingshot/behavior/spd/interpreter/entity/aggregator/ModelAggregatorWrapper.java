@@ -3,7 +3,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.metricspec.BaseMetricDescription;
 import org.palladiosimulator.metricspec.MetricSetDescription;
-import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
+import org.palladiosimulator.spd.stimulus.Stimulus;
 
 public abstract class ModelAggregatorWrapper<T extends Stimulus> {
 

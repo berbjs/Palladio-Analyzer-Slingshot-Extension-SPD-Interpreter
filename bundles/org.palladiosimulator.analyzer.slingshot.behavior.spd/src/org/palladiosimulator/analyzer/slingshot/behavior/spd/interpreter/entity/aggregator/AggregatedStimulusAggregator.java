@@ -2,9 +2,9 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.targetgroup.TargetGroupChecker;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
+import org.palladiosimulator.spd.stimulus.AggregatedStimulus;
+import org.palladiosimulator.spd.stimulus.ManagedElementsStateStimulus;
+import org.palladiosimulator.spd.stimulus.Stimulus;
 
 /**
  * This class implements the base functionality for aggregating {@link ManagedElementsStateStimulus}

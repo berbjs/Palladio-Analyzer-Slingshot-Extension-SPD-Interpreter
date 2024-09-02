@@ -15,10 +15,9 @@ import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcmmeasuringpoint.OperationReference;
+import org.palladiosimulator.spd.stimulus.OperationResponseTime;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
-import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
-import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
 
 public final class OperationResponseTimeTriggerChecker extends TriggerChecker<OperationResponseTime> {
 

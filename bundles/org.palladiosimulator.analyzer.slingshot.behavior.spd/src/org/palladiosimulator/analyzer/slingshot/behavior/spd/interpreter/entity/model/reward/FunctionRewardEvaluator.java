@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
-import org.palladiosimulator.spd.models.rewards.BaseReward;
-import org.palladiosimulator.spd.models.rewards.FunctionReward;
+import org.palladiosimulator.spdmodelreward.BaseReward;
+import org.palladiosimulator.spdmodelreward.FunctionReward;
 
 public class FunctionRewardEvaluator extends RewardEvaluator {
 
@@ -67,7 +67,7 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     final List<RewardEvaluator> inputRewards;
 
     public FunctionRewardEvaluator(FunctionReward reward, RewardInterpreter rewardInterpreter) throws Exception {
-        switch (reward.getAggregationMethod()) {
+        switch (reward.getFunction()) {
         case ADDITION -> {
             this.function = new AdditionFunction();
         }
@@ -105,9 +105,8 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
             this.function = new MultiplicationFunction();
         }
         default -> {
-            LOGGER.error("Unexpected function type " + reward.getAggregationMethod() + " encountered for a reward ");
-            throw new Exception(
-                    "Unexpected function type " + reward.getAggregationMethod() + " encountered for a reward ");
+            LOGGER.error("Unexpected function type " + reward.getFunction() + " encountered for a reward ");
+            throw new Exception("Unexpected function type " + reward.getFunction() + " encountered for a reward ");
         }
         }
         ;

@@ -8,13 +8,13 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
-import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
-import org.palladiosimulator.spd.triggers.stimuli.CPUUtilization;
-import org.palladiosimulator.spd.triggers.stimuli.HDDUtilization;
-import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.MemoryUtilization;
-import org.palladiosimulator.spd.triggers.stimuli.NetworkUtilization;
-import org.palladiosimulator.spd.triggers.stimuli.TaskCount;
+import org.palladiosimulator.spd.stimulus.AGGREGATIONMETHOD;
+import org.palladiosimulator.spd.stimulus.CPUUtilization;
+import org.palladiosimulator.spd.stimulus.HDDUtilization;
+import org.palladiosimulator.spd.stimulus.ManagedElementsStateStimulus;
+import org.palladiosimulator.spd.stimulus.MemoryUtilization;
+import org.palladiosimulator.spd.stimulus.NetworkUtilization;
+import org.palladiosimulator.spd.stimulus.TaskCount;
 
 /**
  * This class implements the base functionality for aggregating {@link ManagedElementsStateStimulus}

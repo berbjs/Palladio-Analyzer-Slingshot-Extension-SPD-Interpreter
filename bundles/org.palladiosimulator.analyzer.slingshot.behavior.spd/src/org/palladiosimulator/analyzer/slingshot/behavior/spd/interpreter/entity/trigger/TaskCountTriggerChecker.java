@@ -7,10 +7,10 @@ import javax.measure.quantity.Dimensionless;
 
 import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotMeasuringValue;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
+import org.palladiosimulator.spd.stimulus.TaskCount;
 import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedCount;
-import org.palladiosimulator.spd.triggers.stimuli.TaskCount;
 
 public class TaskCountTriggerChecker extends AbstractManagedElementTriggerChecker<TaskCount> {
 

@@ -14,13 +14,13 @@ import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcmmeasuringpoint.OperationReference;
-import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
-import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.NumberOfElements;
-import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
-import org.palladiosimulator.spd.triggers.stimuli.QueueLength;
-import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
+import org.palladiosimulator.spd.stimulus.AGGREGATIONMETHOD;
+import org.palladiosimulator.spd.stimulus.AggregatedStimulus;
+import org.palladiosimulator.spd.stimulus.ManagedElementsStateStimulus;
+import org.palladiosimulator.spd.stimulus.NumberOfElements;
+import org.palladiosimulator.spd.stimulus.OperationResponseTime;
+import org.palladiosimulator.spd.stimulus.QueueLength;
+import org.palladiosimulator.spd.stimulus.Stimulus;
 
 /**
  * This class implements the base functionality for forwarding the latest measurement for

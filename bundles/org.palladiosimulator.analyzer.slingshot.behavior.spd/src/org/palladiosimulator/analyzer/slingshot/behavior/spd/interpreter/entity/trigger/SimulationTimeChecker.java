@@ -7,10 +7,10 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTime
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
+import org.palladiosimulator.spd.stimulus.SimulationTime;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
 import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedTime;
-import org.palladiosimulator.spd.triggers.stimuli.SimulationTime;
 
 public final class SimulationTimeChecker extends TriggerChecker<SimulationTime> {
 

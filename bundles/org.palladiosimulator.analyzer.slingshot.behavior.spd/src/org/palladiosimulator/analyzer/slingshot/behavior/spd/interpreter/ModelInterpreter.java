@@ -18,10 +18,10 @@ import org.palladiosimulator.spd.models.LearningBasedModel;
 import org.palladiosimulator.spd.models.QThresholdsModel;
 import org.palladiosimulator.spd.models.RandomModel;
 import org.palladiosimulator.spd.models.util.ModelsSwitch;
-import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
-import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
-import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
+import org.palladiosimulator.spd.stimulus.AGGREGATIONMETHOD;
+import org.palladiosimulator.spd.stimulus.AggregatedStimulus;
+import org.palladiosimulator.spd.stimulus.ManagedElementsStateStimulus;
+import org.palladiosimulator.spd.stimulus.Stimulus;
 
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 

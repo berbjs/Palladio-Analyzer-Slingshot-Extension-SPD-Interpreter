@@ -19,11 +19,11 @@ import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.metricspec.BaseMetricDescription;
 import org.palladiosimulator.metricspec.MetricSetDescription;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
+import org.palladiosimulator.spd.stimulus.AGGREGATIONMETHOD;
+import org.palladiosimulator.spd.stimulus.ManagedElementsStateStimulus;
 import org.palladiosimulator.spd.targets.TargetGroup;
-import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedPrimitive;
-import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 
 /**
  * This abstract class implements the base functionality for

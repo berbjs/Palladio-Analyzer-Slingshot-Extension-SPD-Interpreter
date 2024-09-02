@@ -3,11 +3,10 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import java.util.Set;
 
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
+import org.palladiosimulator.spd.stimulus.CPUUtilization;
 import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
-import org.palladiosimulator.spd.triggers.SimpleFireOnValue;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedPercentage;
-import org.palladiosimulator.spd.triggers.stimuli.CPUUtilization;
 
 public class CPUUtilizationTriggerChecker extends AbstractManagedElementTriggerChecker<CPUUtilization> {
 

@@ -11,9 +11,9 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementM
 import org.palladiosimulator.edp2.models.measuringpoint.MeasuringPoint;
 import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcmmeasuringpoint.PassiveResourceReference;
+import org.palladiosimulator.spd.stimulus.QueueLength;
 import org.palladiosimulator.spd.triggers.BaseTrigger;
 import org.palladiosimulator.spd.triggers.expectations.ExpectedCount;
-import org.palladiosimulator.spd.triggers.stimuli.QueueLength;
 
 /**
  * The trigger checker for {@link QueueLength}. The measurements are only

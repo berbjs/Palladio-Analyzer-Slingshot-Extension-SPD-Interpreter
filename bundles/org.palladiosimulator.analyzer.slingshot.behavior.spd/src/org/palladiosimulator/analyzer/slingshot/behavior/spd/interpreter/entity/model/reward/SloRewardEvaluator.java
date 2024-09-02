@@ -7,7 +7,7 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.entities.SlingshotM
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.monitorrepository.MeasurementSpecification;
 import org.palladiosimulator.servicelevelobjective.ServiceLevelObjective;
-import org.palladiosimulator.spd.models.rewards.SLOReward;
+import org.palladiosimulator.spdmodelreward.SLOReward;
 
 /**
  * 
@@ -21,7 +21,7 @@ public class SloRewardEvaluator extends RewardEvaluator {
 
     public SloRewardEvaluator(SLOReward reward) {
         this.factor = reward.getFactor();
-        this.serviceLevelObjective = reward.getServicelevelobjective();
+        this.serviceLevelObjective = reward.getServiceLevelObjective();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

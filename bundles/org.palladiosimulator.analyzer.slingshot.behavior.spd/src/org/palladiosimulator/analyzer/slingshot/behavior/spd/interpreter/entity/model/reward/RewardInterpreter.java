@@ -2,13 +2,13 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.spd.models.LearningBasedModel;
-import org.palladiosimulator.spd.models.rewards.FunctionReward;
-import org.palladiosimulator.spd.models.rewards.SLOReward;
-import org.palladiosimulator.spd.models.rewards.StaticReward;
-import org.palladiosimulator.spd.models.rewards.UtilizationReward;
-import org.palladiosimulator.spd.models.rewards.util.RewardsSwitch;
+import org.palladiosimulator.spdmodelreward.FunctionReward;
+import org.palladiosimulator.spdmodelreward.SLOReward;
+import org.palladiosimulator.spdmodelreward.StaticReward;
+import org.palladiosimulator.spdmodelreward.UtilizationReward;
+import org.palladiosimulator.spdmodelreward.util.SpdmodelrewardSwitch;
 
-public final class RewardInterpreter extends RewardsSwitch<RewardEvaluator> {
+public final class RewardInterpreter extends SpdmodelrewardSwitch<RewardEvaluator> {
 
     private LearningBasedModel model;
     private ModelInterpreter modelInterpreter;
