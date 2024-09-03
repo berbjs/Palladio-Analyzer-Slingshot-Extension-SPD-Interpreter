@@ -41,7 +41,7 @@ public class ModelBasedTriggerChecker implements Filter {
                 value = model.getDecision();
                 LOGGER.info("Model scaling decision: " + model.getDecision());
             } catch (Exception e) {
-                LOGGER.info("Some aggregator was unable to be aggregated");
+                LOGGER.info(e.getMessage());
                 return FilterResult.disregard(event.getEventToFilter());
             }
             if (event.getState()

@@ -2,29 +2,32 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.models.LearningBasedModel;
+import org.palladiosimulator.spd.stimulus.Stimulus;
 import org.palladiosimulator.spdmodelreward.UtilizationReward;
 
 public class UtilizationRewardEvaluator extends RewardEvaluator {
 
     @SuppressWarnings("rawtypes")
     private ModelAggregatorWrapper aggregator;
+    private Stimulus stimulus;
 
     public UtilizationRewardEvaluator(UtilizationReward object, ModelInterpreter modelInterpreter,
             LearningBasedModel model) {
-        this.aggregator = modelInterpreter.getAggregatorForStimulus(object.getStimulus(), model);
+        this.stimulus = object.getStimulus();
+        this.aggregator = modelInterpreter.getAggregatorForStimulus(this.stimulus, model);
     }
 
     @Override
-    public double getReward() throws Exception {
+    public double getReward() throws NotEmittableException {
         try {
             return this.aggregator.getResult();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new NotEmittableException("Values for Aggregator of " + this.stimulus.getClass()
+                .getSimpleName() + " not emittable.");
         }
-        throw new Exception();
     }
 
     @Override

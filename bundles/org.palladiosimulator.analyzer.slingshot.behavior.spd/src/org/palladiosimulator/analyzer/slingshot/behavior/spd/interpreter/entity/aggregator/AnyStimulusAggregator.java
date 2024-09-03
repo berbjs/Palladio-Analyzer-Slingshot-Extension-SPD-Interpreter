@@ -120,16 +120,17 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
      * the specified trigger, success is returned. If not all measurements were made yet, or if the
      * value was not in accordance, then disregard.
      * 
-     * @throws Exception
+     * @throws NotEmittableException
      *             if {@link #aggregator} cannot currently emit a value
      */
-    public double getResult() throws Exception {
+    public double getResult() throws NotEmittableException {
         if (!this.aggregator.isEmittable()) {
             if (this.stimulusChecker instanceof NumberOfElementsStimulusChecker) {
                 return -1; // TODO IMPORTANT return the initial number of elements of the group
                            // here!
             } else {
-                throw new Exception("Values for " + this.stimulusChecker + " not emittable.");
+                throw new NotEmittableException("Values for " + this.stimulusChecker.getClass()
+                    .getSimpleName() + " not emittable.");
             }
         }
         return this.aggregator.getCurrentValue();

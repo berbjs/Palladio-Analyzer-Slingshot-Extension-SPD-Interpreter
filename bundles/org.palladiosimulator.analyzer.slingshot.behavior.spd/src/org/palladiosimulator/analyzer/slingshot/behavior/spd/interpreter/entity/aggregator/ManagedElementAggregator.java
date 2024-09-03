@@ -33,8 +33,10 @@ import org.palladiosimulator.spd.stimulus.TaskCount;
  */
 public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> extends ModelAggregatorWrapper<T> {
     protected final WindowAggregation aggregator;
+    private T stimulus;
 
     public ManagedElementAggregator(final T stimulus, final double windowSize) {
+        this.stimulus = stimulus;
         if (stimulus instanceof TaskCount) {
             // TODO IMPORTANT set metricSetDescription + baseMetricDescription
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC_TUPLE;
@@ -72,9 +74,10 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
      * @throws Exception
      *             if {@link #aggregator} cannot currently emit a value
      */
-    public double getResult() throws Exception {
+    public double getResult() throws NotEmittableException {
         if (!this.aggregator.isEmittable()) {
-            throw new Exception("Values not emittable.");
+            throw new NotEmittableException("Values for Aggregator of " + this.stimulus.getClass()
+                .getSimpleName() + " not emittable.");
         }
         return this.aggregator.getCurrentValue();
     }

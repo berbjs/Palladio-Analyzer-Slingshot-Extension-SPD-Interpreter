@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spdmodelreward.BaseReward;
 import org.palladiosimulator.spdmodelreward.FunctionReward;
@@ -118,7 +119,7 @@ public class FunctionRewardEvaluator extends RewardEvaluator {
     }
 
     @Override
-    public double getReward() throws Exception {
+    public double getReward() throws NotEmittableException {
         List<Double> inputs = new ArrayList<Double>(this.inputRewards.size());
         for (RewardEvaluator evaluator : this.inputRewards) {
             inputs.add(evaluator.getReward());
