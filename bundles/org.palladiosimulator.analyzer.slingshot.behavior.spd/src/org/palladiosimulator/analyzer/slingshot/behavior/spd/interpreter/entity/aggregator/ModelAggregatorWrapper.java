@@ -10,9 +10,7 @@ public abstract class ModelAggregatorWrapper<T extends Stimulus> {
     protected MetricSetDescription metricSetDescription;
     protected BaseMetricDescription baseMetricDescription;
 
-    public abstract double getResult() throws Exception; // TODO IMPORTANT think about whether this
-                                                         // exception is necessary, how it should be
-                                                         // handled
+    public abstract double getResult() throws NotEmittableException;
 
     public abstract void aggregateMeasurement(final MeasurementMade measurementMade);
 }
