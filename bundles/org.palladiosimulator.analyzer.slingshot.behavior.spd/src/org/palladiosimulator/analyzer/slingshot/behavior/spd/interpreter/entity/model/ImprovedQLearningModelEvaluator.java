@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.models.ImprovedQLearningModel;
 
@@ -26,7 +27,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     }
 
     @Override
-    public int getDecision() throws Exception {
+    public int getDecision() throws NotEmittableException {
         List<Double> input = new ArrayList<>();
         for (ModelAggregatorWrapper<?> modelAggregatorWrapper : this.aggregatorList) {
             input.add(modelAggregatorWrapper.getResult());
