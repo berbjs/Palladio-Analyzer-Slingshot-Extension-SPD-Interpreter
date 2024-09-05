@@ -1,8 +1,5 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AggregatedStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AnyStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ManagedElementAggregator;
@@ -24,14 +21,6 @@ import org.palladiosimulator.spd.stimulus.ManagedElementsStateStimulus;
 import org.palladiosimulator.spd.stimulus.Stimulus;
 
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
-
-    private List<ModelAggregatorWrapper<?>> getStimuliListeners(LearningBasedModel model) {
-        List<ModelAggregatorWrapper<?>> stimuliListenerList = new ArrayList<>();
-        for (Stimulus stimulus : model.getInputs()) {
-            stimuliListenerList.add(getAggregatorForStimulus(stimulus, model));
-        }
-        return stimuliListenerList;
-    }
 
     @SuppressWarnings("rawtypes")
     public ModelAggregatorWrapper getAggregatorForStimulus(Stimulus stimulus, LearningBasedModel model) {
@@ -59,11 +48,13 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getStimuliListeners(model), getRewardEvaluator(model));
+        return new QThresholdsModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model),
+                getAggregatorForStimulus(model.getUtilizationStimulus(), model), getRewardEvaluator(model));
     }
 
     @Override
     public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
-        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model), getRewardEvaluator(model));
+        return new ImprovedQLearningModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model),
+                getRewardEvaluator(model));
     }
 }

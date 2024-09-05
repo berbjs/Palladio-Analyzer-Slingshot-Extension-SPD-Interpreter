@@ -2,6 +2,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -148,15 +149,11 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     private double alpha;
 
     public ImprovedQLearningModelEvaluator(ImprovedQLearningModel model,
-            List<ModelAggregatorWrapper<?>> stimuliListeners, RewardEvaluator rewardEvaluator) {
-        super(stimuliListeners, rewardEvaluator);
-        if (stimuliListeners.size() != 1) {
-            // TODO IMPORTANT this is not supported (yet?) as the given mapping function only works
-            // for a state containing a single double
-        }
-        epsilon = 0.05;
-        actionCount = 5;
-        alpha = 0.1;
+            ModelAggregatorWrapper<?> modelAggregatorWrapper, RewardEvaluator rewardEvaluator) {
+        super(Collections.singletonList(modelAggregatorWrapper), rewardEvaluator);
+        epsilon = model.getEpsilon();
+        actionCount = model.getActionCount();
+        alpha = model.getLearningRate();
         intervalMapping = new IntervalMapping();
         random = new Random();
     }
