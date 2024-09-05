@@ -1,7 +1,10 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
@@ -11,19 +14,29 @@ import org.palladiosimulator.spd.models.ImprovedQLearningModel;
 
 public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator {
 
+    private Double state;
+    private int action;
+    private final double epsilon;
+    private int actionCount;
+    private Random random;
+    private double alpha;
     private ModelAggregatorWrapper<?> responseTimeAggregator;
     private ModelAggregatorWrapper<?> utilizationAggregator;
     private double exponentialSteepness;
     private double targetResponseTime;
 
     public ImprovedQLearningModelEvaluator(ImprovedQLearningModel model,
-            List<ModelAggregatorWrapper<?>> stimuliListeners) {
-        super(stimuliListeners);
+            ModelAggregatorWrapper<?> modelAggregatorWrapper) {
+        super(Collections.singletonList(modelAggregatorWrapper));
         ModelInterpreter modelInterpreter = new ModelInterpreter();
         this.exponentialSteepness = model.getExponentialSteepness();
         this.targetResponseTime = model.getTargetResponseTime();
         this.responseTimeAggregator = modelInterpreter.getAggregatorForStimulus(model.getResponseTimeStimulus(), model);
         this.utilizationAggregator = modelInterpreter.getAggregatorForStimulus(model.getUtilizationStimulus(), model);
+        epsilon = model.getEpsilon();
+        actionCount = model.getActionCount();
+        alpha = model.getLearningRate();
+        random = new Random();
     }
 
     @Override
