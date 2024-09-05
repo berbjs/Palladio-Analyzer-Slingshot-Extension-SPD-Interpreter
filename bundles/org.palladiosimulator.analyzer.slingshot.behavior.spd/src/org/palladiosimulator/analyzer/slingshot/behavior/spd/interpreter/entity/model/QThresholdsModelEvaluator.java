@@ -1,23 +1,32 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ImprovedQLearningModelEvaluator.ImprovedQLearningEntry;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.models.QThresholdsModel;
 
 public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 
+    private Map<Double, ImprovedQLearningEntry> qValuesLowerThreshold = new HashMap<>();
+    private Map<Double, ImprovedQLearningEntry> qValuesUpperThreshold = new HashMap<>();
+    private ModelAggregatorWrapper<?> stimulusListener;
+    private ModelAggregatorWrapper<?> utilizationStimulus;
     private ModelAggregatorWrapper<?> responseTimeAggregator;
     private ModelAggregatorWrapper<?> utilizationAggregator;
     private double exponentialSteepness;
     private double targetResponseTime;
 
-    public QThresholdsModelEvaluator(QThresholdsModel model, List<ModelAggregatorWrapper<?>> stimuliListeners) {
-        super(stimuliListeners);
+    public QThresholdsModelEvaluator(QThresholdsModel model, ModelAggregatorWrapper<?> stimulusListener,
+            ModelAggregatorWrapper<?> utilizationStimulus) {
+        super(Arrays.asList(stimulusListener, utilizationStimulus));
+        this.stimulusListener = stimulusListener;
+        this.utilizationStimulus = utilizationStimulus;
         ModelInterpreter modelInterpreter = new ModelInterpreter();
         this.exponentialSteepness = model.getExponentialSteepness();
         this.targetResponseTime = model.getTargetResponseTime();
@@ -27,10 +36,8 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 
     @Override
     public int getDecision() throws NotEmittableException {
-        List<Double> input = new ArrayList<>();
-        for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
-            input.add(modelAggregatorWrapper.getResult());
-        }
+        Double input = aggregatorList.get(0)
+            .getResult();
         double exponentialFactor = 1;
         if (responseTimeAggregator.getResult() > targetResponseTime) {
             exponentialFactor -= responseTimeAggregator.getResult() / targetResponseTime;

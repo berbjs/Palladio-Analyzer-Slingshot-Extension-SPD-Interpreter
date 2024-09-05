@@ -2,6 +2,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -153,16 +154,16 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     private double targetResponseTime;
 
     public ImprovedQLearningModelEvaluator(ImprovedQLearningModel model,
-            List<ModelAggregatorWrapper<?>> stimuliListeners) {
-        super(stimuliListeners);
+            ModelAggregatorWrapper<?> modelAggregatorWrapper) {
+        super(Collections.singletonList(modelAggregatorWrapper));
         ModelInterpreter modelInterpreter = new ModelInterpreter();
         this.exponentialSteepness = model.getExponentialSteepness();
         this.targetResponseTime = model.getTargetResponseTime();
         this.responseTimeAggregator = modelInterpreter.getAggregatorForStimulus(model.getResponseTimeStimulus(), model);
         this.utilizationAggregator = modelInterpreter.getAggregatorForStimulus(model.getUtilizationStimulus(), model);
-        epsilon = 0.05;
-        actionCount = 5;
-        alpha = 0.1;
+        epsilon = model.getEpsilon();
+        actionCount = model.getActionCount();
+        alpha = model.getLearningRate();
         intervalMapping = new IntervalMapping();
         random = new Random();
     }
