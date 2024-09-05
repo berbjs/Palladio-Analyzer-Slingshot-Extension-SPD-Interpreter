@@ -23,14 +23,6 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
-    private List<ModelAggregatorWrapper<?>> getStimuliListeners(LearningBasedModel model) {
-        List<ModelAggregatorWrapper<?>> stimuliListenerList = new ArrayList<>();
-        for (Stimulus stimulus : model.getInputs()) {
-            stimuliListenerList.add(getAggregatorForStimulus(stimulus, model));
-        }
-        return stimuliListenerList;
-    }
-
     @SuppressWarnings("rawtypes")
     public ModelAggregatorWrapper getAggregatorForStimulus(Stimulus stimulus, LearningBasedModel model) {
         double windowSize = model.getInterval();
@@ -52,11 +44,12 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getStimuliListeners(model));
+        return new QThresholdsModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model),
+                getAggregatorForStimulus(model.getUtilizationStimulus(), model));
     }
 
     @Override
     public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
-        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model));
+        return new ImprovedQLearningModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model));
     }
 }
