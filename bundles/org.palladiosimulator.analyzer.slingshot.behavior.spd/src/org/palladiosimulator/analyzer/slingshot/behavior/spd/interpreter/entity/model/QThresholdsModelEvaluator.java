@@ -1,20 +1,15 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.ModelInterpreter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ImprovedQLearningModelEvaluator.ImprovedQLearningEntry;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.models.QThresholdsModel;
 
 public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 
-    private Map<Double, ImprovedQLearningEntry> qValuesLowerThreshold = new HashMap<>();
-    private Map<Double, ImprovedQLearningEntry> qValuesUpperThreshold = new HashMap<>();
     private ModelAggregatorWrapper<?> stimulusListener;
     private ModelAggregatorWrapper<?> utilizationStimulus;
     private ModelAggregatorWrapper<?> responseTimeAggregator;
