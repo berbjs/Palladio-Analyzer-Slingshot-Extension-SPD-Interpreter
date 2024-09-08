@@ -11,8 +11,6 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.QThresholdsModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.RandomModelEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardEvaluator;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.reward.RewardInterpreter;
 import org.palladiosimulator.spd.models.ImprovedQLearningModel;
 import org.palladiosimulator.spd.models.LearningBasedModel;
 import org.palladiosimulator.spd.models.QThresholdsModel;
@@ -47,11 +45,6 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
         }
     }
 
-    private RewardEvaluator getRewardEvaluator(LearningBasedModel model) {
-        RewardInterpreter rewardInterpreter = new RewardInterpreter(this, model);
-        return rewardInterpreter.doSwitch(model.getReward());
-    }
-
     @Override
     public ModelEvaluator caseRandomModel(RandomModel model) {
         return new RandomModelEvaluator(model);
@@ -59,11 +52,11 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getStimuliListeners(model), getRewardEvaluator(model));
+        return new QThresholdsModelEvaluator(model, getStimuliListeners(model));
     }
 
     @Override
     public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
-        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model), getRewardEvaluator(model));
+        return new ImprovedQLearningModelEvaluator(model, getStimuliListeners(model));
     }
 }
