@@ -20,4 +20,6 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
     }
+
+    abstract void recordRewardMeasurement(MeasurementMade measurement);
 }

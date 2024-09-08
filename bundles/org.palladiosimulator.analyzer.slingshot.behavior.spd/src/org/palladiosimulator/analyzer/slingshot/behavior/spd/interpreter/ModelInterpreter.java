@@ -52,7 +52,7 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getStimuliListeners(model), getRewardEvaluator(model));
+        return new QThresholdsModelEvaluator(model, getStimuliListeners(model));
     }
 
     @Override
