@@ -15,11 +15,24 @@ import org.palladiosimulator.spd.models.ImprovedQLearningModel;
 
 public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator {
 
-    class IntervalMapping {
-        record Interval(double upperBound, int action) {
+    static class IntervalMapping {
+        /**
+         * Record for an interval
+         * 
+         * @param upperBound
+         *            Upper bound of the interval, this is an inclusive bound
+         * @param action
+         *            Associated Action
+         */
+        record Interval(double upperBound, int action) implements Comparable<Interval> {
+
+            @Override
+            public int compareTo(Interval otherInterval) {
+                return Double.compare(upperBound, otherInterval.upperBound);
+            }
         }
 
-        private final List<Interval> intervals;
+        private List<Interval> intervals;
 
         /**
          * Constructs a new IntervalMapping. The initial mapping will link all states to the action
@@ -36,7 +49,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         int getMapping(double state) {
             return intervals.stream()
                 .filter((Interval mapping) -> {
-                    return state < mapping.upperBound;
+                    return state <= mapping.upperBound;
                 })
                 .findFirst()
                 .orElse(new Interval(0.0, 0)).action;
@@ -49,27 +62,33 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
             if (intervals.isEmpty()) {
                 intervals.add(new Interval(1.0, action));
             } else {
-                intervals.stream()
-                    .filter(mapping -> state < mapping.upperBound)
-                    .forEach(mapping -> {
-                        if (mapping.action < action) {
-                            // The new interval does not include state anymore, it is instead
-                            // included in the next higher action
-                            mapping = new Interval(state, mapping.action);
-                            if (intervals.get(-1).upperBound != 1.0) {
-                                // Ensure that there is a highest interval reaching until state 1.0
-                                intervals.add(new Interval(1.0, intervals.get(-1).action + 1));
+                Interval previousInterval = new Interval(-1.0, 0);
+                for (int i = 0; i < intervals.size(); i += 1) {
+                    Interval interval = intervals.get(i);
+                    if (state <= interval.upperBound && state > previousInterval.upperBound) {
+                        if (interval.action < action) {
+                            // Case: The current interval has a too low action
+                            // Action: move interval s.t. the state falls into the next higher
+                            // interval
+                            intervals.set(i, new Interval(Math.nextAfter(state, 0.0), interval.action));
+                        } else if (interval.action > action) {
+                            // Case: The current interval has a too high action
+                            // Action: Move interval st.t. the state falls into the previous
+                            // interval
+                            if (i != 0) {
+                                intervals.set(i - 1, new Interval(state, previousInterval.action));
+                            } else {
+                                intervals.add(0, new Interval(state, interval.action - 1));
                             }
-                            return;
-                        } else if (mapping.action == action) {
-                            // The interval of action should now just include the state
-                            mapping = new Interval(Math.nextAfter(state, 1.0), action);
-                            return;
                         }
-                    });
-                // We reach this case only if no interval exists yet that has a low enough action,
-                // thus we construct a new interval
-                intervals.add(0, new Interval(state, action));
+                    }
+                    previousInterval = interval;
+                }
+                Collections.sort(intervals);
+                if (intervals.get(intervals.size() - 1).upperBound != 1.0) {
+                    // Ensure that there is a highest interval reaching until state 1.0
+                    intervals.add(new Interval(1.0, intervals.get(intervals.size() - 1).action + 1));
+                }
             }
         }
     }
