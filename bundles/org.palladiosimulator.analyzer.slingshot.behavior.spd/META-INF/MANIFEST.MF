@@ -16,4 +16,9 @@ Require-Bundle: org.palladiosimulator.analyzer.slingshot.core;bundle-version="1.
  org.palladiosimulator.pcm.edp2.measuringpoint,
  org.palladiosimulator.spd.semantic,
  org.palladiosimulator.spd,
- org.palladiosimulator.spd.measuringpoint
+ org.palladiosimulator.spd.measuringpoint,
+ org.junit.jupiter.api;bundle-version="5.8.1",
+ org.junit.platform.launcher;bundle-version="1.8.1",
+ org.junit.platform.commons;bundle-version="1.8.1",
+ org.junit.jupiter.engine;bundle-version="5.8.1",
+ org.junit.platform.engine;bundle-version="1.8.1"
