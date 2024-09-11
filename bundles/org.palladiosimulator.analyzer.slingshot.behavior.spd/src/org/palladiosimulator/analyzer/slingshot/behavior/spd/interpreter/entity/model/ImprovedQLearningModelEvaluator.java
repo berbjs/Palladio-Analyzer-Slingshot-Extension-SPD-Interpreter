@@ -174,7 +174,9 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
 
     public ImprovedQLearningModelEvaluator(ImprovedQLearningModel model,
             ModelAggregatorWrapper<?> modelAggregatorWrapper) {
-        super(Collections.singletonList(modelAggregatorWrapper));
+        super(Collections.singletonList(modelAggregatorWrapper), false, true);
+        assert (model.getTargetResponseTime() != 0); // TODO IMPORTANT add this constraint to the
+                                                     // model
         ModelInterpreter modelInterpreter = new ModelInterpreter();
         this.exponentialSteepness = model.getExponentialSteepness();
         this.targetResponseTime = model.getTargetResponseTime();

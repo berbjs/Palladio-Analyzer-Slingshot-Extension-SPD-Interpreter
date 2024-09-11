@@ -7,6 +7,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.ModelBasedScalingPolicy;
 
@@ -36,28 +37,31 @@ public class ModelBasedTriggerChecker implements Filter {
 
     @Override
     public FilterResult doProcess(FilterObjectWrapper event) {
-        if (event.getEventToFilter() instanceof RepeatedSimulationTimeReached) {
+        DESEvent filteredEvent = event.getEventToFilter();
+        if (filteredEvent instanceof MeasurementMade measurementMade) {
+            LOGGER.debug("Received a datapoint collection event!");
+            this.model.recordUsage(measurementMade);
+        }
+        if ((filteredEvent instanceof RepeatedSimulationTimeReached && model.getChangeOnInterval())
+                || (filteredEvent instanceof MeasurementMade && model.getChangeOnStimulus())) {
             int value;
             try {
                 value = model.getDecision();
                 LOGGER.info("Model scaling decision: " + model.getDecision());
             } catch (NotEmittableException e) {
                 LOGGER.info(e.getMessage());
-                return FilterResult.disregard(event.getEventToFilter());
+                return FilterResult.disregard(filteredEvent);
             }
             if (event.getState()
                 .getScalingPolicy() instanceof ModelBasedScalingPolicy modelBasedScalingPolicy) {
                 modelBasedScalingPolicy.setAdjustment(value);
             }
-        } else if (event.getEventToFilter() instanceof MeasurementMade measurementMade) {
-            LOGGER.debug("Received a datapoint collection event!");
-            this.model.recordUsage(measurementMade);
-            return FilterResult.disregard(event.getEventToFilter());
-        } else {
+            return FilterResult.success(filteredEvent);
+        } else if (!(filteredEvent instanceof MeasurementMade
+                || filteredEvent instanceof RepeatedSimulationTimeReached)) {
             LOGGER.debug("Received an unexpected event");
-            return FilterResult.disregard(event.getEventToFilter());
+            return FilterResult.disregard(filteredEvent);
         }
-        return FilterResult.success(event.getEventToFilter());
+        return FilterResult.disregard(filteredEvent);
     }
-
 }
