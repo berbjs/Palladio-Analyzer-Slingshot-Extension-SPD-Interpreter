@@ -24,7 +24,7 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 
     public QThresholdsModelEvaluator(QThresholdsModel model, ModelAggregatorWrapper<?> stimulusListener,
             ModelAggregatorWrapper<?> utilizationStimulus) {
-        super(Arrays.asList(stimulusListener, utilizationStimulus));
+        super(Arrays.asList(stimulusListener, utilizationStimulus), true, false);
         this.stimulusListener = stimulusListener;
         this.utilizationStimulus = utilizationStimulus;
         ModelInterpreter modelInterpreter = new ModelInterpreter();

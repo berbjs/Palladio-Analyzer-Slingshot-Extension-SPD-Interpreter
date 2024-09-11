@@ -7,11 +7,14 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementM
 
 public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
 
-    protected final List<ModelAggregatorWrapper<?>> aggregatorList;
+    final List<ModelAggregatorWrapper<?>> aggregatorList;
 
-    LearningBasedModelEvaluator(List<ModelAggregatorWrapper<?>> stimuliListeners) {
+    LearningBasedModelEvaluator(List<ModelAggregatorWrapper<?>> stimuliListeners, boolean changeOnStimulus,
+            boolean changeOnInterval) {
         super();
         this.aggregatorList = stimuliListeners;
+        this.changeOnStimulus = changeOnStimulus;
+        this.changeOnInterval = changeOnInterval;
     }
 
     @Override
