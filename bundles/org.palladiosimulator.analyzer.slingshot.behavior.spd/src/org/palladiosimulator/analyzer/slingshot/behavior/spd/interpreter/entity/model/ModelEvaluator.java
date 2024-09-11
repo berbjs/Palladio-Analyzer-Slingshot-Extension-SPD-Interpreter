@@ -4,7 +4,7 @@ import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementM
 
 public abstract class ModelEvaluator {
 
-    public abstract int getDecision() throws Exception;
+    public abstract int getDecision() throws NotEmittableException;
 
     public abstract void recordUsage(MeasurementMade measurement);
 }
