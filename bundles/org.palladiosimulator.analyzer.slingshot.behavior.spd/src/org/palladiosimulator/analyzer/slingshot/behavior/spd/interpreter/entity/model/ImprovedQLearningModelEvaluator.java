@@ -24,7 +24,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
          * @param action
          *            Associated Action
          */
-        record Interval(double upperBound, int action) implements Comparable<Interval> {
+        record Interval(double upperBound, int action, ImprovedQLearningEntry qValues) implements Comparable<Interval> {
 
             @Override
             public int compareTo(Interval otherInterval) {
@@ -33,14 +33,16 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         }
 
         private List<Interval> intervals;
+        private double alpha;
 
         /**
          * Constructs a new IntervalMapping. The initial mapping will link all states to the action
          * 0 and will need to be extended by calling {@link #adjustMapping(double, int)}
          */
-        IntervalMapping() {
+        IntervalMapping(double learningRate) {
             intervals = new ArrayList<>();
-            intervals.add(new Interval(1.0, 0));
+            intervals.add(new Interval(1.0, 0, new ImprovedQLearningEntry(learningRate)));
+            this.alpha = learningRate;
         }
 
         /**
@@ -52,7 +54,16 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
                     return state <= mapping.upperBound;
                 })
                 .findFirst()
-                .orElse(new Interval(0.0, 0)).action;
+                .orElse(new Interval(0.0, 0, new ImprovedQLearningEntry(alpha))).action;
+        }
+
+        ImprovedQLearningEntry getQValues(double state) {
+            return intervals.stream()
+                .filter((Interval mapping) -> {
+                    return state <= mapping.upperBound;
+                })
+                .findFirst()
+                .orElse(new Interval(0.0, 0, new ImprovedQLearningEntry(alpha))).qValues;
         }
 
         /**
@@ -60,9 +71,9 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
          */
         void adjustMapping(double state, int action) {
             if (intervals.isEmpty()) {
-                intervals.add(new Interval(1.0, action));
+                intervals.add(new Interval(1.0, action, new ImprovedQLearningEntry(alpha)));
             } else {
-                Interval previousInterval = new Interval(-1.0, 0);
+                Interval previousInterval = new Interval(-1.0, 0, new ImprovedQLearningEntry(alpha));
                 for (int i = 0; i < intervals.size(); i += 1) {
                     Interval interval = intervals.get(i);
                     if (state <= interval.upperBound && state > previousInterval.upperBound) {
@@ -70,15 +81,18 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
                             // Case: The current interval has a too low action
                             // Action: move interval s.t. the state falls into the next higher
                             // interval
-                            intervals.set(i, new Interval(Math.nextAfter(state, 0.0), interval.action));
+                            intervals.set(i,
+                                    new Interval(Math.nextAfter(state, 0.0), interval.action, interval.qValues));
                         } else if (interval.action > action) {
                             // Case: The current interval has a too high action
                             // Action: Move interval st.t. the state falls into the previous
                             // interval
                             if (i != 0) {
-                                intervals.set(i - 1, new Interval(state, previousInterval.action));
+                                intervals.set(i - 1,
+                                        new Interval(state, previousInterval.action, previousInterval.qValues));
                             } else {
-                                intervals.add(0, new Interval(state, interval.action - 1));
+                                intervals.add(0,
+                                        new Interval(state, interval.action - 1, new ImprovedQLearningEntry(alpha)));
                             }
                         }
                     }
@@ -87,13 +101,14 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
                 Collections.sort(intervals);
                 if (intervals.get(intervals.size() - 1).upperBound != 1.0) {
                     // Ensure that there is a highest interval reaching until state 1.0
-                    intervals.add(new Interval(1.0, intervals.get(intervals.size() - 1).action + 1));
+                    intervals.add(new Interval(1.0, intervals.get(intervals.size() - 1).action + 1,
+                            new ImprovedQLearningEntry(alpha)));
                 }
             }
         }
     }
 
-    class ImprovedQLearningEntry {
+    static class ImprovedQLearningEntry {
         private Double[] QValues;
         private int minChange;
         private int alpha;
@@ -133,24 +148,35 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
 
         void update(int action, double reward) {
             QValues[action - minChange] = (1 - alpha) * QValues[action - minChange] + alpha * (reward);
+            Double minApproximatedValue = Math.nextAfter(QValues[action - minChange], Double.MAX_VALUE);
+            Double maxApproximatedValue = Math.nextAfter(QValues[action - minChange], -Double.MAX_VALUE);
             if (reward < 0 && action > 0) {
                 // Extrapolation Rule 1
                 for (int i = action - minChange + 1; i < QValues.length; i += 1) {
-                    Double minApproximatedValue = Math.nextAfter(reward, Double.MAX_VALUE);
                     if (QValues[i] == null) {
                         QValues[i] = minApproximatedValue;
                     }
                     QValues[i] = Double.max(QValues[i], minApproximatedValue);
                 }
             } else if (reward < 0) {
-                // TODO IMPORTANT Extrapolation Rule 2
+                // Extrapolation Rule 2
+                for (int i = 0; i < QValues.length; i += 1) {
+                    if (i + minChange < action) {
+                        QValues[i] = Math.min(QValues[i], maxApproximatedValue);
+                    } else if (i + minChange > action) {
+                        QValues[i] = Math.max(QValues[i], minApproximatedValue);
+                    }
+                }
             } else if (reward > 0) {
-                // TODO IMPORTANT Extrapolation Rule 3
+                // Exptrapolation Rule 3
+                for (int i = action - minChange + 1; i < QValues.length; i += 1) {
+                    QValues[i] = Math.min(QValues[i], maxApproximatedValue);
+                }
             } else if (action == getOptimalAction()) {
                 // Extrapolation Rule 4
                 for (int i = 0; i < QValues.length; i += 1) {
                     if (i != action - minChange) {
-                        QValues[i] = Double.min(QValues[i], Math.nextAfter(reward, -Double.MAX_VALUE));
+                        QValues[i] = Double.min(QValues[i], maxApproximatedValue);
                     }
                 }
             }
@@ -184,8 +210,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         this.utilizationAggregator = modelInterpreter.getAggregatorForStimulus(model.getUtilizationStimulus(), model);
         epsilon = model.getEpsilon();
         actionCount = model.getActionCount();
-        alpha = model.getLearningRate();
-        intervalMapping = new IntervalMapping();
+        intervalMapping = new IntervalMapping(model.getLearningRate());
         random = new Random();
     }
 
@@ -222,7 +247,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     }
 
     private void update(Double state, int action, double reward) {
-        ImprovedQLearningEntry entry = Q.getOrDefault(state, new ImprovedQLearningEntry(alpha));
+        ImprovedQLearningEntry entry = intervalMapping.getQValues(state);
         // TODO IMPORTANT update Q-Values here
         entry.update(action, reward);
         int optimalAction = entry.getOptimalAction();

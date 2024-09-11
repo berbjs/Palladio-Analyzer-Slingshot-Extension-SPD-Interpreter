@@ -7,8 +7,11 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.
 class ImprovedQLearningModelEvaluatorTest {
 
     @Test
+    /**
+     * Tests whether the interval mapping splits the intervals correctly
+     */
     void testIntervalMapping() {
-        IntervalMapping intervalMapping = new IntervalMapping();
+        IntervalMapping intervalMapping = new IntervalMapping(0);
         Assertions.assertEquals(0, intervalMapping.getMapping(0.5));
         intervalMapping.adjustMapping(0.2, -1);
         Assertions.assertEquals(-1, intervalMapping.getMapping(0.15));
