@@ -5,6 +5,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimula
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.Filter;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.ModelBasedScalingPolicy;
@@ -40,7 +41,7 @@ public class ModelBasedTriggerChecker implements Filter {
             try {
                 value = model.getDecision();
                 LOGGER.info("Model scaling decision: " + model.getDecision());
-            } catch (Exception e) {
+            } catch (NotEmittableException e) {
                 LOGGER.info(e.getMessage());
                 return FilterResult.disregard(event.getEventToFilter());
             }
