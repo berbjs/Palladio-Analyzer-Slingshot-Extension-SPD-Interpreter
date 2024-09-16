@@ -15,7 +15,6 @@ import org.palladiosimulator.metricspec.constants.MetricDescriptionConstants;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcmmeasuringpoint.OperationReference;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
-import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.NumberOfElements;
 import org.palladiosimulator.spd.triggers.stimuli.OperationResponseTime;
@@ -89,7 +88,7 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
     private static final Logger LOGGER = Logger.getLogger(AnyStimulusAggregator.class);
 
     public AnyStimulusAggregator(final T stimulus, double windowSize, AGGREGATIONMETHOD aggregationMethod) {
-        if (stimulus instanceof AggregatedStimulus || stimulus instanceof ManagedElementsStateStimulus) {
+        if (stimulus instanceof ManagedElementsStateStimulus) {
             LOGGER.error("Function only for non-aggregated stimuli!");
             throw new IllegalArgumentException("Function only for non-aggregated stimuli!");
         }

@@ -91,6 +91,11 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
             .getMetricDesciption()
             .getId()
             .equals(this.metricSetDescription.getId())) {
+            String measuredResource = measurementMade.getEntity()
+                .getMeasuringPoint()
+                .getStringRepresentation();
+            double value = getValueForAggregation(measurementMade.getEntity());
+            double time = getPointInTime(measurementMade.getEntity());
             aggregator.aggregate(getPointInTime(measurementMade.getEntity()),
                     getValueForAggregation(measurementMade.getEntity()));
         }
