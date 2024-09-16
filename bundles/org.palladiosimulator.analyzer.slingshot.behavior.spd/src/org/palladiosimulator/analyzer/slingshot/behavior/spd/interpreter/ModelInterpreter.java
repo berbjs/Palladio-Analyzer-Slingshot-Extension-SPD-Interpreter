@@ -1,9 +1,5 @@
 package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AggregatedStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.AnyStimulusAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ManagedElementAggregator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
@@ -17,7 +13,6 @@ import org.palladiosimulator.spd.models.QThresholdsModel;
 import org.palladiosimulator.spd.models.RandomModel;
 import org.palladiosimulator.spd.models.util.ModelsSwitch;
 import org.palladiosimulator.spd.triggers.AGGREGATIONMETHOD;
-import org.palladiosimulator.spd.triggers.stimuli.AggregatedStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.ManagedElementsStateStimulus;
 import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 
@@ -26,9 +21,7 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
     @SuppressWarnings("rawtypes")
     public ModelAggregatorWrapper getAggregatorForStimulus(Stimulus stimulus, LearningBasedModel model) {
         double windowSize = model.getInterval();
-        if (stimulus instanceof AggregatedStimulus aggregatedStimulus) {
-            return new AggregatedStimulusAggregator<>(aggregatedStimulus, windowSize);
-        } else if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
+        if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
             return new ManagedElementAggregator<>(managedElementsStateStimulus, windowSize);
         } else {
             // TODO IMPORTANT currently using average aggregation by default for non-aggregated
