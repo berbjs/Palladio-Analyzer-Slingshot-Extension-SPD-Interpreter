@@ -292,6 +292,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         double utilization = utilizationAggregator.getResult();
         double reward = (1 - Math.exp(-exponentialSteepness * (1 - (actualResponseTime / targetResponseTime))))
                 / (1 - utilization);
+        LOGGER.debug("Reward (for the last period): " + reward);
         if (previousState != null) {
             update(reward, intervalMapping.getQValues(input)
                 .getMaxValue());
@@ -304,7 +305,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     private int evaluateState(Double state) {
         // Epsilon-Greedy exploratory action
         LOGGER.debug("Current state: " + state);
-        LOGGER.debug("Current mapping: " + intervalMapping.getMapping(state));
+        LOGGER.debug("Current interval mapping: " + intervalMapping);
         if (Math.random() < epsilon) {
             // TODO IMPORTANT Should ideally be performed "only around the boundary between adjacent
             // states and only using the adjacent actions"
@@ -334,6 +335,5 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         if (optimalAction != previousAction) {
             this.intervalMapping.adjustMapping(previousState, optimalAction);
         }
-        LOGGER.debug("Current interval mapping: " + intervalMapping);
     }
 }
