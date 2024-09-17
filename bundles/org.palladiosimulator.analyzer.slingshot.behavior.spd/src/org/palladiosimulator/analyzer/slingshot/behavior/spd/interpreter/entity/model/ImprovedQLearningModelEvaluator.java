@@ -85,9 +85,6 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
                 for (int i = 0; i < intervals.size(); i += 1) {
                     Interval interval = intervals.get(i);
                     if (state <= interval.upperBound && state > previousInterval.upperBound) {
-                        // TODO IMPORTANT implement the moving of the states modeled by the Q-Value
-                        // table, perhaps with the help of Interval.movedInterval and
-                        // ImprovedQLearningEntry
                         if (interval.action < action) {
                             // Case: The current interval has a too low action
                             // Action: move interval s.t. the state falls into the next higher
@@ -332,7 +329,6 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
 
     private void update(double reward, double nextStateMax) {
         ImprovedQLearningEntry entry = intervalMapping.getQValues(previousState);
-        // TODO IMPORTANT update Q-Values here
         entry.update(previousAction, reward, nextStateMax);
         int optimalAction = entry.getOptimalAction();
         if (optimalAction != previousAction) {
