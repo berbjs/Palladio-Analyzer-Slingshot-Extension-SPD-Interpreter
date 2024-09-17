@@ -47,7 +47,7 @@ public class ModelBasedTriggerChecker implements Filter {
             int value;
             try {
                 value = model.getDecision();
-                LOGGER.info("Model scaling decision: " + model.getDecision());
+                LOGGER.info("Model scaling decision: " + value);
             } catch (NotEmittableException e) {
                 LOGGER.info(e.getMessage());
                 return FilterResult.disregard(filteredEvent);
