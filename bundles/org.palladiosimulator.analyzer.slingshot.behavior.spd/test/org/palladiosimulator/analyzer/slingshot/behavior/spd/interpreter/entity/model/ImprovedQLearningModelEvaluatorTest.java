@@ -11,7 +11,7 @@ class ImprovedQLearningModelEvaluatorTest {
      * Tests whether the interval mapping splits the intervals correctly
      */
     void testIntervalMapping() {
-        IntervalMapping intervalMapping = new IntervalMapping(0);
+        IntervalMapping intervalMapping = new IntervalMapping(0, 5, 0.5);
         Assertions.assertEquals(0, intervalMapping.getMapping(0.5));
         intervalMapping.adjustMapping(0.2, -1);
         Assertions.assertEquals(-1, intervalMapping.getMapping(0.15));
