@@ -124,13 +124,8 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
      */
     public double getResult() throws NotEmittableException {
         if (!this.aggregator.isEmittable()) {
-            if (this.stimulusChecker instanceof NumberOfElementsStimulusChecker) {
-                return -1; // TODO IMPORTANT return the initial number of elements of the group
-                           // here!
-            } else {
-                throw new NotEmittableException("Values for " + this.stimulusChecker.getClass()
-                    .getSimpleName() + " not emittable.");
-            }
+            throw new NotEmittableException("Values for " + this.stimulusChecker.getClass()
+                .getSimpleName() + " not emittable.");
         }
         return this.aggregator.getCurrentValue();
     }

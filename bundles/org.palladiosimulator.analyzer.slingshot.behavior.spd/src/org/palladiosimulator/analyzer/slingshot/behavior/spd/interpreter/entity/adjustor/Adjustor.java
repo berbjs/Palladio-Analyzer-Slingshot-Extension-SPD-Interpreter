@@ -67,8 +67,6 @@ public class Adjustor implements Filter {
                 }
             }
         }
-        // TODO IMPORTANT test if this replacement of this.policy with
-        // objectWrapper.getState().getScalingPolicy() doesn't break anything
         return FilterResult.success(new ModelAdjustmentRequested(objectWrapper.getState()
             .getScalingPolicy()));
     }
