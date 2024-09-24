@@ -6,6 +6,7 @@ import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entitie
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterObjectWrapper;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterResult;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.LearningBasedModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
@@ -42,16 +43,25 @@ public class ModelBasedTriggerChecker implements Filter {
             LOGGER.debug("Received a datapoint collection event!");
             this.model.recordUsage(measurementMade);
         }
+        if (filteredEvent instanceof RepeatedSimulationTimeReached
+                && model instanceof LearningBasedModelEvaluator learningBasedModelEvaluator) {
+            try {
+                learningBasedModelEvaluator.update();
+            } catch (NotEmittableException e) {
+                LOGGER.info(e.getMessage());
+                return FilterResult.disregard(filteredEvent);
+            }
+        }
         if ((filteredEvent instanceof RepeatedSimulationTimeReached && model.getChangeOnInterval())
                 || (filteredEvent instanceof MeasurementMade && model.getChangeOnStimulus())) {
             int value;
             try {
                 value = model.getDecision();
-                LOGGER.info("Model scaling decision: " + value);
             } catch (NotEmittableException e) {
                 LOGGER.info(e.getMessage());
                 return FilterResult.disregard(filteredEvent);
             }
+            LOGGER.info("Model scaling decision: " + value);
             if (event.getState()
                 .getScalingPolicy() instanceof ModelBasedScalingPolicy modelBasedScalingPolicy) {
                 modelBasedScalingPolicy.setAdjustment(value);
