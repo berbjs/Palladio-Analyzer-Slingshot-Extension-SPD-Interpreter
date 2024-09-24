@@ -329,4 +329,9 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
             this.intervalMapping.adjustMapping(previousState, optimalAction);
         }
     }
+
+    @Override
+    public void update() {
+        // The update is performed inside getDecision(), so this is only a stub.
+    }
 }

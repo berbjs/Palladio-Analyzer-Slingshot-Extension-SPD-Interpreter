@@ -36,6 +36,18 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 
     @Override
     public int getDecision() throws NotEmittableException {
+        // TODO fill in implementation
+        return 0;
+    }
+
+    @Override
+    void recordRewardMeasurement(MeasurementMade measurement) {
+        this.responseTimeAggregator.aggregateMeasurement(measurement);
+        this.utilizationAggregator.aggregateMeasurement(measurement);
+    }
+
+    @Override
+    public void update() throws NotEmittableException {
         Double input = aggregatorList.get(0)
             .getResult();
         double exponentialFactor = 1;
@@ -45,12 +57,5 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
         double reward = (1 - Math.exp(-exponentialSteepness * exponentialFactor))
                 / (1 - utilizationAggregator.getResult());
         // TODO IMPORTANT Add model evaluation here
-        return 0;
-    }
-
-    @Override
-    void recordRewardMeasurement(MeasurementMade measurement) {
-        this.responseTimeAggregator.aggregateMeasurement(measurement);
-        this.utilizationAggregator.aggregateMeasurement(measurement);
     }
 }
