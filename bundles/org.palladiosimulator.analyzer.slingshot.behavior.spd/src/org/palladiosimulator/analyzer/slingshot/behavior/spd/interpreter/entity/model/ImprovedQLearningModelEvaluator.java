@@ -307,7 +307,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         LOGGER.debug("Current state: " + state);
         LOGGER.debug("Current interval mapping: " + intervalMapping);
         if (Math.random() < epsilon) {
-            // TODO IMPORTANT Should ideally be performed "only around the boundary between adjacent
+            // TODO Should ideally be performed "only around the boundary between adjacent
             // states and only using the adjacent actions"
             LOGGER.debug("Performed Epsilon-Action!");
             return random.nextInt(intervalMapping.getMapping(state) - (actionCount - 1) / 2,
