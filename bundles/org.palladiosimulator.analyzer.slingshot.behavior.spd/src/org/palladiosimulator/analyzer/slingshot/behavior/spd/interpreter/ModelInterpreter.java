@@ -24,7 +24,7 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
         if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
             return new ManagedElementAggregator<>(managedElementsStateStimulus, windowSize);
         } else {
-            // TODO IMPORTANT currently using average aggregation by default for non-aggregated
+            // TODO currently using average aggregation by default for non-aggregated
             // stimuli, this might need to be changed
             return new AnyStimulusAggregator<>(stimulus, windowSize, AGGREGATIONMETHOD.AVERAGE);
         }

@@ -56,6 +56,6 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
         }
         double reward = (1 - Math.exp(-exponentialSteepness * exponentialFactor))
                 / (1 - utilizationAggregator.getResult());
-        // TODO IMPORTANT Add model evaluation here
+        // TODO Add model evaluation here
     }
 }
