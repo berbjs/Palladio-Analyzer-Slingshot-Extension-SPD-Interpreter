@@ -38,22 +38,22 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
     public ManagedElementAggregator(final T stimulus, final double windowSize) {
         this.stimulus = stimulus;
         if (stimulus instanceof TaskCount) {
-            // TODO IMPORTANT set metricSetDescription + baseMetricDescription
+            // TODO set metricSetDescription + baseMetricDescription
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC_TUPLE;
             this.baseMetricDescription = MetricDescriptionConstants.STATE_OF_ACTIVE_RESOURCE_METRIC;
         } else if (stimulus instanceof CPUUtilization) {
             this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
             this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
         } else if (stimulus instanceof HDDUtilization) {
-            // TODO IMPORTANT verify correctly set metricSetDescription + baseMetricDescription
+            // TODO verify correctly set metricSetDescription + baseMetricDescription
             this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
             this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
         } else if (stimulus instanceof MemoryUtilization) {
-            // TODO IMPORTANT set metricSetDescription + baseMetricDescription
+            // TODO set metricSetDescription + baseMetricDescription
             this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
             this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
         } else if (stimulus instanceof NetworkUtilization) {
-            // TODO IMPORTANT set metricSetDescription + baseMetricDescription
+            // TODO set metricSetDescription + baseMetricDescription
             this.metricSetDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE_TUPLE;
             this.baseMetricDescription = MetricDescriptionConstants.UTILIZATION_OF_ACTIVE_RESOURCE;
         }
@@ -91,11 +91,6 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
             .getMetricDesciption()
             .getId()
             .equals(this.metricSetDescription.getId())) {
-            String measuredResource = measurementMade.getEntity()
-                .getMeasuringPoint()
-                .getStringRepresentation();
-            double value = getValueForAggregation(measurementMade.getEntity());
-            double time = getPointInTime(measurementMade.getEntity());
             aggregator.aggregate(getPointInTime(measurementMade.getEntity()),
                     getValueForAggregation(measurementMade.getEntity()));
         }
