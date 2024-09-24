@@ -15,16 +15,13 @@ public class RateOfChangeAggregation implements Function<Collection<DataPoint>, 
     @Override
     public Double apply(Collection<DataPoint> t) {
 
-        if (t.size() == 0) {
+        if (t.isEmpty()) {
             return 0.0;
         }
 
         SimpleRegression regression = new SimpleRegression();
         t.stream()
-            .forEach((dataPoint) -> {
-                regression.addData(dataPoint.getTimestamp(), dataPoint.getValue());
-            });
-        ;
+            .forEach(dataPoint -> regression.addData(dataPoint.getTimestamp(), dataPoint.getValue()));
         return regression.getSlope();
     }
 }

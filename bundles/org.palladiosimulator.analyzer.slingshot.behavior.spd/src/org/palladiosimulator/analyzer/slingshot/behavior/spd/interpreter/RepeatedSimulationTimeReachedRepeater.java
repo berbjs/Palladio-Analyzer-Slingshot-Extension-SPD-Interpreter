@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
 import org.palladiosimulator.analyzer.slingshot.common.annotations.Nullable;
-import org.palladiosimulator.analyzer.slingshot.core.api.SimulationDriver;
 import org.palladiosimulator.analyzer.slingshot.core.extension.SimulationBehaviorExtension;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.Subscribe;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.annotations.eventcontract.OnEvent;
@@ -17,12 +16,10 @@ import org.palladiosimulator.spd.SPD;
 
 @OnEvent(when = RepeatedSimulationTimeReached.class, then = RepeatedSimulationTimeReached.class, cardinality = SINGLE)
 public class RepeatedSimulationTimeReachedRepeater implements SimulationBehaviorExtension {
-    private static final Logger LOGGER = Logger.getLogger(RepeatedSimulationTimeReached.class);
-    private final SimulationDriver driver;
+    private static final Logger LOGGER = Logger.getLogger(RepeatedSimulationTimeReachedRepeater.class);
 
     @Inject
-    public RepeatedSimulationTimeReachedRepeater(final SimulationDriver driver, @Nullable final SPD spdModel) {
-        this.driver = driver;
+    public RepeatedSimulationTimeReachedRepeater(@Nullable final SPD spdModel) {
     }
 
     @Subscribe

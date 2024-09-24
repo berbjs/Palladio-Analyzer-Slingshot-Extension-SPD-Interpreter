@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.SpdInterpreter.InterpretationResult;
-import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.SPDAdjustorContext;
 import org.palladiosimulator.analyzer.slingshot.core.api.SimulationDriver;
 import org.palladiosimulator.analyzer.slingshot.core.events.PreSimulationConfigurationStarted;
 import org.palladiosimulator.analyzer.slingshot.core.extension.SimulationBehaviorExtension;
@@ -63,10 +62,5 @@ public class SpdBehavior implements SimulationBehaviorExtension {
 								    .forEach(driver::registerEventHandler);
 
 		return Result.from(result.getEventsToSchedule());
-	}
-	
-	public void addNewAdjustorContext(SPDAdjustorContext ac) {		
-		LOGGER.debug("AdjustorContext: #handlers = " + ac.getAssociatedHandlers().size());
-		ac.getAssociatedHandlers().stream().forEach(driver::registerEventHandler);
 	}
 }

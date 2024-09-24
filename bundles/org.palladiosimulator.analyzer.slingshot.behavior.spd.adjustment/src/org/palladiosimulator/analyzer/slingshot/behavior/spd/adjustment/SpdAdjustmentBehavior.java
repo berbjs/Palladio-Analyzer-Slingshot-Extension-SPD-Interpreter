@@ -51,9 +51,8 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
 
     @Inject
     public SpdAdjustmentBehavior(final Allocation allocation, final @Nullable MonitorRepository monitorRepository,
-            final @Nullable Configuration semanticConfiguration, // Provided by
-                                                                 // SemanticModelProvider
-            final @Nullable SPD spd, final QVToReconfigurator reconfigurator,
+            final @Nullable Configuration semanticConfiguration, final @Nullable SPD spd,
+            final QVToReconfigurator reconfigurator,
             @Named(SpdAdjustorModule.MAIN_QVTO) final Iterable<QVToModelTransformation> transformations) {
         this.activated = monitorRepository != null && semanticConfiguration != null && spd != null;
         this.allocation = allocation;

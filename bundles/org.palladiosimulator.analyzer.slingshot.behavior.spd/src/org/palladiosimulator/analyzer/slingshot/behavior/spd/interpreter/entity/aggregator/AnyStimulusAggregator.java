@@ -66,23 +66,6 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
         }
     }
 
-    class NumberOfElementsStimulusChecker extends StimulusChecker {
-
-        public NumberOfElementsStimulusChecker(NumberOfElements numberOfElements) {
-            LOGGER.debug("Encountered a NumberOfElements Stimulus");
-            // TODO Auto-generated constructor stub
-        }
-
-        @Override
-        Optional<Measure<Double, ?>> checkStimulus(MeasurementMade measurementMade) {
-            // TODO Auto-generated method stub
-            final SlingshotMeasuringValue measuringValue = measurementMade.getEntity();
-            final MeasuringPoint point = measuringValue.getMeasuringPoint();
-            // if (point instanceof final ActiveR)
-            return Optional.empty();
-        }
-    }
-
     protected final WindowAggregation aggregator;
     private AnyStimulusAggregator<T>.StimulusChecker stimulusChecker;
     private static final Logger LOGGER = Logger.getLogger(AnyStimulusAggregator.class);
@@ -98,12 +81,13 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
             this.baseMetricDescription = MetricDescriptionConstants.RESPONSE_TIME_METRIC;
             this.metricSetDescription = MetricDescriptionConstants.RESPONSE_TIME_METRIC_TUPLE;
         } else if (stimulus instanceof NumberOfElements numberOfElements) {
-            this.stimulusChecker = new NumberOfElementsStimulusChecker(numberOfElements);
+            LOGGER.debug("Number of Elements stimuli are not yet supported");
+            // TODO implement number of elements aggregator
             this.baseMetricDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS;
             this.metricSetDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS_OVER_TIME;
-        } else if (stimulus instanceof QueueLength) {
+        } else if (stimulus instanceof QueueLength queueLength) {
             LOGGER.debug("Queue Length stimuli are not yet supported");
-            // TODO IMPORTANT implement queue length aggregator
+            // TODO implement queue length aggregator
             this.baseMetricDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC;
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC_TUPLE;
         }
