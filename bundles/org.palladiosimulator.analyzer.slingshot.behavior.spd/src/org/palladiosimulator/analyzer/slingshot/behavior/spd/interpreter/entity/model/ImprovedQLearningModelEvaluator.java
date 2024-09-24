@@ -297,4 +297,9 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     void recordRewardMeasurement(MeasurementMade measurement) {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public void update() {
+        // The update is performed inside getDecision(), so this is only a stub.
+    }
 }

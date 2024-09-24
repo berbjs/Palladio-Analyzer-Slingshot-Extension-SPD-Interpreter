@@ -3,6 +3,7 @@ package org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity
 import java.util.List;
 
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.ModelAggregatorWrapper;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.aggregator.NotEmittableException;
 import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 
 public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
@@ -23,6 +24,8 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
     }
+
+    public abstract void update() throws NotEmittableException;
 
     abstract void recordRewardMeasurement(MeasurementMade measurement);
 }
