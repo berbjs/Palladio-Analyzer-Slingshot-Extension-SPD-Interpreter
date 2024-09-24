@@ -7,15 +7,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.RepeatedSimulationTimeReached;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.data.SpdBasedEvent;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.FilterChain;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.SPDAdjustorContext;
 import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entities.TargetGroupState;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.model.ModelEvaluator;
+import org.palladiosimulator.analyzer.slingshot.behavior.spd.interpreter.entity.trigger.ModelBasedTriggerChecker;
 import org.palladiosimulator.analyzer.slingshot.common.events.DESEvent;
 import org.palladiosimulator.analyzer.slingshot.eventdriver.entity.Subscriber;
+import org.palladiosimulator.analyzer.slingshot.monitor.data.events.MeasurementMade;
 import org.palladiosimulator.spd.ModelBasedScalingPolicy;
 import org.palladiosimulator.spd.ReactiveScalingPolicy;
 import org.palladiosimulator.spd.SPD;
+import org.palladiosimulator.spd.models.BaseModel;
 import org.palladiosimulator.spd.targets.TargetGroup;
 import org.palladiosimulator.spd.util.SpdSwitch;
 
@@ -70,8 +75,22 @@ class SpdInterpreter extends SpdSwitch<SpdInterpreter.InterpretationResult> {
             return new InterpretationResult();
         }
 
-        final ScalingTriggerInterpreter.InterpretationResult intrResult = OutputInterpreter
-            .getInterpretationResult(policy.getTargetGroup(), policy.getModel());
+        final BaseModel model = policy.getModel();
+
+        final RepeatedSimulationTimeReached event = new RepeatedSimulationTimeReached(policy.getTargetGroup()
+            .getId(), model.getInitalIntervalDelay() + model.getInterval(), 0.f, model.getInterval());
+
+        final ModelInterpreter modelInterpreter = new ModelInterpreter();
+        final ModelEvaluator modelEvaluator = modelInterpreter.doSwitch(model);
+
+        final ScalingTriggerInterpreter.InterpretationResult intrResult = (new ScalingTriggerInterpreter.InterpretationResult())
+            .scheduleEvent(event)
+            .listenEvent(Subscriber.builder(RepeatedSimulationTimeReached.class)
+                .name("simulationTimeReached"))
+            .listenEvent(Subscriber.builder(MeasurementMade.class)
+                .name("measurementMade"))
+            .triggerChecker(new ModelBasedTriggerChecker(modelEvaluator));
+
         return (new InterpretationResult())
             .adjustorContext(new SPDAdjustorContext(policy, intrResult.getTriggerChecker(),
                     intrResult.getEventsToListen(), targetGroupStates.get(policy.getTargetGroup())))
