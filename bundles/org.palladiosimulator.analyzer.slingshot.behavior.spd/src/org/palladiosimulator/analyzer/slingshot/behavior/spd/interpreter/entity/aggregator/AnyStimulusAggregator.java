@@ -81,12 +81,12 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
             this.baseMetricDescription = MetricDescriptionConstants.RESPONSE_TIME_METRIC;
             this.metricSetDescription = MetricDescriptionConstants.RESPONSE_TIME_METRIC_TUPLE;
         } else if (stimulus instanceof NumberOfElements numberOfElements) {
-            LOGGER.debug("Number of Elements stimuli are not yet supported");
+            LOGGER.info("Number of Elements stimuli are not yet supported");
             // TODO implement number of elements aggregator
             this.baseMetricDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS;
             this.metricSetDescription = MetricDescriptionConstants.NUMBER_OF_RESOURCE_CONTAINERS_OVER_TIME;
         } else if (stimulus instanceof QueueLength queueLength) {
-            LOGGER.debug("Queue Length stimuli are not yet supported");
+            LOGGER.info("Queue Length stimuli are not yet supported");
             // TODO implement queue length aggregator
             this.baseMetricDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC;
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC_TUPLE;

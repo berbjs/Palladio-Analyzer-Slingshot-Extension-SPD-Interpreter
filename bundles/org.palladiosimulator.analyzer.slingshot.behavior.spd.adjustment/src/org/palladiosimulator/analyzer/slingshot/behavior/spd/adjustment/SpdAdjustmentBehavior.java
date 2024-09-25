@@ -79,7 +79,6 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
          * cached
          */
         if (event.getScalingPolicy() instanceof ModelBasedScalingPolicy) {
-            LOGGER.debug("Model-based scaling policy detected, caching new adjustment!");
             final Configuration configuration = this.semanticConfiguration;
             configuration.setEnactedPolicy(event.getScalingPolicy());
             this.reconfigurator.getModelCache()
@@ -87,16 +86,6 @@ public class SpdAdjustmentBehavior implements SimulationBehaviorExtension {
         }
         // Set the enacted policy for the next transformation
         this.semanticConfiguration.setEnactedPolicy(event.getScalingPolicy());
-        LOGGER.debug("ADJUSTING ACCORDING TO " + event.getScalingPolicy()
-            .getEntityName());
-        LOGGER.debug("ENACTING POLICY " + this.semanticConfiguration.getEnactedPolicy()
-            .getEntityName());
-        LOGGER.debug("PREVIOUSLY ENACTED POLICIES FOR targetCfg:");
-        for (ScalingPolicy targetPolicy : this.semanticConfiguration.getTargetCfgs()
-            .get(0)
-            .getEnactedPolicies()) {
-            LOGGER.debug(targetPolicy.getEntityName());
-        }
         final List<ResourceContainer> oldContainers = new ArrayList<>(
                 environment.getResourceContainer_ResourceEnvironment());
         final List<AllocationContext> oldAllocationContexts = new ArrayList<>(
