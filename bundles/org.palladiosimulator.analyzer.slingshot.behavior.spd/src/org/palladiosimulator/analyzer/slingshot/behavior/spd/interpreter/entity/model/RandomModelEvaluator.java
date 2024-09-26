@@ -8,10 +8,10 @@ import org.palladiosimulator.spd.models.RandomModel;
 
 public class RandomModelEvaluator extends ModelEvaluator {
 
-    private OfInt scalingDecisions;
-    private double probability;
+    private final OfInt scalingDecisions;
+    private final double probability;
 
-    public RandomModelEvaluator(RandomModel model) {
+    public RandomModelEvaluator(final RandomModel model) {
         super();
         this.scalingDecisions = new Random().ints(model.getMinAdjustment(), model.getMaxAdjustment() + 1)
             .iterator();
@@ -23,11 +23,11 @@ public class RandomModelEvaluator extends ModelEvaluator {
         if (Math.random() >= this.probability) {
             return 0;
         }
-        return scalingDecisions.nextInt();
+        return this.scalingDecisions.nextInt();
     }
 
     @Override
-    public void recordUsage(MeasurementMade measurement) {
+    public void recordUsage(final MeasurementMade measurement) {
         // the random model evaluator does not record any usage
     }
 
