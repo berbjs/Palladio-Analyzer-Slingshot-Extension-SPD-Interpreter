@@ -37,8 +37,7 @@ public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @Override
     public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model),
-                getAggregatorForStimulus(model.getUtilizationStimulus(), model));
+        return new QThresholdsModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model));
     }
 
     @Override
