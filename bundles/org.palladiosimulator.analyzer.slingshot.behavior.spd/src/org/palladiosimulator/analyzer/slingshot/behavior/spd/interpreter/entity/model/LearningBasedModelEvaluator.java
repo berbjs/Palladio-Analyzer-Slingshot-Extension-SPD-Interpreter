@@ -23,6 +23,7 @@ public abstract class LearningBasedModelEvaluator extends ModelEvaluator {
         for (ModelAggregatorWrapper<?> modelAggregatorWrapper : aggregatorList) {
             modelAggregatorWrapper.aggregateMeasurement(measurement);
         }
+        this.recordRewardMeasurement(measurement);
     }
 
     public abstract void update() throws NotEmittableException;
