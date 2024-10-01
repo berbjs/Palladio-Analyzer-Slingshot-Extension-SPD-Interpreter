@@ -19,29 +19,35 @@ import org.palladiosimulator.spd.triggers.stimuli.Stimulus;
 public class ModelInterpreter extends ModelsSwitch<ModelEvaluator> {
 
     @SuppressWarnings("rawtypes")
-    public ModelAggregatorWrapper getAggregatorForStimulus(Stimulus stimulus, LearningBasedModel model) {
-        double windowSize = model.getInterval();
-        if (stimulus instanceof ManagedElementsStateStimulus managedElementsStateStimulus) {
+    public ModelAggregatorWrapper getAggregatorForStimulus(final Stimulus stimulus, final LearningBasedModel model) {
+        final double windowSize = model.getInterval();
+        if (stimulus instanceof final ManagedElementsStateStimulus managedElementsStateStimulus) {
             return new ManagedElementAggregator<>(managedElementsStateStimulus, windowSize);
         } else {
             // TODO currently using average aggregation by default for non-aggregated
             // stimuli, this might need to be changed
-            return new AnyStimulusAggregator<>(stimulus, windowSize, AGGREGATIONMETHOD.AVERAGE);
+            return this.getAggregatorForStimulus(stimulus, model, AGGREGATIONMETHOD.AVERAGE);
         }
     }
 
+    public <T extends Stimulus> ModelAggregatorWrapper<T> getAggregatorForStimulus(final T stimulus,
+            final LearningBasedModel model, final AGGREGATIONMETHOD aggregationMethod) {
+        final double windowSize = model.getInterval();
+        return new AnyStimulusAggregator<>(stimulus, windowSize, aggregationMethod);
+    }
+
     @Override
-    public ModelEvaluator caseRandomModel(RandomModel model) {
+    public ModelEvaluator caseRandomModel(final RandomModel model) {
         return new RandomModelEvaluator(model);
     }
 
     @Override
-    public ModelEvaluator caseQThresholdsModel(QThresholdsModel model) {
-        return new QThresholdsModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model));
+    public ModelEvaluator caseQThresholdsModel(final QThresholdsModel model) {
+        return new QThresholdsModelEvaluator(model, this.getAggregatorForStimulus(model.getInput(), model));
     }
 
     @Override
-    public ModelEvaluator caseImprovedQLearningModel(ImprovedQLearningModel model) {
-        return new ImprovedQLearningModelEvaluator(model, getAggregatorForStimulus(model.getInput(), model));
+    public ModelEvaluator caseImprovedQLearningModel(final ImprovedQLearningModel model) {
+        return new ImprovedQLearningModelEvaluator(model, this.getAggregatorForStimulus(model.getInput(), model));
     }
 }
