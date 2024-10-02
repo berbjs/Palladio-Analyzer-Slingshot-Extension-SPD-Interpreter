@@ -22,8 +22,8 @@ import org.palladiosimulator.spd.models.QThresholdsModel;
  */
 public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
 
-    private final Map<Long, ImprovedQLearningEntry> qValuesLowerThreshold = new HashMap<>();
-    private final Map<Long, ImprovedQLearningEntry> qValuesUpperThreshold = new HashMap<>();
+    private final Map<Long, ReducedActionSpaceCalculator> qValuesLowerThreshold = new HashMap<>();
+    private final Map<Long, ReducedActionSpaceCalculator> qValuesUpperThreshold = new HashMap<>();
     private final ModelAggregatorWrapper<?> stimulusListener;
     private final ModelAggregatorWrapper<?> responseTimeAggregator;
     private final ModelAggregatorWrapper<?> utilizationAggregator;
@@ -52,10 +52,12 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
     public int getDecision() throws NotEmittableException {
         // TODO make initial scaling policy (here: 40,80) configurable
         final int upperThreshold = this.qValuesUpperThreshold
-            .getOrDefault(this.previousState, new ImprovedQLearningEntry(this.learningRate, this.discountFactor, 5, 78))
+            .getOrDefault(this.previousState,
+                    new ReducedActionSpaceCalculator(this.learningRate, this.discountFactor, 5, 78))
             .getOptimalAction();
         final int lowerThreshold = this.qValuesLowerThreshold
-            .getOrDefault(this.previousState, new ImprovedQLearningEntry(this.learningRate, this.discountFactor, 5, 38))
+            .getOrDefault(this.previousState,
+                    new ReducedActionSpaceCalculator(this.learningRate, this.discountFactor, 5, 38))
             .getOptimalAction();
         final double currentUtilization = this.utilizationAggregator.getResult();
         this.lastScalingAction = 0;
@@ -71,6 +73,7 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
     @Override
     public void recordUsage(MeasurementMade measurement) {
         super.recordUsage(measurement);
+        // TODO use the measurement specified in model.getInput()
         if (measurement.getEntity()
             .getMetricDesciption()
             .getId()

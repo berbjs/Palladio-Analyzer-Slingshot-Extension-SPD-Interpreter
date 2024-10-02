@@ -92,9 +92,10 @@ public class AnyStimulusAggregator<T extends Stimulus> extends ModelAggregatorWr
             this.metricSetDescription = MetricDescriptionConstants.STATE_OF_PASSIVE_RESOURCE_METRIC_TUPLE;
         }
         if (aggregationMethod.equals(AGGREGATIONMETHOD.AVERAGE)) {
-            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, windowSize / 2, 0.2);
+            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, -Double.MIN_VALUE, 0.2);
         } else {
-            this.aggregator = SlidingTimeWindowAggregation.getFromAggregationMethod(aggregationMethod, windowSize, 0.0);
+            this.aggregator = SlidingTimeWindowAggregation.getFromAggregationMethod(aggregationMethod, windowSize,
+                    -Double.MIN_VALUE);
         }
     }
 

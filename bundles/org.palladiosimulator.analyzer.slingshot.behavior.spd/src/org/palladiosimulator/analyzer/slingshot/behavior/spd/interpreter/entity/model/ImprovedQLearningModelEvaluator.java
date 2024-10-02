@@ -127,7 +127,7 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     }
 
     private void update(final double reward, final double nextStateMax) {
-        final ImprovedQLearningEntry entry = this.intervalMappings.get(this.resourceCount)
+        final ReducedActionSpaceCalculator entry = this.intervalMappings.get(this.resourceCount)
             .getQValues(this.previousState);
         entry.update(this.previousAction, reward, nextStateMax);
         final int optimalAction = entry.getOptimalAction();

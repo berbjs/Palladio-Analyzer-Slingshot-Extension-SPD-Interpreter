@@ -13,7 +13,7 @@ class IntervalMapping {
      * @param action
      *            Associated Action
      */
-    record Interval(double upperBound, int action, ImprovedQLearningEntry qValues) implements Comparable<IntervalMapping.Interval> {
+    record Interval(double upperBound, int action, ReducedActionSpaceCalculator qValues) implements Comparable<IntervalMapping.Interval> {
         @Override
         public int compareTo(IntervalMapping.Interval otherInterval) {
             return Double.compare(upperBound, otherInterval.upperBound);
@@ -36,7 +36,7 @@ class IntervalMapping {
     IntervalMapping(double learningRate, int actionCount, double discountFactor) {
         this.gamma = discountFactor;
         intervals = new ArrayList<>();
-        intervals.add(new Interval(1.0, 0, new ImprovedQLearningEntry(learningRate, discountFactor, actionCount)));
+        intervals.add(new Interval(1.0, 0, new ReducedActionSpaceCalculator(learningRate, discountFactor, actionCount)));
         this.actionCount = actionCount;
         this.alpha = learningRate;
     }
@@ -50,16 +50,16 @@ class IntervalMapping {
                 return state <= mapping.upperBound;
             })
             .findFirst()
-            .orElse(new Interval(0.0, 0, new ImprovedQLearningEntry(alpha, gamma, actionCount))).action;
+            .orElse(new Interval(0.0, 0, new ReducedActionSpaceCalculator(alpha, gamma, actionCount))).action;
     }
 
-    ImprovedQLearningEntry getQValues(double state) {
+    ReducedActionSpaceCalculator getQValues(double state) {
         return intervals.stream()
             .filter((IntervalMapping.Interval mapping) -> {
                 return state <= mapping.upperBound;
             })
             .findFirst()
-            .orElse(new Interval(0.0, 0, new ImprovedQLearningEntry(alpha, gamma, actionCount))).qValues;
+            .orElse(new Interval(0.0, 0, new ReducedActionSpaceCalculator(alpha, gamma, actionCount))).qValues;
     }
 
     /**
@@ -67,10 +67,10 @@ class IntervalMapping {
      */
     void adjustMapping(double state, int action) {
         if (intervals.isEmpty()) {
-            intervals.add(new Interval(1.0, action, new ImprovedQLearningEntry(alpha, gamma, actionCount)));
+            intervals.add(new Interval(1.0, action, new ReducedActionSpaceCalculator(alpha, gamma, actionCount)));
         } else {
             IntervalMapping.Interval previousInterval = new Interval(-1.0, 0,
-                    new ImprovedQLearningEntry(alpha, gamma, actionCount));
+                    new ReducedActionSpaceCalculator(alpha, gamma, actionCount));
             for (int i = 0; i < intervals.size(); i += 1) {
                 IntervalMapping.Interval interval = intervals.get(i);
                 if (state <= interval.upperBound && state > previousInterval.upperBound) {
@@ -89,7 +89,7 @@ class IntervalMapping {
                                     new Interval(state, previousInterval.action, previousInterval.qValues));
                         } else {
                             intervals.add(0,
-                                    new Interval(state, interval.action - 1, new ImprovedQLearningEntry(alpha,
+                                    new Interval(state, interval.action - 1, new ReducedActionSpaceCalculator(alpha,
                                             gamma, actionCount, interval.action - 1 - (actionCount - 1) / 2)));
                         }
                     }
@@ -100,7 +100,7 @@ class IntervalMapping {
             if (intervals.get(intervals.size() - 1).upperBound != 1.0) {
                 // Ensure that there is a highest interval reaching until state 1.0
                 intervals.add(new Interval(1.0, intervals.get(intervals.size() - 1).action + 1,
-                        new ImprovedQLearningEntry(alpha, gamma, actionCount,
+                        new ReducedActionSpaceCalculator(alpha, gamma, actionCount,
                                 intervals.get(intervals.size() - 1).qValues.getMinChange() + 1)));
             }
         }

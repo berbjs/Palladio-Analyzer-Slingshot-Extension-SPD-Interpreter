@@ -48,7 +48,7 @@ public class ModelBasedTriggerChecker implements Filter {
             try {
                 learningBasedModelEvaluator.update();
             } catch (NotEmittableException e) {
-                LOGGER.info(e.getMessage());
+                LOGGER.warn(e.getMessage());
                 return FilterResult.disregard(filteredEvent);
             }
         }
@@ -58,7 +58,7 @@ public class ModelBasedTriggerChecker implements Filter {
             try {
                 value = model.getDecision();
             } catch (NotEmittableException e) {
-                LOGGER.info(e.getMessage());
+                LOGGER.warn(e.getMessage());
                 return FilterResult.disregard(filteredEvent);
             }
             LOGGER.info("Model scaling decision: " + value);

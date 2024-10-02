@@ -59,10 +59,10 @@ public class ManagedElementAggregator<T extends ManagedElementsStateStimulus> ex
         }
         if (stimulus.getAggregationOverElements()
             .equals(AGGREGATIONMETHOD.AVERAGE)) {
-            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, windowSize / 2, 0.2);
+            this.aggregator = new SlidingTimeWindowAggregationBasedOnEMA(windowSize, -Double.MIN_VALUE, 0.2);
         } else {
             this.aggregator = SlidingTimeWindowAggregation
-                .getFromAggregationMethod(stimulus.getAggregationOverElements(), windowSize, 0.0);
+                .getFromAggregationMethod(stimulus.getAggregationOverElements(), windowSize, -Double.MIN_VALUE);
         }
     }
 
