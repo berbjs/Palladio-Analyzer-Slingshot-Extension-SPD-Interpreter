@@ -53,11 +53,11 @@ public class QThresholdsModelEvaluator extends LearningBasedModelEvaluator {
         // TODO make initial scaling policy (here: 40,80) configurable
         final int upperThreshold = this.qValuesUpperThreshold
             .getOrDefault(this.previousState,
-                    new ReducedActionSpaceCalculator(this.learningRate, this.discountFactor, 5, 78))
+                    new ReducedActionSpaceCalculator(this.learningRate, this.discountFactor, 5, 78, false))
             .getOptimalAction();
         final int lowerThreshold = this.qValuesLowerThreshold
             .getOrDefault(this.previousState,
-                    new ReducedActionSpaceCalculator(this.learningRate, this.discountFactor, 5, 38))
+                    new ReducedActionSpaceCalculator(this.learningRate, this.discountFactor, 5, 38, false))
             .getOptimalAction();
         final double currentUtilization = this.utilizationAggregator.getResult();
         this.lastScalingAction = 0;

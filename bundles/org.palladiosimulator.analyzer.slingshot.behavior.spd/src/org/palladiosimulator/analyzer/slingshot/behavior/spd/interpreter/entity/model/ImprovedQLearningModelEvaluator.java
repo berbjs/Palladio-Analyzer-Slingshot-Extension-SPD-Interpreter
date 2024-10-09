@@ -19,15 +19,16 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     private int previousAction;
     private final double epsilon;
     private int actionCount;
-    private Map<Long, IntervalMapping> intervalMappings;
+    private final Map<Long, IntervalMapping> intervalMappings;
     private final Random random;
     private final ModelAggregatorWrapper<?> responseTimeAggregator;
     private final ModelAggregatorWrapper<?> utilizationAggregator;
     private final double exponentialSteepness;
     private final double targetResponseTime;
     private long resourceCount;
-    private double discountFactor;
-    private double learningRate;
+    private long previousResourceCount;
+    private final double discountFactor;
+    private final double learningRate;
     private static final Logger LOGGER = Logger.getLogger(ImprovedQLearningModelEvaluator.class);
 
     public ImprovedQLearningModelEvaluator(final ImprovedQLearningModel model,
@@ -47,13 +48,10 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         this.actionCount = model.getActionCount();
         this.learningRate = model.getLearningRate();
         this.discountFactor = model.getDiscountFactor();
-        this.intervalMappings = new HashMap();
+        this.intervalMappings = new HashMap<>();
         if (model.getActionCount() % 2 == 0) {
             throw new IllegalArgumentException("The action count must be odd");
         }
-        // this.intervalMapping = new IntervalMapping(model.getLearningRate(),
-        // model.getActionCount(),
-        // model.getDiscountFactor());
         this.random = new Random();
     }
 
@@ -79,38 +77,36 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
         final double reward = (1
                 - Math.exp(-this.exponentialSteepness * (1 - (actualResponseTime / this.targetResponseTime))))
                 / (1 - utilization);
-        LOGGER.debug("Reward (for the last period): " + reward);
+        LOGGER.info("Reward (for the last period): " + reward);
         if (this.previousState != null) {
-            if (!this.intervalMappings.containsKey(this.resourceCount)) {
-                this.intervalMappings.put(this.resourceCount,
-                        new IntervalMapping(this.learningRate, this.actionCount, this.discountFactor));
-            }
-            this.update(reward,
-                    this.intervalMappings
-                        .getOrDefault(this.resourceCount + this.evaluateState(input),
-                                new IntervalMapping(this.learningRate, this.actionCount, this.discountFactor))
-                        .getQValues(input)
-                        .getMaxValue());
+            this.update(reward, this.intervalMappings
+                .getOrDefault(this.previousResourceCount + this.evaluateState(input, this.previousResourceCount),
+                        new IntervalMapping(this.learningRate, this.actionCount, this.discountFactor))
+                .getQValues(input)
+                .getMaxValue());
         }
+        LOGGER.info("Current state: " + this.resourceCount + " resources; " + input);
+        this.intervalMappings.computeIfAbsent(this.resourceCount,
+                key -> new IntervalMapping(this.learningRate, this.actionCount, this.discountFactor));
+        LOGGER.info("Current interval mapping: " + this.intervalMappings.get(this.resourceCount));
+        this.previousAction = this.evaluateState(input, this.resourceCount);
         this.previousState = input;
-        this.previousAction = this.evaluateState(input);
+        this.previousResourceCount = this.resourceCount;
         return this.previousAction;
     }
 
-    private int evaluateState(final Double state) {
+    private int evaluateState(final Double state, final long resourceCount) {
         // Epsilon-Greedy exploratory action
-        LOGGER.debug("Current state: " + state);
-        LOGGER.debug("Current interval mapping: " + this.intervalMappings.get(this.resourceCount));
         if (Math.random() < this.epsilon) {
             // TODO Should ideally be performed "only around the boundary between adjacent
             // states and only using the adjacent actions"
             LOGGER.debug("Performed Epsilon-Action!");
-            return this.random.nextInt(this.intervalMappings.get(this.resourceCount)
-                .getMapping(state) - (this.actionCount - 1) / 2,
-                    this.intervalMappings.get(this.resourceCount)
-                        .getMapping(state) + (this.actionCount - 1) / 2 + 1);
+            return this.random.nextInt(this.intervalMappings.get(resourceCount)
+                .getMapping(state) - 1,
+                    this.intervalMappings.get(resourceCount)
+                        .getMapping(state) + 2);
         } else {
-            return this.intervalMappings.get(this.resourceCount)
+            return this.intervalMappings.get(resourceCount)
                 .getMapping(state);
         }
     }
@@ -127,13 +123,14 @@ public class ImprovedQLearningModelEvaluator extends LearningBasedModelEvaluator
     }
 
     private void update(final double reward, final double nextStateMax) {
-        final ReducedActionSpaceCalculator entry = this.intervalMappings.get(this.resourceCount)
+        final ReducedActionSpaceCalculator entry = this.intervalMappings.get(this.previousResourceCount)
             .getQValues(this.previousState);
-        entry.update(this.previousAction, reward, nextStateMax);
-        final int optimalAction = entry.getOptimalAction();
-        if (optimalAction != this.previousAction) {
-            this.intervalMappings.get(this.resourceCount)
-                .adjustMapping(this.previousState, optimalAction);
+        final int updatedOptimalAction = entry.getUpdatedOptimalAction(this.previousAction, reward, nextStateMax);
+        if (entry.getOptimalAction() != updatedOptimalAction) {
+            this.intervalMappings.get(this.previousResourceCount)
+                .adjustMapping(this.previousState, updatedOptimalAction);
+        } else {
+            entry.update(this.previousAction, reward, nextStateMax);
         }
     }
 }
